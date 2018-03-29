@@ -1,0 +1,9 @@
+lucky_number:
+  path: /user
+  controller: App\Controller\LuckyController::getUsers
+
+registration:
+  path: /user
+  controller: App\Controller\UserController::registration
+  requirements:
+    _method: POST
