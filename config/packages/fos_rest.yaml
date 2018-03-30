@@ -15,10 +15,10 @@
 #            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json, html ] }
 fos_rest:
     body_listener: true
+    param_fetcher_listener: true
     format_listener:
         rules:
             - { path: '^/api', priorities: ['json'], fallback_format: json, prefer_extension: false }
-    param_fetcher_listener: true
     view:
         view_response_listener: 'force'
         formats:

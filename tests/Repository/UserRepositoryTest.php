@@ -5,6 +5,7 @@ namespace App\Tests\Repository;
 use App\Entity\User;
 use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserRepositoryTest extends KernelTestCase
 {
@@ -19,24 +20,27 @@ class UserRepositoryTest extends KernelTestCase
     private $user;
 
     /**
+     * @var UserPasswordEncoderInterface
+     */
+    protected $passwordEncoder;
+
+    /**
      * {@inheritDoc}
      */
     protected function setUp()
     {
         $kernel = self::bootKernel();
 
-        $this->entityManager = $kernel->getContainer()
-            ->get('doctrine')
-            ->getManager();
-
-        $this->user = new User;
+        $this->user = new User();
+        $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+        $this->passwordEncoder = $kernel->getContainer()->get('security.password_encoder');
     }
 
     protected function createUser($email, $username, $password)
     {
         $this->user->email = $email;
         $this->user->username = $username;
-        $this->user->plainPassword = $password;
+        $this->user->setPassword($password, $this->passwordEncoder);
 
         try {
             $this->entityManager->persist($this->user);
@@ -50,7 +54,7 @@ class UserRepositoryTest extends KernelTestCase
 
     public function testFindAll()
     {
-        $this->createUser('tester@tester.com', 'unitTester', '123456');
+        $this->createUser('tester@tester.com', 'tester', '123456');
         $users = $this->entityManager->getRepository(User::class)->findAll();
 
         $this->assertTrue(is_array($users));
