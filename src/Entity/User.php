@@ -39,7 +39,7 @@ class User implements UserInterface
     public $username;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $roles;
 
@@ -58,11 +58,10 @@ class User implements UserInterface
     private $password;
 
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
-
 
     public function getRoles(): array
     {
@@ -73,7 +72,7 @@ class User implements UserInterface
         return json_decode($this->roles);
     }
 
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -83,7 +82,7 @@ class User implements UserInterface
         return null;
     }
 
-    public function getUsername(): string
+    public function getUsername(): ?string
     {
         return $this->username;
     }
