@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity;
 
@@ -57,13 +58,13 @@ class User implements UserInterface
     private $password;
 
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
 
-    public function getRoles()
+    public function getRoles(): array
     {
         if (!$this->roles) {
             return [self::ROLE_USER];
@@ -72,24 +73,25 @@ class User implements UserInterface
         return json_decode($this->roles);
     }
 
-    public function comparePasswords($password)
+    public function getPassword(): string
     {
-        // TODO
-        return $password === $this->password;
+        return $this->password;
     }
 
-    public function getSalt()
+    public function getSalt(): ?string
     {
-        // TODO: Implement getSalt() method.
+        return null;
     }
 
-    public function getUsername()
+    public function getUsername(): string
     {
-        // TODO: Implement getUsername() method.
+        return $this->username;
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): self
     {
-        // TODO: Implement eraseCredentials() method.
+        $this->plainPassword = null;
+
+        return $this;
     }
 }

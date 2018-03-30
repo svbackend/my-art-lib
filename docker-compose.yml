@@ -21,13 +21,14 @@ services:
           SESSION_DRIVER: redis
           CACHE_DRIVER: redis
   postgres:
-      image: postgres:10.3
+      image: postgres:9.6
       ports:
         - 15432:5432
       environment:
         POSTGRES_DB: my_art_lib
         POSTGRES_USER: my_art_lib
         POSTGRES_PASSWORD: my_art_lib
+        PGDATA: /tmp
   redis:
     image: redis:4.0-alpine
     ports:
