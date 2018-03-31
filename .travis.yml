@@ -7,7 +7,7 @@ install:
   - composer install
 
 script:
-  - ./bin/phpunit tests/Unit/* -- --coverage-clover=coverage.clover
+  - ./bin/phpunit tests/Unit/* --coverage-clover=coverage.clover
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar

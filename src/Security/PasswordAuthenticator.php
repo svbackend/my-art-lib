@@ -12,6 +12,7 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 class PasswordAuthenticator extends AbstractGuardAuthenticator
 {
@@ -19,15 +20,17 @@ class PasswordAuthenticator extends AbstractGuardAuthenticator
     const PASSWORD_KEY = 'password';
 
     protected $passwordEncoder;
+    protected $em;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $em)
     {
         $this->passwordEncoder = $passwordEncoder;
+        $this->em = $em;
     }
 
     public function supports(Request $request)
     {
-        return $request->request->has(self::USERNAME_KEY) && $request->request->has(self::PASSWORD_KEY);
+        return $request->getPathInfo() === '/api/login' && $request->request->has(self::USERNAME_KEY) && $request->request->has(self::PASSWORD_KEY);
     }
 
     public function getCredentials(Request $request)
@@ -40,6 +43,7 @@ class PasswordAuthenticator extends AbstractGuardAuthenticator
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
+        $username = $password = null;
         extract($credentials);
 
         if (null === $username || null === $password) {
@@ -61,10 +65,20 @@ class PasswordAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        //todo generate user token here?
+        /**
+         * @var $user User
+         */
+        $user = $token->getUser();
+        $user->generateApiKey(); // <= bin2hex(openssl_random_pseudo_bytes(32));
+        $this->em->persist($user);
+        $this->em->flush();
+        //todo - store api keys in another table with relation many (tokens) to one (user)
+
+        // these tokens (below) client mast send with every request in headers or query
+        // (/api/users/1?apiKey=...)
         $data = [
-            TokenAuthenticator::QUERY_TOKEN_KEY => (string)$token,
-            TokenAuthenticator::HEADER_TOKEN_KEY => (string)$token,
+            TokenAuthenticator::QUERY_TOKEN_KEY => $user->getApiKey(),
+            TokenAuthenticator::HEADER_TOKEN_KEY => $user->getApiKey(),
         ];
 
         return new JsonResponse($data, Response::HTTP_ACCEPTED);

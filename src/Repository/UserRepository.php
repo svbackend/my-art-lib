@@ -52,18 +52,17 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
 
     public function loadUserByUsername($username)
     {
+        // Actually username should me less than 50 characters, so if its 64 then it's token
+        if (strlen($username) === 64) {
+            return $this->loadUserByToken($username);
+        }
+
         return $this->createQueryBuilder('u')
             ->where('u.username = :username OR u.email = :email')
             ->setParameter('username', $username)
             ->setParameter('email', $username)
             ->getQuery()
             ->getOneOrNullResult();
-    }
-
-    public function loadUserByUsername2($username)
-    {
-        // todo check if $username is token (by length for example) - call loadUserByTokenMethod otherwise find use by username and email
-        return $this->loadUserByToken($username);
     }
 
     public function loadUserByToken(string $token)

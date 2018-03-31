@@ -19,7 +19,7 @@ use JMS\Serializer\Annotation\Expose;
  */
 class User implements UserInterface, \Serializable
 {
-    const ROLE_USER = 'user';
+    const ROLE_USER = 'ROLE_USER';
 
     /**
      * @ORM\Id()
@@ -62,11 +62,34 @@ class User implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="string", unique=true, nullable=true)
      */
-    public $apiKey;
+    private $apiKey;
+
+    public function __construct()
+    {
+        $this->addRole(self::ROLE_USER);
+    }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function addRole(string $role): self
+    {
+        if (array_search($role, $this->getRoles()) === false) {
+            array_push($this->roles, $role);
+        }
+
+        return $this;
+    }
+
+    public function removeRole(string $role): self
+    {
+        if (false !== $key = array_search($role, $this->roles)) {
+            if (isset($this->roles[$key])) unset($this->roles[$key]);
+        }
+
+        return $this;
     }
 
     public function getRoles(): array
@@ -113,14 +136,15 @@ class User implements UserInterface, \Serializable
         return $this;
     }
 
+    // todo remove apiKey from 2 methods below
     public function serialize(): string
     {
         return serialize([
             $this->id,
             $this->email,
             $this->username,
-            #$this->password,
-            #$this->roles,
+            $this->apiKey,
+            $this->roles,
         ]);
     }
 
@@ -130,9 +154,25 @@ class User implements UserInterface, \Serializable
             $this->id,
             $this->email,
             $this->username,
-            #$this->password,
-            #$this->roles,
+            $this->apiKey,
+            $this->roles,
             ) = unserialize($serialized);
+
+        return $this;
+    }
+
+    /**
+     * @return string:null
+     */
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
+
+
+    public function generateApiKey(): self
+    {
+        $this->apiKey = bin2hex(openssl_random_pseudo_bytes(32));
 
         return $this;
     }

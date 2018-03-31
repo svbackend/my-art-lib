@@ -9,15 +9,15 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+        login:
             anonymous: true
-            logout: ~
+            pattern: ^/api/login
             guard:
                 authenticators:
                     - App\Security\PasswordAuthenticator
-                entry_point: App\Security\TokenAuthenticator
         api:
             pattern: ^/api/
+            anonymous: true
             guard:
                 authenticators:
                     - App\Security\TokenAuthenticator
@@ -34,6 +34,9 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
-    access_control:
+    #access control already working
+    #access_control:
+    #    - { path: ^/api, roles: ROLE_USER }
+
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
