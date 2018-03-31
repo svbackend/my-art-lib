@@ -20,11 +20,6 @@ class UserTest extends KernelTestCase
     protected $passwordEncoder;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    private $entityManager;
-
-    /**
      * {@inheritDoc}
      */
     protected function setUp()
@@ -32,7 +27,6 @@ class UserTest extends KernelTestCase
         $kernel = self::bootKernel();
 
         $this->user = new User();
-        $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
         $this->passwordEncoder = $kernel->getContainer()->get('security.password_encoder');
     }
     

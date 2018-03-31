@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Repository;
+namespace App\Tests\Functional\Repository;
 
 use App\Entity\User;
 use Doctrine\ORM\ORMException;
