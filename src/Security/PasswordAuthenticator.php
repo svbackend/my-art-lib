@@ -61,18 +61,10 @@ class PasswordAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
+        //todo generate user token here?
         $data = [
             TokenAuthenticator::QUERY_TOKEN_KEY => (string)$token,
             TokenAuthenticator::HEADER_TOKEN_KEY => (string)$token,
-            'providedKey' => $providerKey,
-        ];
-
-        $token->serialize();
-
-        $data = [
-            TokenAuthenticator::QUERY_TOKEN_KEY => (string)$token,
-            TokenAuthenticator::HEADER_TOKEN_KEY => (string)$token,
-            'providedKey' => $providerKey,
         ];
 
         return new JsonResponse($data, Response::HTTP_ACCEPTED);
