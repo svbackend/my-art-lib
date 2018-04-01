@@ -26,3 +26,25 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    #FOS\OAuthServerBundle\Command\:
+    #    resource: '../vendor/friendsofsymfony/oauth-server-bundle/Command'
+
+    App\Command\:
+        resource: '../src/Command'
+
+    FOS\OAuthServerBundle\Model\AccessTokenManagerInterface:
+        alias: fos_oauth_server.access_token_manager.default
+        public: true
+
+    FOS\OAuthServerBundle\Model\AuthCodeManagerInterface:
+        alias: fos_oauth_server.auth_code_manager.default
+        public: true
+
+    FOS\OAuthServerBundle\Model\ClientManagerInterface:
+        alias: fos_oauth_server.client_manager.default
+        public: true
+
+    FOS\OAuthServerBundle\Model\RefreshTokenManagerInterface:
+        alias: fos_oauth_server.refresh_token_manager.default
+        public: true

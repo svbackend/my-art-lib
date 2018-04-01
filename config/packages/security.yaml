@@ -6,21 +6,43 @@ security:
             entity:
                 class: App\Entity\User
     firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-        login:
-            anonymous: true
-            pattern: ^/api/login
-            guard:
-                authenticators:
-                    - App\Security\PasswordAuthenticator
-        api:
-            pattern: ^/api/
-            anonymous: true
-            guard:
-                authenticators:
-                    - App\Security\TokenAuthenticator
+            dev:
+                pattern: ^/(_(profiler|wdt)|css|images|js)/
+                security: false
+            oauth_token:
+                pattern:    ^/oauth/v2/token
+                security:   false
+
+            oauth_authorize:
+                pattern:    ^/oauth/v2/auth
+                # Add your favorite authentication process here
+                http_basic:
+                    provider: your_db_provider
+
+            api:
+                pattern:    ^/api
+                fos_oauth:  true
+                stateless:  true
+                anonymous:  false # can be omitted as its default value
+
+    access_control:
+        - { path: ^/api, roles: [ IS_AUTHENTICATED_FULLY ] }
+#    firewalls:
+#        dev:
+#            pattern: ^/(_(profiler|wdt)|css|images|js)/
+#            security: false
+#        login:
+#            anonymous: true
+#            pattern: ^/api/login
+#            guard:
+#                authenticators:
+#                    - App\Security\PasswordAuthenticator
+#        api:
+#            pattern: ^/api/
+#            anonymous: true
+#            guard:
+#                authenticators:
+#                    - App\Security\TokenAuthenticator
     encoders:
         App\Entity\User:
             algorithm: bcrypt

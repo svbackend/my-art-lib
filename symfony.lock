@@ -59,6 +59,12 @@
     "exsyst/swagger": {
         "version": "v0.4.0"
     },
+    "friendsofsymfony/oauth-server-bundle": {
+        "version": "2.0-dev"
+    },
+    "friendsofsymfony/oauth2-php": {
+        "version": "1.2.3"
+    },
     "friendsofsymfony/rest-bundle": {
         "version": "2.2",
         "recipe": {
@@ -116,6 +122,9 @@
     "ocramius/proxy-manager": {
         "version": "2.2.0"
     },
+    "phing/phing": {
+        "version": "2.16.1"
+    },
     "phpcollection/phpcollection": {
         "version": "0.5.0"
     },
@@ -133,6 +142,9 @@
     },
     "predis/predis": {
         "version": "v1.1.1"
+    },
+    "propel/propel1": {
+        "version": "1.7.1"
     },
     "psr/cache": {
         "version": "1.0.1"
@@ -358,6 +370,9 @@
     },
     "willdurand/negotiation": {
         "version": "v2.3.1"
+    },
+    "willdurand/propel-typehintable-behavior": {
+        "version": "1.0.5"
     },
     "zendframework/zend-code": {
         "version": "3.3.0"
