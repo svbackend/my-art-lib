@@ -2,7 +2,7 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         #in_memory: { memory: ~ }
-        your_db_provider:
+        db_user_provider:
             entity:
                 class: App\Entity\User
     firewalls:
@@ -17,13 +17,14 @@ security:
                 pattern:    ^/oauth/v2/auth
                 # Add your favorite authentication process here
                 http_basic:
-                    provider: your_db_provider
+                    provider: db_user_provider
 
             api:
                 pattern:    ^/api
                 fos_oauth:  true
                 stateless:  true
                 anonymous:  false # can be omitted as its default value
+                provider: db_user_provider
 
     access_control:
         - { path: ^/api, roles: [ IS_AUTHENTICATED_FULLY ] }

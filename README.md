@@ -29,5 +29,4 @@ To get access to redis cli type:
 * `docker-compose exec redis bash`
 
 To generate oauth2 client use this command: 
-(but idk why, how to use it with user username & passwords?)
-* `php bin/console oauth:create-client --redirect-uri="http://127.0.0.1:8080/" --grant-type="token"`
+* `php bin/console oauth:create-client --redirect-uri="http://127.0.0.1:8080/" --grant-type="password"`
