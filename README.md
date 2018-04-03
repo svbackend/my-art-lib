@@ -27,3 +27,6 @@ To get access to postgres cli type:
 
 To get access to redis cli type: 
 * `docker-compose exec redis bash`
+
+To generate oauth2 client use this command: 
+* `php bin/console oauth:create-client --redirect-uri="http://127.0.0.1:8080/" --grant-type="password"`
