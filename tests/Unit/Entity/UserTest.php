@@ -40,6 +40,32 @@ class UserTest extends KernelTestCase
         $this->assertEquals([$this->user::ROLE_USER], $this->user->getRoles());
     }
 
+    public function testAddRole()
+    {
+        $this->user->addRole('ROLE_MODERATOR');
+        $this->assertEquals([$this->user::ROLE_USER, 'ROLE_MODERATOR'], $this->user->getRoles());
+    }
+
+    public function testRemoveRole()
+    {
+        $this->user->removeRole($this->user::ROLE_USER);
+        $this->assertEquals([$this->user::ROLE_USER], $this->user->getRoles());
+
+        $this->user->addRole('ROLE_MODERATOR');
+        $this->user->removeRole($this->user::ROLE_USER);
+        $this->assertEquals(['ROLE_MODERATOR'], $this->user->getRoles());
+
+        $this->user->removeRole('ROLE_MODERATOR');
+        $this->assertEquals([$this->user::ROLE_USER], $this->user->getRoles());
+    }
+
+    public function testIsPasswordValid()
+    {
+        $this->user->setPassword('123456', $this->passwordEncoder);
+        $this->assertEquals(false, $this->user->isPasswordValid('wrongPassword', $this->passwordEncoder));
+        $this->assertEquals(true, $this->user->isPasswordValid('123456', $this->passwordEncoder));
+    }
+
     public function testGetSalt()
     {
         $this->assertEquals(null, $this->user->getSalt());
@@ -61,5 +87,18 @@ class UserTest extends KernelTestCase
         $this->user->setPassword('123456', $this->passwordEncoder);
         $this->user->eraseCredentials();
         $this->assertEquals(null, $this->user->plainPassword);
+    }
+
+    public function testSerialize()
+    {
+        $this->user->addRole('ROLE_MODERATOR');
+        $this->user->username = 'tester';
+        $this->user->email = 'tester@tester.com';
+        $serializedUser = $this->user->serialize();
+
+        $unserializedUser = (new User)->unserialize($serializedUser);
+        $this->assertEquals('tester', $unserializedUser->getUsername());
+        $this->assertEquals('tester@tester.com', $unserializedUser->email);
+        $this->assertEquals($this->user->getRoles(), $unserializedUser->getRoles());
     }
 }

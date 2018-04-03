@@ -44,7 +44,7 @@ class User implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $roles;
+    public $roles;
 
     /**
      * @Exclude
@@ -59,11 +59,6 @@ class User implements UserInterface, \Serializable
      */
     private $password;
 
-    /**
-     * @ORM\Column(type="string", unique=true, nullable=true)
-     */
-    private $apiKey;
-
     public function __construct()
     {
         $this->addRole(self::ROLE_USER);
@@ -77,7 +72,9 @@ class User implements UserInterface, \Serializable
     public function addRole(string $role): self
     {
         if (array_search($role, $this->getRoles()) === false) {
-            array_push($this->roles, $role);
+            return $this->setRoles(
+                array_merge($this->getRoles(), [$role])
+            );
         }
 
         return $this;
@@ -85,9 +82,25 @@ class User implements UserInterface, \Serializable
 
     public function removeRole(string $role): self
     {
-        if (false !== $key = array_search($role, $this->roles)) {
-            if (isset($this->roles[$key])) unset($this->roles[$key]);
+        $roles = $this->getRoles();
+        $foundedRoleKey = array_search($role, $roles);
+
+        if ($foundedRoleKey !== false) {
+            unset($roles[$foundedRoleKey]);
+            return $this->setRoles($roles);
         }
+
+        return $this;
+    }
+
+    private function setRoles(array $roles): self
+    {
+        if (!count($roles)) {
+            $this->roles = null;
+            return $this;
+        }
+
+        $this->roles = json_encode($roles);
 
         return $this;
     }
@@ -95,10 +108,21 @@ class User implements UserInterface, \Serializable
     public function getRoles(): array
     {
         if (!$this->roles) {
-            return [self::ROLE_USER];
+            return $this->getDefaultRoles();
         }
 
-        return json_decode($this->roles);
+        $roles = (array)json_decode($this->roles);
+
+        if (!count($roles)) {
+            return $this->getDefaultRoles();
+        }
+
+        return array_values($roles);
+    }
+
+    private function getDefaultRoles()
+    {
+        return [self::ROLE_USER];
     }
 
     public function setPassword($password, UserPasswordEncoderInterface $passwordEncoder): self
@@ -143,7 +167,6 @@ class User implements UserInterface, \Serializable
             $this->id,
             $this->email,
             $this->username,
-            $this->apiKey,
             $this->roles,
         ]);
     }
@@ -154,25 +177,8 @@ class User implements UserInterface, \Serializable
             $this->id,
             $this->email,
             $this->username,
-            $this->apiKey,
             $this->roles,
             ) = unserialize($serialized);
-
-        return $this;
-    }
-
-    /**
-     * @return string:null
-     */
-    public function getApiKey(): ?string
-    {
-        return $this->apiKey;
-    }
-
-
-    public function generateApiKey(): self
-    {
-        $this->apiKey = bin2hex(openssl_random_pseudo_bytes(32));
 
         return $this;
     }

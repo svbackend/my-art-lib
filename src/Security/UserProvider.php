@@ -72,6 +72,6 @@ class UserProvider implements UserProviderInterface
      */
     protected function findUser($username)
     {
-        return $this->userRepository->findUserByUsername($username);
+        return $this->userRepository->loadUserByUsername($username);
     }
 }
