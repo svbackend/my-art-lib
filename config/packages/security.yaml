@@ -25,9 +25,6 @@ security:
                 anonymous:  true
                 provider: db_user_provider
 
-    access_control:
-        - { path: ^/api, roles: [ IS_AUTHENTICATED_FULLY ] }
-
     encoders:
         App\Entity\User:
             algorithm: bcrypt

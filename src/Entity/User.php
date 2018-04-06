@@ -44,7 +44,7 @@ class User implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    public $roles;
+    private $roles;
 
     /**
      * @Exclude

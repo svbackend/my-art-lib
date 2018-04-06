@@ -59,6 +59,9 @@
     "exsyst/swagger": {
         "version": "v0.4.0"
     },
+    "fesor/request-objects": {
+        "version": "v0.3.0"
+    },
     "friendsofsymfony/oauth-server-bundle": {
         "version": "2.0-dev"
     },

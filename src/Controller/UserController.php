@@ -4,8 +4,11 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Request\User\RegisterUserRequest;
+use App\Service\User\RegisterService;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -41,16 +44,23 @@ class UserController extends FOSRestController
      */
     protected $em;
 
+    /**
+     * @var RegisterService
+     */
+    protected $registerService;
+
     public function __construct(
         ViewHandlerInterface $viewHandler,
         ValidatorInterface $validator,
         UserPasswordEncoderInterface $passwordEncoder,
+        RegisterService $registerService,
         EntityManagerInterface $entityManager)
     {
         $this->viewHandler = $viewHandler;
         $this->validator = $validator;
         $this->passwordEncoder = $passwordEncoder;
         $this->em = $entityManager;
+        $this->registerService = $registerService;
     }
 
     /**
@@ -66,35 +76,19 @@ class UserController extends FOSRestController
      *     @Model(type=User::class)
      * )
      */
-    public function postUsers(Request $request)
+    public function postUsers(RegisterUserRequest $request)
     {
-        $user = new User();
-        $view = new View();
-
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY');
 
-        $user->username = $request->get('username');
-        $user->setPassword($request->get('password'), $this->passwordEncoder);
-        $user->email = $request->get('email');
-
-        $errors = $this->validator->validate($user);
-
-        if (count($errors)) {
-            $view->setStatusCode(400);
-            $view->setData($errors);
-        } else {
-            $this->em->persist($user);
-            $this->em->flush();
-            $view->setData($user);
-        }
-
-        return $this->viewHandler->handle($view);
+        return $this->registerService->registerByRequest($request);
     }
 
     /**
      * Authentication
      *
-     * @Route("/api/login", methods={"POST"})
+     * @Route("/oauth/v2/token", methods={"POST"})
+     * @SWG\Parameter(name="username", in="formData", type="string")
+     * @SWG\Parameter(name="password", in="formData", type="string")
      * @SWG\Response(
      *     description="Authentication.",
      *     response=202
@@ -120,6 +114,8 @@ class UserController extends FOSRestController
      */
     public function getUsers($id)
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         /**
          * @var $userRepository UserRepository
          */
@@ -150,6 +146,8 @@ class UserController extends FOSRestController
      */
     public function getAll()
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
         /**
          * @var $userRepository UserRepository
          */
