@@ -21,6 +21,9 @@ class BaseRequest extends RequestObject implements ErrorResponseProvider
         return new JsonResponse([
             'message' => 'Please check your data',
             'errors' => array_map(function (ConstraintViolation $violation) use ($propertyAccessor) {
+                // todo find the way to show correct path to property.
+                // Assert\* will return path like "[registration][username]"
+                // But UniqueEntity will return path like "username"
                 return [
                     'path' => $violation->getPropertyPath(),
                     'message' => $violation->getMessage(),

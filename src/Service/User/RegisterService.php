@@ -5,6 +5,7 @@ namespace App\Service\User;
 use App\Entity\User;
 use App\Request\User\RegisterUserRequest;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

@@ -5,7 +5,6 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use JMS\Serializer\Annotation\Exclude;
@@ -30,14 +29,11 @@ class User implements UserInterface, \Serializable
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Assert\NotBlank()
-     * @Assert\Email()
      */
     public $email;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Assert\NotBlank()
      */
     public $username;
 
@@ -48,8 +44,6 @@ class User implements UserInterface, \Serializable
 
     /**
      * @Exclude
-     * @Assert\NotBlank()
-     * @Assert\Length(max=4096)
      */
     public $plainPassword;
 
@@ -160,7 +154,6 @@ class User implements UserInterface, \Serializable
         return $this;
     }
 
-    // todo remove apiKey from 2 methods below
     public function serialize(): string
     {
         return serialize([

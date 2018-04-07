@@ -6,60 +6,21 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Request\User\RegisterUserRequest;
 use App\Service\User\RegisterService;
-use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Nelmio\ApiDocBundle\Annotation\Security;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Form\RegistrationForm;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use FOS\RestBundle\View\ViewHandler;
-use FOS\RestBundle\View\ViewHandlerInterface;
-use FOS\RestBundle\View\View;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class UserController extends FOSRestController
 {
-    /**
-     * @var ViewHandler
-     */
-    protected $viewHandler;
-
-    /**
-     * @var ValidatorInterface
-     */
-    protected $validator;
-
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    protected $passwordEncoder;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
-
     /**
      * @var RegisterService
      */
     protected $registerService;
 
-    public function __construct(
-        ViewHandlerInterface $viewHandler,
-        ValidatorInterface $validator,
-        UserPasswordEncoderInterface $passwordEncoder,
-        RegisterService $registerService,
-        EntityManagerInterface $entityManager)
+    public function __construct(RegisterService $registerService)
     {
-        $this->viewHandler = $viewHandler;
-        $this->validator = $validator;
-        $this->passwordEncoder = $passwordEncoder;
-        $this->em = $entityManager;
         $this->registerService = $registerService;
     }
 
@@ -75,6 +36,8 @@ class UserController extends FOSRestController
      *     response=202,
      *     @Model(type=User::class)
      * )
+     * @param $request RegisterUserRequest
+     * @return User
      */
     public function postUsers(RegisterUserRequest $request)
     {

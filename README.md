@@ -8,7 +8,8 @@ Project where users can fill own library of watched movies and share it. (dev st
 
 Pre-requirements:
 
-* `Docker`
+* `Docker & Composer & Git`
+* `php 7.2`
 
 Install:
 
@@ -16,6 +17,8 @@ Install:
 * `docker-compose up --build`
 * `docker-compose exec app bash`
 * `composer update`
+* `cp .env.dist .env`
+* `cp .env.dist .env.test`
 * `php bin/console doctrine:schema:update --force`
 
 You'r ready!
