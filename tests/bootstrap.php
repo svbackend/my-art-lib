@@ -68,6 +68,6 @@ $loadFixturesDoctrineCommand = function () use ($application) {
         $dropDatabaseDoctrineCommand,
         $createDatabaseDoctrineCommand,
         $updateSchemaDoctrineCommand,
-        #$loadFixturesDoctrineCommand,
+        $loadFixturesDoctrineCommand,
     ]
 );

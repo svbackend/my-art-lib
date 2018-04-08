@@ -29,6 +29,8 @@
         "willdurand/propel-typehintable-behavior": "^1.0"
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^5.0",
+        "doctrine/doctrine-fixtures-bundle": "^3.0",
         "symfony/dotenv": "^4.0",
         "symfony/phpunit-bridge": "^4.0",
         "symfony/profiler-pack": "^1.0"

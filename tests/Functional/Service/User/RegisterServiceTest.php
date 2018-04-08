@@ -62,9 +62,8 @@ class RegisterServiceTest extends KernelTestCase
         ]);
         $registerServiceResult = $registerService->registerByRequest($this->requestObject);
 
-        echo var_export($registerServiceResult);
-
-        $this->assertContains('id', $registerServiceResult);
+        $this->assertTrue($registerServiceResult instanceof User);
+        $this->assertNotEmpty($registerServiceResult->getId(), 'User Id not provided.');
     }
 
     /**

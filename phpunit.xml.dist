@@ -35,10 +35,14 @@
             <exclude>
                 <directory>src/Command</directory>
             </exclude>
+            <exclude>
+                <directory>src/DataFixtures</directory>
+            </exclude>
         </whitelist>
     </filter>
 
     <listeners>
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
+        <listener class="\DAMA\DoctrineTestBundle\PHPUnit\PHPUnitListener" />
     </listeners>
 </phpunit>

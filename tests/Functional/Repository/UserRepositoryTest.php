@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Repository;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -54,11 +55,36 @@ class UserRepositoryTest extends KernelTestCase
 
     public function testFindAll()
     {
-        $this->createUser('tester@tester.com', 'tester', '123456');
+        $createdUser = $this->createUser('tester@tester.com', 'tester', '123456');
         $users = $this->entityManager->getRepository(User::class)->findAll();
 
         $this->assertTrue(is_array($users));
         $this->assertTrue(count($users) > 0);
+        $this->assertContains($createdUser, $users);
+    }
+
+    public function testLoadByUsernameExistedUser()
+    {
+        /**
+         * @var $userRepository UserRepository
+         */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        $user = $userRepository->loadUserByUsername('tester_fixture');
+
+        $this->assertNotNull($user);
+        $this->assertObjectHasAttribute('username', $user);
+        $this->assertObjectHasAttribute('email', $user);
+    }
+
+    public function testLoadByUsernameNonExistedUser()
+    {
+        /**
+         * @var $userRepository UserRepository
+         */
+        $userRepository = $this->entityManager->getRepository(User::class);
+        $user = $userRepository->loadUserByUsername('NotExistedUser');
+
+        $this->assertNull($user);
     }
 
     /**
