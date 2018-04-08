@@ -13,6 +13,9 @@ install:
   - composer install
   - cp .env.dist .env.test
 
+env:
+  - DATABASE_URL="pgsql://my_art_lib:my_art_lib@localhost/my_art_lib"
+
 before_script:
   - psql -c "CREATE DATABASE my_art_lib;" -U postgres
   - psql -c "CREATE USER my_art_lib WITH PASSWORD 'my_art_lib';" -U postgres
