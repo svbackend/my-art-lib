@@ -5,6 +5,7 @@ php:
 
 install:
   - composer install
+  - cp .env.dist .env.test
 
 script:
   - ./bin/phpunit tests/Unit/* --coverage-clover=coverage.clover
