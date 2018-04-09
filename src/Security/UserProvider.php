@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Security;
 
@@ -8,14 +9,24 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class UserProvider implements UserProviderInterface
 {
-    protected $userRepository;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(UserRepository $userRepository, TranslatorInterface $translator)
     {
         $this->userRepository = $userRepository;
+        $this->translator = $translator;
     }
 
     /**
@@ -26,7 +37,9 @@ class UserProvider implements UserProviderInterface
         $user = $this->findUser($username);
 
         if (!$user) {
-            throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
+            throw new UsernameNotFoundException($this->translator->trans('not_found_by_username', [
+                'username' => $username,
+            ], 'users'));
         }
 
         return $user;
@@ -35,18 +48,22 @@ class UserProvider implements UserProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function refreshUser(UserInterface $user)
+    public function refreshUser(UserInterface $user): ?User
     {
         if (!$this->supportsClass(get_class($user))) {
-            throw new UnsupportedUserException(sprintf('Expected an instance of %s, but got "%s".', User::class, get_class($user)));
+            throw new UnsupportedUserException($this->translator->trans('unexpected_class', [
+                'expected_class' => User::class,
+                'actual_class' => get_class($user),
+            ], 'exceptions'));
         }
 
         /**
          * @var $user User
          */
-
-        if (null === $reloadedUser = $this->userRepository->findBy(['id' => $user->getId()])) {
-            throw new UsernameNotFoundException(sprintf('User with ID "%s" could not be reloaded.', $user->getId()));
+        if (null === $reloadedUser = $this->userRepository->find($user->getId())) {
+            throw new UsernameNotFoundException($this->translator->trans('user_provider.reload.error', [
+                'user_id' => $user->getId(),
+            ], 'exceptions'));
         }
 
         return $reloadedUser;

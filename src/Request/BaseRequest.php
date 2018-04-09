@@ -5,12 +5,23 @@ namespace App\Request;
 use Fesor\RequestObject\RequestObject;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Fesor\RequestObject\ErrorResponseProvider;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class BaseRequest extends RequestObject implements ErrorResponseProvider
 {
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+    
     /**
      * {@inheritdoc}
      */
@@ -19,7 +30,7 @@ class BaseRequest extends RequestObject implements ErrorResponseProvider
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
         return new JsonResponse([
-            'message' => 'Please check your data',
+            'message' => $this->translator->trans('invalid_data', [], 'validation'),
             'errors' => array_map(function (ConstraintViolation $violation) use ($propertyAccessor) {
                 // todo find the way to show correct path to property.
                 // Assert\* will return path like "[registration][username]"
