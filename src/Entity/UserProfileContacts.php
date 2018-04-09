@@ -4,11 +4,6 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\Expose;
 
 /**
  * @ORM\Entity
@@ -39,6 +34,11 @@ class UserProfileContacts
      */
     public $url;
 
+    public function __construct(UserProfile $userProfile)
+    {
+        $this->profile = $userProfile;
+    }
+
     /**
      * @return mixed
      */
@@ -48,12 +48,10 @@ class UserProfileContacts
     }
 
     /**
-     * @param mixed $profile
-     * @return UserProfileContacts
+     * @return UserProfile
      */
-    public function setProfile(UserProfile $profile): self
+    public function getProfile()
     {
-        $this->profile = $profile;
-        return $this;
+        return $this->profile;
     }
 }

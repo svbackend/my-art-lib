@@ -26,19 +26,14 @@ class UsersFixtures extends Fixture
         $user->setPassword('123456', $this->encoder);
 
         $profile = $user->getProfile();
-        $profile->setUser($user);
-        $profile->setFirstName('First')->setLastName('Last');
+        $profile->first_name = 'First';
+        $profile->last_name = 'Last';
 
         for ($i = 3; $i-->= 0;) {
-            $contact = new UserProfileContacts();
-            $contact->provider = "TestProvider #{$i}";
-            $contact->url = "https://test.com/{$i}/info";
-            $contact->setProfile($profile);
-            $manager->persist($contact);
+            $profile->addContacts("TestProvider #{$i}", "https://test.com/{$i}/info");
         }
 
         $manager->persist($user);
-        $manager->persist($profile);
         $manager->flush();
     }
 }

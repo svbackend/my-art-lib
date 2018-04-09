@@ -62,7 +62,7 @@ class User implements UserInterface, \Serializable
     public function __construct()
     {
         $this->addRole(self::ROLE_USER);
-        $this->profile = (new UserProfile())->setUser($this);
+        $this->profile = new UserProfile($this);
     }
 
     public function getProfile(): UserProfile

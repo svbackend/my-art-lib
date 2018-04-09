@@ -41,12 +41,12 @@ class UserProfile
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $first_name;
+    public $first_name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $last_name;
+    public $last_name;
 
     /**
      * @ORM\Column(type="date", nullable=true)
@@ -56,15 +56,16 @@ class UserProfile
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $about;
+    public $about;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $public_email;
+    public $public_email;
 
-    public function __construct()
+    public function __construct(User $user)
     {
+        $this->user = $user;
         $this->contacts = new ArrayCollection();
     }
 
@@ -85,12 +86,20 @@ class UserProfile
     }
 
     /**
-     * @param User $user
+     * @return mixed
+     */
+    public function getBirthDate()
+    {
+        return $this->birth_date;
+    }
+
+    /**
+     * @param \DateTime $birth_date
      * @return UserProfile
      */
-    public function setUser(User $user): UserProfile
+    public function setBirthDate(\DateTime $birth_date)
     {
-        $this->user = $user;
+        $this->birth_date = $birth_date;
         return $this;
     }
 
@@ -103,93 +112,18 @@ class UserProfile
     }
 
     /**
-     * @return mixed
-     *
+     * @param $name
+     * @param $url
+     * @return $this
      */
-    public function getFirstName()
+    public function addContacts($name, $url)
     {
-        return $this->first_name;
-    }
+        $contact = new UserProfileContacts($this);
+        $contact->provider = $name;
+        $contact->url = $url;
 
-    /**
-     * @param mixed $first_name
-     * @return UserProfile
-     */
-    public function setFirstName($first_name)
-    {
-        $this->first_name = $first_name;
-        return $this;
-    }
+        $this->contacts->add($contact);
 
-    /**
-     * @return mixed
-     */
-    public function getLastName()
-    {
-        return $this->last_name;
-    }
-
-    /**
-     * @param mixed $last_name
-     * @return UserProfile
-     */
-    public function setLastName($last_name)
-    {
-        $this->last_name = $last_name;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getBirthDate()
-    {
-        return $this->birth_date;
-    }
-
-    /**
-     * @param mixed $birth_date
-     * @return UserProfile
-     */
-    public function setBirthDate($birth_date)
-    {
-        $this->birth_date = $birth_date;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAbout()
-    {
-        return $this->about;
-    }
-
-    /**
-     * @param mixed $about
-     * @return UserProfile
-     */
-    public function setAbout($about)
-    {
-        $this->about = $about;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPublicEmail()
-    {
-        return $this->public_email;
-    }
-
-    /**
-     * @param mixed $public_email
-     * @return UserProfile
-     */
-    public function setPublicEmail($public_email)
-    {
-        $this->public_email = $public_email;
         return $this;
     }
 }
