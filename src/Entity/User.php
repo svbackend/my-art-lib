@@ -28,6 +28,12 @@ class User implements UserInterface, \Serializable
     private $id;
 
     /**
+     * @var $profile UserProfile
+     * @ORM\OneToOne(targetEntity="App\Entity\UserProfile", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $profile;
+
+    /**
      * @ORM\Column(type="string", length=255, unique=true)
      */
     public $email;
@@ -56,6 +62,12 @@ class User implements UserInterface, \Serializable
     public function __construct()
     {
         $this->addRole(self::ROLE_USER);
+        $this->profile = (new UserProfile())->setUser($this);
+    }
+
+    public function getProfile(): UserProfile
+    {
+        return $this->profile;
     }
 
     public function getId(): ?int
