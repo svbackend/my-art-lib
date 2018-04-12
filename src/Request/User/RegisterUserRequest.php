@@ -2,9 +2,7 @@
 
 namespace App\Request\User;
 
-use App\Entity\User;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Request\BaseRequest;
 
 class RegisterUserRequest extends BaseRequest

@@ -11,26 +11,30 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class UserController extends FOSRestController
 {
     /**
      * @var RegisterService
      */
-    protected $registerService;
+    private $registerService;
 
-    public function __construct(RegisterService $registerService)
+    private $translator;
+
+    public function __construct(RegisterService $registerService, TranslatorInterface $translator)
     {
         $this->registerService = $registerService;
+        $this->translator = $translator;
     }
 
     /**
      * Registration
      *
      * @Route("/api/users", methods={"POST"})
-     * @SWG\Parameter(name="username", in="formData", type="string")
-     * @SWG\Parameter(name="password", in="formData", type="string")
-     * @SWG\Parameter(name="email", in="formData", type="string")
+     * @SWG\Parameter(name="registration.username", in="formData", type="string")
+     * @SWG\Parameter(name="registration.password", in="formData", type="string")
+     * @SWG\Parameter(name="registration.email", in="formData", type="string")
      * @SWG\Response(
      *     description="Registration.",
      *     response=202,
@@ -59,7 +63,7 @@ class UserController extends FOSRestController
      */
     public function login()
     {
-        throw new NotFoundHttpException('This action should not be called!');
+        throw new NotFoundHttpException($this->translator->trans('wrong_action', [], 'exceptions'));
     }
 
     /**
@@ -86,7 +90,9 @@ class UserController extends FOSRestController
         $user = $userRepository->find($id);
 
         if ($user === null) {
-            throw new NotFoundHttpException(sprintf('The resource \'%s\' was not found.', $id));
+            throw new NotFoundHttpException($this->translator->trans('not_found_by_id', [
+                'user_id' => $id,
+            ], 'users'));
         }
 
         return $user;

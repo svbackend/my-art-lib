@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en" trgLang="pl">
+  <file id="exceptions.pl">
+    <unit id="hkeWxxd" name="wrong_action">
+      <notes>
+        <note category="file-source" priority="1">src/Controller/UserController.php:66</note>
+      </notes>
+      <segment>
+        <source>wrong_action</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="88Nkdsf" name="unexpected_class">
+      <notes>
+        <note category="file-source" priority="1">src/Security/UserProvider.php:54</note>
+      </notes>
+      <segment>
+        <source>unexpected_class</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="3xqsQCp" name="user_provider.reload.error">
+      <notes>
+        <note category="file-source" priority="1">src/Security/UserProvider.php:64</note>
+      </notes>
+      <segment>
+        <source>user_provider.reload.error</source>
+        <target></target>
+      </segment>
+    </unit>
+  </file>
+</xliff>

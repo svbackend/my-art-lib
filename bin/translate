@@ -1,0 +1,5 @@
+./bin/console translation:update --dump-messages --force en
+./bin/console translation:update --dump-messages --force ru
+./bin/console translation:update --dump-messages --force uk
+./bin/console translation:update --dump-messages --force pl
+php bin/console translation:extract app
