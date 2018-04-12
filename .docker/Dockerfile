@@ -4,7 +4,7 @@ MAINTAINER Valentyn Saik
 
 COPY . /srv/app
 COPY .docker/vhost.conf /etc/apache2/sites-available/000-default.conf
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+#COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /srv/app
 
