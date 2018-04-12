@@ -3,7 +3,7 @@
   <file id="validation.pl">
     <unit id="1cGIPIV" name="invalid_data">
       <notes>
-        <note category="file-source" priority="1">src/Request/BaseRequest.php:33</note>
+        <note category="state" priority="1">obsolete</note>
       </notes>
       <segment>
         <source>invalid_data</source>

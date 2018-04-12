@@ -7,7 +7,7 @@
       </notes>
       <segment>
         <source>Email already taken</source>
-        <target></target>
+        <target>Цей e-mail вже занятий</target>
       </segment>
     </unit>
     <unit id="E4bQcD." name="Username already taken">

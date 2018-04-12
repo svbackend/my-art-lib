@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Service\User;
 
 use App\Entity\User;
+use Doctrine\DBAL\Schema\Constraint;
 use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -11,6 +12,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use App\Service\User\RegisterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class RegisterServiceTest extends KernelTestCase
 {
@@ -18,7 +20,7 @@ class RegisterServiceTest extends KernelTestCase
      * {@inheritDoc}
      */
     /** @var  RegisterUserRequest|MockObject */
-    private $requestObject;
+    private $registerUserRequest;
 
     /**
      * @var RegisterService
@@ -46,24 +48,48 @@ class RegisterServiceTest extends KernelTestCase
     protected function setUp()
     {
         $kernel = self::bootKernel();
-        $this->requestObject = $this->createMock(RegisterUserRequest::class);
+        $this->registerUserRequest = $this->createMock(RegisterUserRequest::class);
         $this->passwordEncoder = $kernel->getContainer()->get('security.password_encoder');
         $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
         $this->validator = $kernel->getContainer()->get('validator');
     }
 
-    public function testRegister()
+    public function testSuccessRegister()
     {
         $registerService = new RegisterService($this->passwordEncoder, $this->entityManager, $this->validator);
-        $this->requestObject->method('get')->with('registration')->willReturn([
+        $this->registerUserRequest->method('get')->with('registration')->willReturn([
             'username' => 'registerServiceTester',
             'password' => 'registerServiceTester',
             'email' => 'register@Service.Tester',
         ]);
-        $registerServiceResult = $registerService->registerByRequest($this->requestObject);
+        $registerServiceResult = $registerService->registerByRequest($this->registerUserRequest);
 
-        $this->assertTrue($registerServiceResult instanceof User);
+        $this->assertInstanceOf(User::class, $registerServiceResult);
         $this->assertNotEmpty($registerServiceResult->getId(), 'User Id not provided.');
+    }
+
+    public function testInvalidRegister()
+    {
+        $registerService = new RegisterService($this->passwordEncoder, $this->entityManager, $this->validator);
+        $this->registerUserRequest->method('get')->with('registration')->willReturn([
+            'username' => 'registerServiceTester',
+            'password' => 'registerServiceTester',
+            'email' => 'register@Service.Tester',
+        ]);
+        // Here we register our user successfully
+        $registerService->registerByRequest($this->registerUserRequest);
+
+        $this->registerUserRequest->method('get')->with('registration')->willReturn([
+            'username' => 'registerServiceTester',
+            'password' => 'registerServiceTester',
+            'email' => 'register@Service.Tester',
+        ]);
+        $this->registerUserRequest->method('getErrorResponse')->will($this->returnArgument(0)); // will return errors
+        // But here this user should not be registered again because he already exist in DB
+        $registerServiceResult = $registerService->registerByRequest($this->registerUserRequest);
+
+        $this->assertInstanceOf(ConstraintViolationListInterface::class, $registerServiceResult);
+        $this->assertTrue(count($registerServiceResult) > 0);
     }
 
     /**
@@ -75,5 +101,6 @@ class RegisterServiceTest extends KernelTestCase
 
         $this->entityManager->close();
         $this->entityManager = null;
+        $this->registerUserRequest = null;
     }
 }

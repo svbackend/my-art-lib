@@ -32,9 +32,9 @@ class UserController extends FOSRestController
      * Registration
      *
      * @Route("/api/users", methods={"POST"})
-     * @SWG\Parameter(name="username", in="formData", type="string")
-     * @SWG\Parameter(name="password", in="formData", type="string")
-     * @SWG\Parameter(name="email", in="formData", type="string")
+     * @SWG\Parameter(name="registration.username", in="formData", type="string")
+     * @SWG\Parameter(name="registration.password", in="formData", type="string")
+     * @SWG\Parameter(name="registration.email", in="formData", type="string")
      * @SWG\Response(
      *     description="Registration.",
      *     response=202,
