@@ -11,7 +11,6 @@ addons:
 
 install:
   - composer install
-  - ./bin/composer install
   - cp .env.dist .env.test
 
 env:
