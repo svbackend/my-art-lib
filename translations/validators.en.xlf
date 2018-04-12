@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en" trgLang="en">
+  <file id="validators.en">
+    <unit id="F2EPJsR" name="Email already taken">
+      <notes>
+        <note category="file-source" priority="1">src/Entity/User.php:0</note>
+      </notes>
+      <segment>
+        <source>Email already taken</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="E4bQcD." name="Username already taken">
+      <notes>
+        <note category="file-source" priority="1">src/Entity/User.php:0</note>
+      </notes>
+      <segment>
+        <source>Username already taken</source>
+        <target></target>
+      </segment>
+    </unit>
+  </file>
+</xliff>
