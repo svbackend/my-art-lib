@@ -47,7 +47,13 @@ class UserRepositoryTest extends KernelTestCase
             $this->entityManager->persist($this->user);
             $this->entityManager->flush();
         } catch (ORMException $e) {
-            $this->fail('User not saved, error: ' . $e->getMessage());
+            $debugData = [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ];
+            $this->fail('User not saved, error: ' . var_export($debugData));
         }
 
         return $this->user;
