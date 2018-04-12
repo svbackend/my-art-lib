@@ -13,23 +13,23 @@ Pre-requirements:
 
 Install:
 
-* `git clone`
 * `docker-compose up --build`
-* `docker-compose exec app bash`
-* `composer update`
+* `bin/composer update`
 * `cp .env.dist .env`
 * `cp .env.dist .env.test`
+* `docker-compose exec app bash`
 * `php bin/console doctrine:schema:update --force`
+* `php bin/phpunit`
 
-You'r ready!
+If all tests passed then you'r ready!
 
 To run project again simply type `docker-compose up` (without `--build` at this time)
+
+To generate oauth2 client use this command: 
+* `php bin/console oauth:create-client --redirect-uri="http://127.0.0.1:8080/" --grant-type="password"`
 
 To get access to postgres cli type: 
 * `docker-compose exec postgres bash`
 
 To get access to redis cli type: 
 * `docker-compose exec redis bash`
-
-To generate oauth2 client use this command: 
-* `php bin/console oauth:create-client --redirect-uri="http://127.0.0.1:8080/" --grant-type="password"`
