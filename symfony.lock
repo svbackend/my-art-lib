@@ -149,6 +149,9 @@
     "ocramius/proxy-manager": {
         "version": "2.2.0"
     },
+    "paragonie/random_compat": {
+        "version": "v2.0.12"
+    },
     "phing/phing": {
         "version": "2.16.1"
     },
@@ -224,6 +227,9 @@
     "symfony/asset": {
         "version": "v4.0.6"
     },
+    "symfony/browser-kit": {
+        "version": "v4.0.8"
+    },
     "symfony/cache": {
         "version": "v4.0.6"
     },
@@ -247,6 +253,9 @@
     },
     "symfony/doctrine-bridge": {
         "version": "v4.0.6"
+    },
+    "symfony/dom-crawler": {
+        "version": "v4.0.8"
     },
     "symfony/dotenv": {
         "version": "v4.0.6"

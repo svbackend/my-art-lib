@@ -11,6 +11,10 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UsersFixtures extends Fixture
 {
+    const TESTER_EMAIL = 'tester@fixture.com';
+    const TESTER_USERNAME = 'tester_fixture';
+    const TESTER_PASSWORD = '123456';
+
     private $encoder;
 
     public function __construct(UserPasswordEncoderInterface $encoder)

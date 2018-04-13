@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c82dda61eb8b8da399aaaddb0e0ae283",
+    "content-hash": "e525eadc4d5408963a9e916255e393e0",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1010,42 +1010,41 @@
         },
         {
             "name": "friendsofsymfony/oauth-server-bundle",
-            "version": "dev-master",
+            "version": "1.6.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSOAuthServerBundle.git",
-                "reference": "37b3b9d8268d1bae8ff59ed2ad51493269512ca7"
+                "reference": "8fb2fe896148a9b6a3364da4e4072388da114a7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSOAuthServerBundle/zipball/37b3b9d8268d1bae8ff59ed2ad51493269512ca7",
-                "reference": "37b3b9d8268d1bae8ff59ed2ad51493269512ca7",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSOAuthServerBundle/zipball/8fb2fe896148a9b6a3364da4e4072388da114a7a",
+                "reference": "8fb2fe896148a9b6a3364da4e4072388da114a7a",
                 "shasum": ""
             },
             "require": {
                 "friendsofsymfony/oauth2-php": "~1.1",
-                "php": "^7.1",
-                "symfony/dependency-injection": "~3.0|~4.0",
-                "symfony/framework-bundle": "~3.0|~4.0",
-                "symfony/security-bundle": "~3.0|~4.0"
+                "paragonie/random_compat": "^1|^2",
+                "php": "^5.5|^7.0",
+                "symfony/dependency-injection": "^2.8|~3.0|^4.0",
+                "symfony/framework-bundle": "~2.8|~3.0|^4.0",
+                "symfony/security-bundle": "~2.8|~3.0|^4.0"
             },
             "require-dev": {
                 "doctrine/doctrine-bundle": "~1.0",
                 "doctrine/mongodb-odm": "~1.0",
                 "doctrine/orm": "~2.2",
                 "phing/phing": "~2.4",
-                "php-mock/php-mock-phpunit": "~1.0|~2.0",
-                "phpstan/phpstan-phpunit": "~0.9",
-                "phpstan/phpstan-shim": "~0.9",
-                "phpunit/phpunit": "~5.0|~6.0",
-                "propel/propel1": "~1.6",
-                "symfony/class-loader": "~3.0|~4.0",
-                "symfony/console": "~3.0|~4.0",
-                "symfony/form": "~3.0|~4.0",
-                "symfony/phpunit-bridge": "~3.0|~4.0",
-                "symfony/templating": "~3.0|~4.0",
-                "symfony/yaml": "~3.0|~4.0",
-                "willdurand/propel-typehintable-behavior": "~1.0"
+                "php-mock/php-mock-phpunit": "^1.1",
+                "phpunit/phpunit": "~4.8|~5.0",
+                "propel/propel1": "^1.6.5",
+                "symfony/class-loader": "~2.8|~3.0|^4.0",
+                "symfony/console": "~2.8|~3.0|^4.0",
+                "symfony/form": "~2.8|~3.0|^4.0",
+                "symfony/phpunit-bridge": "~2.8|~3.0|^4.0",
+                "symfony/templating": "~2.8|~3.0|^4.0",
+                "symfony/yaml": "~2.8|~3.0|^4.0",
+                "willdurand/propel-typehintable-behavior": "^1.0.4"
             },
             "suggest": {
                 "doctrine/doctrine-bundle": "*",
@@ -1058,7 +1057,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "1.5-dev"
                 }
             },
             "autoload": {
@@ -1090,7 +1089,7 @@
                 "oauth2",
                 "server"
             ],
-            "time": "2018-04-04T10:02:38+00:00"
+            "time": "2018-04-05T08:53:21+00:00"
         },
         {
             "name": "friendsofsymfony/oauth2-php",
@@ -1900,6 +1899,54 @@
             "time": "2017-11-16T23:22:31+00:00"
         },
         {
+            "name": "paragonie/random_compat",
+            "version": "v2.0.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paragonie/random_compat.git",
+                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
+                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.*|5.*"
+            },
+            "suggest": {
+                "ext-libsodium": "Provides a modern crypto API that can be used to generate random bytes."
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/random.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Paragon Initiative Enterprises",
+                    "email": "security@paragonie.com",
+                    "homepage": "https://paragonie.com"
+                }
+            ],
+            "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
+            "keywords": [
+                "csprng",
+                "pseudorandom",
+                "random"
+            ],
+            "time": "2018-04-04T21:24:14+00:00"
+        },
+        {
             "name": "phing/phing",
             "version": "2.16.1",
             "source": {
@@ -2033,16 +2080,16 @@
         },
         {
             "name": "php-translation/extractor",
-            "version": "1.5.0",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-translation/extractor.git",
-                "reference": "517a8d2ce1e2d035f4df7512161cb67f8d878d1f"
+                "reference": "e977eda03f3b4c99e46c79ae3736253489a8ea13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-translation/extractor/zipball/517a8d2ce1e2d035f4df7512161cb67f8d878d1f",
-                "reference": "517a8d2ce1e2d035f4df7512161cb67f8d878d1f",
+                "url": "https://api.github.com/repos/php-translation/extractor/zipball/e977eda03f3b4c99e46c79ae3736253489a8ea13",
+                "reference": "e977eda03f3b4c99e46c79ae3736253489a8ea13",
                 "shasum": ""
             },
             "require": {
@@ -2080,7 +2127,7 @@
                 }
             ],
             "description": "Extract translations form the source code",
-            "time": "2018-04-12T05:58:28+00:00"
+            "time": "2018-04-13T05:24:08+00:00"
         },
         {
             "name": "php-translation/symfony-bundle",
@@ -5734,6 +5781,119 @@
                 "persistence"
             ],
             "time": "2017-12-04T20:26:38+00:00"
+        },
+        {
+            "name": "symfony/browser-kit",
+            "version": "v4.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/browser-kit.git",
+                "reference": "c43bfa0182363b3fd64331b5e64e467349ff4670"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/browser-kit/zipball/c43bfa0182363b3fd64331b5e64e467349ff4670",
+                "reference": "c43bfa0182363b3fd64331b5e64e467349ff4670",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.3",
+                "symfony/dom-crawler": "~3.4|~4.0"
+            },
+            "require-dev": {
+                "symfony/css-selector": "~3.4|~4.0",
+                "symfony/process": "~3.4|~4.0"
+            },
+            "suggest": {
+                "symfony/process": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\BrowserKit\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony BrowserKit Component",
+            "homepage": "https://symfony.com",
+            "time": "2018-03-19T22:35:49+00:00"
+        },
+        {
+            "name": "symfony/dom-crawler",
+            "version": "v4.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dom-crawler.git",
+                "reference": "d6c04c7532535b5e0b63db45b543cd60818e0fbc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/d6c04c7532535b5e0b63db45b543cd60818e0fbc",
+                "reference": "d6c04c7532535b5e0b63db45b543cd60818e0fbc",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.3",
+                "symfony/polyfill-mbstring": "~1.0"
+            },
+            "require-dev": {
+                "symfony/css-selector": "~3.4|~4.0"
+            },
+            "suggest": {
+                "symfony/css-selector": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\DomCrawler\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony DomCrawler Component",
+            "homepage": "https://symfony.com",
+            "time": "2018-03-19T22:35:49+00:00"
         },
         {
             "name": "symfony/dotenv",
