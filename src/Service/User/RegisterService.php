@@ -9,6 +9,10 @@ use Doctrine\ORM\ORMException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+// todo REFACTORING
+// 1. Create user instance not here, use another service (or DTO?)
+// 2. How to use custom errorHandler?
+// 3. Save entity not here, looks like I need to move this to repository
 class RegisterService
 {
     private $user;

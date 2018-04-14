@@ -8,23 +8,6 @@ security:
             dev:
                 pattern: ^/(_(profiler|wdt)|css|images|js)/
                 security: false
-            oauth_token:
-                pattern:    ^/oauth/v2/token
-                security:   false
-
-            oauth_authorize:
-                pattern:    ^/oauth/v2/auth
-                # Add your favorite authentication process here
-                http_basic:
-                    provider: db_user_provider
-
-            api:
-                pattern:    ^/api
-                fos_oauth:  true
-                stateless:  true
-                anonymous:  true
-                provider: db_user_provider
-
     encoders:
         App\Entity\User:
             algorithm: bcrypt

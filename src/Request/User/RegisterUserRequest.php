@@ -9,6 +9,7 @@ class RegisterUserRequest extends BaseRequest
 {
     public function rules()
     {
+        // maybe move common rules to "RuleSets" to prevent code duplication? (post-lunch)
         return new Assert\Collection([
             'registration' => new Assert\Collection([
                 'email' => new Assert\Email(),
