@@ -59,4 +59,28 @@ class PostControllerTest extends WebTestCase
         $this->assertArrayHasKey('message', $response);
         $this->assertGreaterThanOrEqual(3, count($response['errors']));
     }
+
+    public function testGetAllUsersByAuthenticatedUser()
+    {
+        $client = static::createClient();
+
+        $client->request('GET', "/api/users?api_token={$this->getAccessToken()}");
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+    private function getAccessToken()
+    {
+        $client = static::createClient();
+
+        $client->request('POST', '/api/auth/login', [
+            'credentials' => [
+                'username' => UsersFixtures::TESTER_USERNAME,
+                'password' => UsersFixtures::TESTER_PASSWORD,
+            ]
+        ]);
+
+        $response = json_decode($client->getResponse()->getContent(), true);
+
+        return $response['api_token'];
+    }
 }

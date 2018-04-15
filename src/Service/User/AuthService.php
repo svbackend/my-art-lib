@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Service\User;
 
@@ -6,14 +7,10 @@ use App\Entity\ApiToken;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Request\User\AuthUserRequest;
-use App\Request\User\RegisterUserRequest;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\ConstraintViolation;
 
 class AuthService
 {
@@ -50,35 +47,48 @@ class AuthService
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function getTokenByRequest(AuthUserRequest $request)
+    public function getTokenByRequest(AuthUserRequest $request): ApiToken
     {
         $credentials = $request->get('credentials');
-        $username = $credentials['username'];
-        $password = $credentials['password'];
 
-        $user = $this->userRepository->loadUserByUsername($username);
+        $user = $this->findUserByCredentials($credentials['username'], $credentials['password']);
+        $apiToken = $this->createApiTokenForUser($user);
 
-        if ($user === null || $this->isPasswordValid($password, $user) === false) {
-            // todo how to improve this? I don't want to create by my own similar errors
-            $errors = new ConstraintViolationList([
-                new ConstraintViolation(
-                    $this->translator->trans('not_found_by_username_and_password', ['username' => $username], 'users'),
-                    '', [], '', '[credentials][username]', $username
-                ),
-            ]);
+        return $apiToken;
+    }
 
-            return $request->getErrorResponse($errors);
-        }
-
+    private function createApiTokenForUser(User $user): ApiToken
+    {
         $apiToken = new ApiToken($user);
 
         $this->entityManager->persist($apiToken);
         $this->entityManager->flush();
 
-        return ['api_token' => (string)$apiToken];
+        return $apiToken;
     }
 
-    private function isPasswordValid(string $password, User $user)
+    private function findUserByCredentials(string $username, string $password): User
+    {
+        $user = $this->userRepository->loadUserByUsername($username);
+
+        if ($user === null) {
+            throw new BadCredentialsException(
+                $this->translator->trans('user_with_this_username_not_exist', [
+                    'username' => $username,
+                ], 'users')
+            );
+        }
+
+        if ($this->isPasswordValid($password, $user) === false) {
+            throw new BadCredentialsException(
+                $this->translator->trans('wrong_password', [], 'users')
+            );
+        }
+
+        return $user;
+    }
+
+    private function isPasswordValid(string $password, User $user): bool
     {
         return $user->isPasswordValid($password, $this->passwordEncoder);
     }

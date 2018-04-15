@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Security;
+namespace App\Tests\Unit\Security;
 
 use App\Entity\User;
 use App\Repository\ApiTokenRepository;

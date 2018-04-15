@@ -18,12 +18,11 @@ class AuthControllerTest extends WebTestCase
             ]
         ]);
 
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
-        $this->assertArrayHasKey('errors', $response);
-        $this->assertArrayHasKey('message', $response);
-        $this->assertGreaterThanOrEqual(1, count($response['errors']));
+        $this->assertArrayHasKey('error', $response);
+        $this->assertArrayHasKey('error_description', $response);
     }
 
     public function testGetAuthTokenWithIncorrectPassword()
@@ -37,12 +36,11 @@ class AuthControllerTest extends WebTestCase
             ]
         ]);
 
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
-        $this->assertArrayHasKey('errors', $response);
-        $this->assertArrayHasKey('message', $response);
-        $this->assertGreaterThanOrEqual(1, count($response['errors']));
+        $this->assertArrayHasKey('error', $response);
+        $this->assertArrayHasKey('error_description', $response);
     }
 
     public function testGetAuthTokenValid()

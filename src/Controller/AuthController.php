@@ -58,12 +58,14 @@ class AuthController extends FOSRestController
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      * @param $authUserRequest AuthUserRequest
      * @param $authService AuthService
-     * @return Response
+     * @return array
      */
     public function login(AuthUserRequest $authUserRequest, AuthService $authService)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY');
 
-        return $authService->getTokenByRequest($authUserRequest);
+        $apiToken = $authService->getTokenByRequest($authUserRequest);
+
+        return ['api_token' => $apiToken->getToken()];
     }
 }

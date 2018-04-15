@@ -4,11 +4,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\Expose;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ApiTokenRepository")
@@ -25,8 +21,8 @@ class ApiToken
     private $id;
 
     /**
-     * @var $profile UserProfile
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="apiTokens")
+     * @var $user User
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tokens")
      */
     private $user;
 
@@ -37,8 +33,14 @@ class ApiToken
 
     public function __construct(User $user)
     {
-        $this->user = $user;
         $this->token = bin2hex(openssl_random_pseudo_bytes(128));
+        $user->addApiToken($this);
+        $this->user = $user;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     public function getUser(): User
@@ -47,11 +49,6 @@ class ApiToken
     }
 
     public function getToken(): string
-    {
-        return $this->token;
-    }
-
-    public function __toString()
     {
         return $this->token;
     }

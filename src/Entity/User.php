@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -28,11 +29,10 @@ class User implements UserInterface, \Serializable
     private $id;
 
     /**
-     * @var $api_token ApiToken|null
-     * @ORM\OneToMany(targetEntity="App\Entity\ApiToken", mappedBy="apiToken", cascade={"remove"})
-     * @ORM\JoinColumn(nullable=true)
+     * @var $tokens ApiToken[]|null
+     * @ORM\OneToMany(targetEntity="App\Entity\ApiToken", mappedBy="tokens", cascade={"remove"})
      */
-    private $apiTokens;
+    private $tokens;
 
     /**
      * @var $profile UserProfile
@@ -70,6 +70,7 @@ class User implements UserInterface, \Serializable
     {
         $this->addRole(self::ROLE_USER);
         $this->profile = new UserProfile($this);
+        $this->tokens = new ArrayCollection();
     }
 
     public function getProfile(): UserProfile
@@ -136,6 +137,13 @@ class User implements UserInterface, \Serializable
     private function getDefaultRoles()
     {
         return [self::ROLE_USER];
+    }
+
+    public function addApiToken(ApiToken $apiToken)
+    {
+        $this->tokens->add($apiToken);
+
+        return $this;
     }
 
     public function setPassword($password, UserPasswordEncoderInterface $passwordEncoder): self

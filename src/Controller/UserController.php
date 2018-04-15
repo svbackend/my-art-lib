@@ -51,22 +51,6 @@ class UserController extends FOSRestController
     }
 
     /**
-     * Authentication
-     *
-     * @Route("/oauth/v2/token", methods={"POST"})
-     * @SWG\Parameter(name="username", in="formData", type="string")
-     * @SWG\Parameter(name="password", in="formData", type="string")
-     * @SWG\Response(
-     *     description="Authentication.",
-     *     response=202
-     * )
-     */
-    public function login()
-    {
-        throw new NotFoundHttpException($this->translator->trans('wrong_action', [], 'exceptions'));
-    }
-
-    /**
      * Get single user
      *
      * @Route("/api/users/{id}", methods={"GET"})
