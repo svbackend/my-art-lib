@@ -45,4 +45,14 @@ class ApiToken
     {
         return $this->user;
     }
+
+    public function getToken(): string
+    {
+        return $this->token;
+    }
+
+    public function __toString()
+    {
+        return $this->token;
+    }
 }
