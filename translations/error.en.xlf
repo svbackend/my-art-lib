@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.0" srcLang="en" trgLang="en">
+  <file id="error.en">
+    <unit id="WoR7vyq" name="api_token_authentication_failure">
+      <notes>
+        <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:66</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>api_token_authentication_failure</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="aKHmxMO" name="api_token_authentication_failure_description">
+      <notes>
+        <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:67</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>api_token_authentication_failure_description</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="yT3VxxE" name="api_token_authentication_required">
+      <notes>
+        <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:76</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>api_token_authentication_required</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="KcRY30V" name="api_token_authentication_required_description">
+      <notes>
+        <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:77</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>api_token_authentication_required_description</source>
+        <target></target>
+      </segment>
+    </unit>
+  </file>
+</xliff>

@@ -28,6 +28,13 @@ class User implements UserInterface, \Serializable
     private $id;
 
     /**
+     * @var $api_token ApiToken|null
+     * @ORM\OneToMany(targetEntity="App\Entity\ApiToken", mappedBy="apiToken", cascade={"remove"})
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $apiTokens;
+
+    /**
      * @var $profile UserProfile
      * @ORM\OneToOne(targetEntity="App\Entity\UserProfile", mappedBy="user", cascade={"persist", "remove"})
      */

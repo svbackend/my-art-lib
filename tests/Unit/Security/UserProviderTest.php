@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Tests\Security;
 
 use App\Entity\User;
+use App\Repository\ApiTokenRepository;
 use App\Repository\UserRepository;
 use App\Security\UserProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -27,6 +28,11 @@ class UserProviderTest extends KernelTestCase
     private $userRepositoryMock;
 
     /**
+     * @var ApiTokenRepository|MockObject
+     */
+    private $apiTokenRepositoryMock;
+
+    /**
      * @var TranslatorInterface|MockObject
      */
     private $translatorMock;
@@ -34,10 +40,11 @@ class UserProviderTest extends KernelTestCase
     public function setUp()
     {
         $this->userRepositoryMock = $this->createMock(UserRepository::class);
+        $this->apiTokenRepositoryMock = $this->createMock(ApiTokenRepository::class);
         $this->translatorMock = $this->createMock(Translator::class);
         $this->translatorMock->method('trans')->will($this->returnArgument(0));
 
-        $this->userProvider = new UserProvider($this->userRepositoryMock, $this->translatorMock);
+        $this->userProvider = new UserProvider($this->userRepositoryMock, $this->apiTokenRepositoryMock, $this->translatorMock);
     }
 
     /**

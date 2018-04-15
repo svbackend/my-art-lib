@@ -2,12 +2,21 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         db_user_provider:
-            entity:
-                class: App\Entity\User
+            id: App\Security\UserProvider
     firewalls:
-            dev:
-                pattern: ^/(_(profiler|wdt)|css|images|js)/
-                security: false
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            pattern: ^/api
+            stateless: true
+            anonymous: true
+            logout: ~
+            provider: db_user_provider
+            guard:
+              authenticators:
+                - App\Security\TokenAuthenticator
     encoders:
         App\Entity\User:
             algorithm: bcrypt

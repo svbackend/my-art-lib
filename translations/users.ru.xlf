@@ -12,10 +12,20 @@
     </unit>
     <unit id="leFh34_" name="not_found_by_username">
       <notes>
-        <note category="file-source" priority="1">src/Security/UserProvider.php:40</note>
+        <note category="file-source" priority="1">src/Security/UserProvider.php:51</note>
       </notes>
       <segment>
         <source>not_found_by_username</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="rHa3rS_" name="not_found_by_api_token">
+      <notes>
+        <note category="file-source" priority="1">src/Security/UserProvider.php:68</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>not_found_by_api_token</source>
         <target></target>
       </segment>
     </unit>

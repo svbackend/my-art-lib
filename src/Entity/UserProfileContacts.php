@@ -20,7 +20,6 @@ class UserProfileContacts
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\UserProfile", inversedBy="contacts")
-     * @ORM\JoinColumn(nullable=true)
      */
     private $profile;
 
