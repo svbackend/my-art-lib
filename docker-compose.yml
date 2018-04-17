@@ -11,6 +11,7 @@ services:
       - .:/srv/app
     links:
       - postgres
+      - pgadmin
       - redis
     environment:
           DB_HOST: postgres
@@ -29,7 +30,11 @@ services:
         POSTGRES_USER: my_art_lib
         POSTGRES_PASSWORD: my_art_lib
         PGDATA: /tmp
+  pgadmin:
+      image: fenglc/pgadmin4
+      ports:
+        - 5050:5050
   redis:
-    image: redis:4.0-alpine
-    ports:
-      - 16379:6379
+      image: redis:4.0-alpine
+      ports:
+        - 16379:6379

@@ -5,7 +5,6 @@
         "php": "^7.1.3",
         "ext-iconv": "*",
         "fesor/request-objects": "^0.3.0",
-        "friendsofsymfony/oauth-server-bundle": "^1.6@dev",
         "friendsofsymfony/rest-bundle": "^2.3",
         "jms/serializer-bundle": "^2.3",
         "nelmio/api-doc-bundle": "^3.2",
@@ -19,7 +18,6 @@
         "symfony/asset": "^4.0",
         "symfony/console": "^4.0",
         "symfony/flex": "^1.0",
-        "symfony/form": "^4.0",
         "symfony/framework-bundle": "^4.0",
         "symfony/lts": "^4@dev",
         "symfony/maker-bundle": "^1.3",
@@ -27,7 +25,6 @@
         "symfony/property-access": "^4.0",
         "symfony/security-bundle": "^4.0",
         "symfony/translation": "^4.0",
-        "symfony/twig-bundle": "^4.0",
         "symfony/validator": "^4.0",
         "symfony/yaml": "^4.0",
         "willdurand/propel-typehintable-behavior": "^1.0"

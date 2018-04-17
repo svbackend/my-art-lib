@@ -12,7 +12,7 @@
     </unit>
     <unit id="88Nkdsf" name="unexpected_class">
       <notes>
-        <note category="file-source" priority="1">src/Security/UserProvider.php:54</note>
+        <note category="file-source" priority="1">src/Security/UserProvider.php:82</note>
       </notes>
       <segment>
         <source>unexpected_class</source>
@@ -21,10 +21,20 @@
     </unit>
     <unit id="3xqsQCp" name="user_provider.reload.error">
       <notes>
-        <note category="file-source" priority="1">src/Security/UserProvider.php:64</note>
+        <note category="file-source" priority="1">src/Security/UserProvider.php:92</note>
       </notes>
       <segment>
         <source>user_provider.reload.error</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="l58H2U8" name="invalid_user_provider">
+      <notes>
+        <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:42</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>invalid_user_provider</source>
         <target></target>
       </segment>
     </unit>

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use App\Repository\ApiTokenRepository;
 use App\Repository\UserRepository;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -19,22 +20,32 @@ class UserProvider implements UserProviderInterface
     private $userRepository;
 
     /**
+     * @var ApiTokenRepository
+     */
+    private $apiTokenRepository;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
 
-    public function __construct(UserRepository $userRepository, TranslatorInterface $translator)
+    public function __construct(
+        UserRepository $userRepository,
+        ApiTokenRepository $apiTokenRepository,
+        TranslatorInterface $translator
+    )
     {
         $this->userRepository = $userRepository;
+        $this->apiTokenRepository = $apiTokenRepository;
         $this->translator = $translator;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function loadUserByUsername($username)
+    public function loadUserByUsername($username): User
     {
-        $user = $this->findUser($username);
+        $user = $this->userRepository->loadUserByUsername($username);
 
         if (!$user) {
             throw new UsernameNotFoundException($this->translator->trans('not_found_by_username', [
@@ -43,6 +54,23 @@ class UserProvider implements UserProviderInterface
         }
 
         return $user;
+    }
+
+    /**
+     * @param string $token
+     * @return User
+     */
+    public function loadUserByToken(string $token): User
+    {
+        $apiToken = $this->apiTokenRepository->findByToken($token);
+
+        if (!$apiToken) {
+            throw new UsernameNotFoundException($this->translator->trans('not_found_by_api_token', [
+                'token' => $token,
+            ], 'users'));
+        }
+
+        return $apiToken->getUser();
     }
 
     /**
@@ -76,19 +104,5 @@ class UserProvider implements UserProviderInterface
     {
         $userClass = User::class;
         return $userClass === $class || is_subclass_of($class, $userClass);
-    }
-
-    /**
-     * Finds a user by username.
-     *
-     * This method is meant to be an extension point for child classes.
-     *
-     * @param string $username
-     *
-     * @return User|null
-     */
-    protected function findUser($username)
-    {
-        return $this->userRepository->loadUserByUsername($username);
     }
 }

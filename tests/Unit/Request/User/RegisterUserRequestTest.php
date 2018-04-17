@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Entity;
+namespace App\Tests\Unit\Request\User;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\Request\User\RegisterUserRequest;

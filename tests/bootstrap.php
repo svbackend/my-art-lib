@@ -56,6 +56,7 @@ $loadFixturesDoctrineCommand = function () use ($application) {
     $input = new ArrayInput([
         'command' => 'doctrine:fixtures:load',
         '--no-interaction' => true,
+        '--purge-with-truncate' => true,
     ]);
     $input->setInteractive(false);
     $application->run($input, new ConsoleOutput());
