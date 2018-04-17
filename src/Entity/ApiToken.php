@@ -22,7 +22,7 @@ class ApiToken
 
     /**
      * @var $user User
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tokens")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
      */
     private $user;
 
@@ -34,7 +34,7 @@ class ApiToken
     public function __construct(User $user)
     {
         $this->token = bin2hex(openssl_random_pseudo_bytes(128));
-        $user->addApiToken($this);
+        #$user->addApiToken($this);
         $this->user = $user;
     }
 

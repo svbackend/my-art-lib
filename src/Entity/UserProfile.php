@@ -33,7 +33,7 @@ class UserProfile
 
     /**
      * @var $contacts UserProfileContacts[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="App\Entity\UserProfileContacts", mappedBy="contacts", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\UserProfileContacts", mappedBy="profile", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $contacts;

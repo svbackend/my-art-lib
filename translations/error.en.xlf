@@ -8,7 +8,7 @@
       </notes>
       <segment>
         <source>api_token_authentication_failure</source>
-        <target></target>
+        <target>Authentication failure. Bad credentials.</target>
       </segment>
     </unit>
     <unit id="aKHmxMO" name="api_token_authentication_failure_description">
@@ -18,7 +18,7 @@
       </notes>
       <segment>
         <source>api_token_authentication_failure_description</source>
-        <target></target>
+        <target>Check your username and password</target>
       </segment>
     </unit>
     <unit id="yT3VxxE" name="api_token_authentication_required">
@@ -28,7 +28,7 @@
       </notes>
       <segment>
         <source>api_token_authentication_required</source>
-        <target></target>
+        <target>Authentication required</target>
       </segment>
     </unit>
     <unit id="KcRY30V" name="api_token_authentication_required_description">
@@ -38,7 +38,7 @@
       </notes>
       <segment>
         <source>api_token_authentication_required_description</source>
-        <target></target>
+        <target>You need to provide api_token to access this resource.</target>
       </segment>
     </unit>
   </file>

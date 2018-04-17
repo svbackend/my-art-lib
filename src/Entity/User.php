@@ -28,15 +28,11 @@ class User implements UserInterface, \Serializable
      */
     private $id;
 
-    /**
-     * @var $tokens ApiToken[]|null
-     * @ORM\OneToMany(targetEntity="App\Entity\ApiToken", mappedBy="tokens", cascade={"remove"})
-     */
-    private $tokens;
+    #private $tokens;
 
     /**
      * @var $profile UserProfile
-     * @ORM\OneToOne(targetEntity="App\Entity\UserProfile", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\UserProfile", cascade={"persist", "remove"})
      */
     private $profile;
 
@@ -70,7 +66,7 @@ class User implements UserInterface, \Serializable
     {
         $this->addRole(self::ROLE_USER);
         $this->profile = new UserProfile($this);
-        $this->tokens = new ArrayCollection();
+        #$this->tokens = new ArrayCollection();
     }
 
     public function getProfile(): UserProfile
@@ -139,12 +135,13 @@ class User implements UserInterface, \Serializable
         return [self::ROLE_USER];
     }
 
+    /*
     public function addApiToken(ApiToken $apiToken)
     {
         $this->tokens->add($apiToken);
 
         return $this;
-    }
+    }*/
 
     public function setPassword($password, UserPasswordEncoderInterface $passwordEncoder): self
     {

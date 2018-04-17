@@ -51,7 +51,12 @@ class AuthService
     {
         $credentials = $request->get('credentials');
 
-        $user = $this->findUserByCredentials($credentials['username'], $credentials['password']);
+        return $this->getTokenByCredentials($credentials['username'], $credentials['password']);
+    }
+
+    public function getTokenByCredentials(string $username, string $password): ApiToken
+    {
+        $user = $this->findUserByCredentials($username, $password);
         $apiToken = $this->createApiTokenForUser($user);
 
         return $apiToken;
