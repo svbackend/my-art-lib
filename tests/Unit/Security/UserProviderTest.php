@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Security;
 
+use App\Entity\ApiToken;
 use App\Entity\User;
 use App\Repository\ApiTokenRepository;
 use App\Repository\UserRepository;
 use App\Security\UserProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Translation\Translator;
@@ -18,7 +18,7 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 class UserProviderTest extends KernelTestCase
 {
     /**
-     * @var UserProviderInterface
+     * @var UserProvider
      */
     private $userProvider;
 
@@ -65,6 +65,24 @@ class UserProviderTest extends KernelTestCase
     }
 
     /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\UsernameNotFoundException
+     */
+    public function testLoadUserByTokenFail()
+    {
+        $this->apiTokenRepositoryMock->method('findByToken')->willReturn(null);
+        $this->userProvider->loadUserByToken('notExistedUserToken');
+    }
+
+    public function testLoadUserByTokenSuccess()
+    {
+        $user = new User();
+        $apiToken = new ApiToken($user);
+        $this->apiTokenRepositoryMock->method('findByToken')->willReturn($apiToken);
+        $result = $this->userProvider->loadUserByToken('validToken');
+        self::assertInstanceOf(User::class, $result);
+    }
+
+    /**
      * @expectedException \Symfony\Component\Security\Core\Exception\UnsupportedUserException
      */
     public function testRefreshUserWithUnsupportedClass()
@@ -74,5 +92,23 @@ class UserProviderTest extends KernelTestCase
          */
         $unsupportedUserClass = $this->createMock(UserInterface::class);
         $this->userProvider->refreshUser($unsupportedUserClass);
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\UsernameNotFoundException
+     */
+    public function testRefreshUserWhenUserNotFound()
+    {
+        $user = new User();
+        $this->userRepositoryMock->method('find')->willReturn(null);
+        $this->userProvider->refreshUser($user);
+    }
+
+    public function testRefreshUserSuccess()
+    {
+        $user = new User();
+        $this->userRepositoryMock->method('find')->willReturn($user);
+        $result =  $this->userProvider->refreshUser($user);
+        self::assertInstanceOf(User::class, $result);
     }
 }
