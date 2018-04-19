@@ -64,23 +64,20 @@ class PostControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', "/api/users?api_token={$this->getAccessToken()}");
+        $api_token = UsersFixtures::TESTER_API_TOKEN;
+        $client->request('GET', "/api/users?api_token={$api_token}");
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    private function getAccessToken()
+    public function testGetAllUsersWithWrongApiToken()
     {
         $client = static::createClient();
 
-        $client->request('POST', '/api/auth/login', [
-            'credentials' => [
-                'username' => UsersFixtures::TESTER_USERNAME,
-                'password' => UsersFixtures::TESTER_PASSWORD,
-            ]
-        ]);
-
+        $client->request('GET', "/api/users?api_token=WRONG_API_TOKEN");
+        $this->assertEquals(403, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
-        return $response['api_token'];
+        $this->assertArrayHasKey('error', $response);
+        $this->assertArrayHasKey('error_description', $response);
     }
 }
