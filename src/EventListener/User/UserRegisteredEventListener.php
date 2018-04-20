@@ -5,17 +5,22 @@ namespace App\EventListener\User;
 
 use App\Entity\User;
 use App\Event\User\UserRegisteredEvent;
+use App\Service\User\ConfirmationTokenService;
+use App\Service\User\SendEmailService;
 
 class UserRegisteredEventListener
 {
     /**
-     * @var \Twig_Environment
+     * @var SendEmailService
      */
-    private $twig;
+    private $emailService;
 
-    public function __construct(\Twig_Environment $twig)
+    private $confirmationTokenService;
+
+    public function __construct(SendEmailService $emailService, ConfirmationTokenService $confirmationTokenService)
     {
-        $this->twig = $twig;
+        $this->emailService = $emailService;
+        $this->confirmationTokenService = $confirmationTokenService;
     }
 
     public function onUserRegistered(UserRegisteredEvent $event): void
@@ -29,21 +34,8 @@ class UserRegisteredEventListener
 
     private function sendEmailConfirmation(User $user)
     {
-        // Move this logic to service
-        /*
-        $message = (new \Swift_Message('Confirm your email on my art lib'))
-            ->setFrom('send@example.com')
-            ->setTo($user->email)
-            ->setBody(
-                $this->twig->render(
-                    'emails/registration.html.twig',
-                    array('name' => $name)
-                ),
-                'text/html'
-            );
+        $token = $this->confirmationTokenService->getEmailConfirmationToken($user);
 
-        $mailer->send($message);
-        */
-
+        $this->emailService->sendEmailConfirmation($user, $token->getToken());
     }
 }

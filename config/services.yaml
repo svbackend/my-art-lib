@@ -3,7 +3,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    appName: 'MyArtLib'
     locale: 'en'
+    router.request_context.host: 127.0.0.1/
+    router.request_context.scheme: https
+    router.request_context.base_url: '/'
 
 services:
     # default configuration for services in *this* file

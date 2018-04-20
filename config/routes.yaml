@@ -3,6 +3,10 @@ api:
     prefix: /api
     type: rest
 
+confirm_email:
+    path: /api/doc
+    methods: GET
+
 app.swagger_ui:
     path: /api/doc
     methods: GET
