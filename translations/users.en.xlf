@@ -3,7 +3,7 @@
   <file id="users.en">
     <unit id="uInWk5M" name="not_found_by_id">
       <notes>
-        <note category="file-source" priority="1">src/Controller/UserController.php:93</note>
+        <note category="file-source" priority="1">src/Controller/UserController.php:77</note>
       </notes>
       <segment>
         <source>not_found_by_id</source>
@@ -22,10 +22,29 @@
     <unit id="rHa3rS_" name="not_found_by_api_token">
       <notes>
         <note category="file-source" priority="1">src/Security/UserProvider.php:68</note>
-        <note category="state" priority="1">new</note>
       </notes>
       <segment>
         <source>not_found_by_api_token</source>
+        <target>User not founded by provided api key</target>
+      </segment>
+    </unit>
+    <unit id="UHZkiu3" name="user_with_this_username_not_exist">
+      <notes>
+        <note category="file-source" priority="1">src/Service/User/AuthService.php:81</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>user_with_this_username_not_exist</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="i2MINB7" name="wrong_password">
+      <notes>
+        <note category="file-source" priority="1">src/Service/User/AuthService.php:89</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>wrong_password</source>
         <target></target>
       </segment>
     </unit>

@@ -54,7 +54,7 @@ class User implements UserInterface, \Serializable
     /**
      * @Exclude
      */
-    public $plainPassword;
+    private $plainPassword;
 
     /**
      * @Exclude
@@ -135,18 +135,25 @@ class User implements UserInterface, \Serializable
         return [self::ROLE_USER];
     }
 
-    /*
-    public function addApiToken(ApiToken $apiToken)
+    public function setPlainPassword(string $plainPassword): self
     {
-        $this->tokens->add($apiToken);
+        if (!empty($plainPassword)) {
+            $this->plainPassword = $plainPassword;
+            // Change some mapped values so preUpdate will get called.
+            $this->password = ''; // just blank it out
+        }
 
         return $this;
-    }*/
+    }
+
+    public function getPlainPassword(): string
+    {
+        return (string)$this->plainPassword;
+    }
 
     public function setPassword($password, UserPasswordEncoderInterface $passwordEncoder): self
     {
-        $this->plainPassword = $password;
-        $this->password = $passwordEncoder->encodePassword($this, $this->plainPassword);
+        $this->password = $passwordEncoder->encodePassword($this, $password);
 
         return $this;
     }

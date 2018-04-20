@@ -3,10 +3,10 @@
 namespace App\Service\User;
 
 use App\Entity\User;
+use App\Event\User\UserRegisteredEvent;
 use App\Request\User\RegisterUserRequest;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMException;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 // todo REFACTORING
@@ -15,13 +15,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 // 3. Save entity not here, looks like I need to move this to repository
 class RegisterService
 {
-    private $user;
-
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $passwordEncoder;
-
     /**
      * @var EntityManagerInterface
      */
@@ -32,15 +25,20 @@ class RegisterService
      */
     private $validator;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
     public function __construct(
-        UserPasswordEncoderInterface $passwordEncoder,
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        EventDispatcherInterface $dispatcher
     )
     {
-        $this->passwordEncoder = $passwordEncoder;
         $this->entityManager = $entityManager;
         $this->validator = $validator;
+        $this->dispatcher = $dispatcher;
     }
 
     public function registerByRequest(RegisterUserRequest $request)
@@ -58,6 +56,9 @@ class RegisterService
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
+        $userRegisteredEvent = new UserRegisteredEvent($user);
+        $this->dispatcher->dispatch(UserRegisteredEvent::NAME, $userRegisteredEvent);
+
         return $user;
     }
 
@@ -67,13 +68,13 @@ class RegisterService
      * @param $password
      * @return User
      */
-    private function createUserInstance($email, $username, $password)
+    private function createUserInstance($email, $username, $password): User
     {
-        $this->user = new User();
-        $this->user->email = $email;
-        $this->user->username = $username;
-        $this->user->setPassword($password, $this->passwordEncoder);
+        $user = new User();
+        $user->email = $email;
+        $user->username = $username;
+        $user->setPlainPassword($password);
 
-        return $this->user;
+        return $user;
     }
 }

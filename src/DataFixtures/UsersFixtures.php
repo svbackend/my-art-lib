@@ -16,19 +16,12 @@ class UsersFixtures extends Fixture
     const TESTER_PASSWORD = '123456';
     const TESTER_API_TOKEN = 'tester_api_token';
 
-    private $encoder;
-
-    public function __construct(UserPasswordEncoderInterface $encoder)
-    {
-        $this->encoder = $encoder;
-    }
-
     public function load(ObjectManager $manager): void
     {
         $user = new User();
-        $user->username = 'tester_fixture';
-        $user->email = 'tester@fixture.com';
-        $user->setPassword('123456', $this->encoder);
+        $user->username = self::TESTER_USERNAME;
+        $user->email = self::TESTER_EMAIL;
+        $user->setPlainPassword(self::TESTER_PASSWORD);
 
         $profile = $user->getProfile();
         $profile->first_name = 'First';

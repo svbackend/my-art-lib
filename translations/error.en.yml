@@ -1,0 +1,4 @@
+api_token_authentication_failure: 'Authentication failure. Bad credentials.'
+api_token_authentication_failure_description: 'Check your username and password'
+api_token_authentication_required: 'Authentication required'
+api_token_authentication_required_description: 'You need to provide api_token to access this resource.'

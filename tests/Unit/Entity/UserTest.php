@@ -86,7 +86,7 @@ class UserTest extends KernelTestCase
     {
         $this->user->setPassword('123456', $this->passwordEncoder);
         $this->user->eraseCredentials();
-        $this->assertEquals(null, $this->user->plainPassword);
+        $this->assertEquals(null, $this->user->getPlainPassword());
     }
 
     public function testSerialize()
