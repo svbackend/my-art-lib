@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\ConfirmationToken;
 use App\Entity\User;
 use App\Entity\UserProfile;
 use App\Entity\UserProfileContacts;
@@ -15,6 +16,7 @@ class UsersFixtures extends Fixture
     const TESTER_USERNAME = 'tester_fixture';
     const TESTER_PASSWORD = '123456';
     const TESTER_API_TOKEN = 'tester_api_token';
+    const TESTER_EMAIL_CONFIRMATION_TOKEN = '11kYJ3ut7aOISPQN0RSqceYDasNnb690';
 
     public function load(ObjectManager $manager): void
     {
@@ -35,10 +37,17 @@ class UsersFixtures extends Fixture
         $manager->flush();
 
         $this->createTestApiToken($user, self::TESTER_API_TOKEN, $manager);
+        $this->createEmailConfirmationToken($user, self::TESTER_EMAIL_CONFIRMATION_TOKEN, $manager);
     }
 
     private function createTestApiToken(User $user, string $token, ObjectManager $manager): void
     {
         $manager->getConnection()->exec("INSERT INTO users_api_tokens (id, user_id, token) VALUES (NEXTVAL('users_api_tokens_id_seq'), {$user->getId()}, '{$token}');");
+    }
+
+    private function createEmailConfirmationToken(User $user, string $token, ObjectManager $manager): void
+    {
+        $type = ConfirmationToken::TYPE_CONFIRM_EMAIl;
+        $manager->getConnection()->exec("INSERT INTO users_confirmation_tokens (id, user_id, token, type) VALUES (NEXTVAL('users_confirmation_tokens_id_seq'), {$user->getId()}, '{$token}', '{$type}');");
     }
 }

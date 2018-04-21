@@ -3,14 +3,18 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\ConfirmationTokenRepository;
 use App\Repository\UserRepository;
+use App\Request\User\ConfirmEmailRequest;
 use App\Request\User\RegisterUserRequest;
 use App\Service\User\RegisterService;
 use FOS\RestBundle\Controller\FOSRestController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class UserController extends FOSRestController
@@ -48,6 +52,40 @@ class UserController extends FOSRestController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY');
 
         return $this->registerService->registerByRequest($request);
+    }
+
+    /**
+     * Confirm email
+     *
+     * @Route("/api/confirmEmail", methods={"POST"})
+     * @SWG\Parameter(name="token", in="formData", type="string")
+     * @SWG\Response(
+     *     description="Email confirmed.",
+     *     response=202
+     * )
+     * @param $request ConfirmEmailRequest
+     * @param $confirmationTokenRepository ConfirmationTokenRepository
+     * @return JsonResponse
+     */
+    public function postConfirmEmail(ConfirmEmailRequest $request, ConfirmationTokenRepository $confirmationTokenRepository)
+    {
+        $token = $request->get('token');
+
+        if (null === $confirmationToken = $confirmationTokenRepository->findOneOrNullByToken($token)) {
+            throw new BadCredentialsException($this->translator->trans('bad_email_confirmation_token', [
+                'token' => $token,
+            ], 'users'));
+        }
+
+        $user = $confirmationToken->getUser();
+        $user->confirmEmail();
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($user);
+        $entityManager->remove($confirmationToken);
+        $entityManager->flush();
+
+        return new JsonResponse(null, 202);
     }
 
     /**

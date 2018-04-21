@@ -3,7 +3,7 @@
   <file id="users.pl">
     <unit id="uInWk5M" name="not_found_by_id">
       <notes>
-        <note category="file-source" priority="1">src/Controller/UserController.php:77</note>
+        <note category="file-source" priority="1">src/Controller/UserController.php:115</note>
       </notes>
       <segment>
         <source>not_found_by_id</source>
@@ -31,7 +31,6 @@
     <unit id="UHZkiu3" name="user_with_this_username_not_exist">
       <notes>
         <note category="file-source" priority="1">src/Service/User/AuthService.php:81</note>
-        <note category="state" priority="1">new</note>
       </notes>
       <segment>
         <source>user_with_this_username_not_exist</source>
@@ -41,10 +40,29 @@
     <unit id="i2MINB7" name="wrong_password">
       <notes>
         <note category="file-source" priority="1">src/Service/User/AuthService.php:89</note>
-        <note category="state" priority="1">new</note>
       </notes>
       <segment>
         <source>wrong_password</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="KRx.u3l" name="bad_email_confirmation_token">
+      <notes>
+        <note category="file-source" priority="1">src/Controller/UserController.php:75</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>bad_email_confirmation_token</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="wHtHVzn" name="user_registration_email_subject">
+      <notes>
+        <note category="file-source" priority="1">src/Service/User/SendEmailService.php:48</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>user_registration_email_subject</source>
         <target></target>
       </segment>
     </unit>

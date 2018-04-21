@@ -5,7 +5,6 @@ namespace App\EventListener\User;
 
 use App\Entity\User;
 use App\Event\User\UserRegisteredEvent;
-use App\Service\User\ConfirmationTokenService;
 use App\Service\User\SendEmailService;
 
 class UserRegisteredEventListener
@@ -15,12 +14,9 @@ class UserRegisteredEventListener
      */
     private $emailService;
 
-    private $confirmationTokenService;
-
-    public function __construct(SendEmailService $emailService, ConfirmationTokenService $confirmationTokenService)
+    public function __construct(SendEmailService $emailService)
     {
         $this->emailService = $emailService;
-        $this->confirmationTokenService = $confirmationTokenService;
     }
 
     public function onUserRegistered(UserRegisteredEvent $event): void
@@ -34,8 +30,6 @@ class UserRegisteredEventListener
 
     private function sendEmailConfirmation(User $user)
     {
-        $token = $this->confirmationTokenService->getEmailConfirmationToken($user);
-
-        $this->emailService->sendEmailConfirmation($user, $token->getToken());
+        $this->emailService->sendEmailConfirmation($user);
     }
 }

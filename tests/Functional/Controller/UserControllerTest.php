@@ -40,6 +40,77 @@ class PostControllerTest extends WebTestCase
         $this->assertArrayHasKey('profile', $response);
     }
 
+    public function testConfirmEmailWithValidToken()
+    {
+        $client = static::createClient();
+
+        $client->request('POST', '/api/confirmEmail', [
+            'token' => UsersFixtures::TESTER_EMAIL_CONFIRMATION_TOKEN
+        ]);
+
+        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+    }
+
+    public function testConfirmEmailWithWrongToken()
+    {
+        $client = static::createClient();
+
+        $client->request('POST', '/api/confirmEmail', [
+            'token' => str_repeat('t', 32)
+        ]);
+
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('error', $response);
+        $this->assertArrayHasKey('error_description', $response);
+    }
+
+    public function testConfirmEmailWithInvalidToken()
+    {
+        $client = static::createClient();
+
+        $client->request('POST', '/api/confirmEmail', [
+            'token' => '_invalidToken_'
+        ]);
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('errors', $response);
+        $this->assertArrayHasKey('message', $response);
+        $this->assertGreaterThanOrEqual(1, count($response['errors']));
+    }
+
+    public function testEmailSentAfterRegistration()
+    {
+        $client = static::createClient();
+        $client->enableProfiler();
+        $client->request('POST', '/api/users', [
+            'registration' => [
+                'username' => 'RegistrationTester',
+                'password' => 'RegistrationTester',
+                'email' => 'Registration@Tester.com',
+            ]
+        ]);
+
+        $mailCollector = $client->getProfile()->getCollector('swiftmailer');
+
+        // Check that an e-mail was sent
+        $this->assertGreaterThanOrEqual(1, $mailCollector->getMessageCount()); // at least 1 message should be sent
+
+        $collectedMessages = $mailCollector->getMessages();
+        /**
+         * @var $message \Swift_Message
+         */
+        $message = $collectedMessages[0];
+
+        // Asserting e-mail data
+        $this->assertInstanceOf(\Swift_Message::class, $message);
+        $this->assertEquals('Registration@Tester.com', key($message->getTo()));
+        $this->assertContains('?token', $message->getBody());
+    }
+
     public function testPostUsersInvalid()
     {
         $client = static::createClient();

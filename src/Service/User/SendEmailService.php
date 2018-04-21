@@ -23,18 +23,26 @@ class SendEmailService
      */
     private $twig;
 
-    public function __construct(TranslatorInterface $translator, \Swift_Mailer $mailer, \Twig_Environment $twig)
+    /**
+     * @var ConfirmationTokenService
+     */
+    private $confirmationTokenService;
+
+    public function __construct(TranslatorInterface $translator, \Swift_Mailer $mailer, \Twig_Environment $twig, ConfirmationTokenService $confirmationTokenService)
     {
         $this->translator = $translator;
         $this->mailer = $mailer;
         $this->twig = $twig;
+        $this->confirmationTokenService = $confirmationTokenService;
     }
 
-    public function sendEmailConfirmation(User $user, string $confirmationToken)
+    public function sendEmailConfirmation(User $user)
     {
+        $emailConfirmationToken = $this->confirmationTokenService->getEmailConfirmationToken($user)->getToken();
+
         $body = $this->twig->render(
             'emails/confirmEmail.html.twig',
-            ['token' => $confirmationToken]
+            ['token' => $emailConfirmationToken]
         );
 
         $subject = $this->translator->trans('user_registration_email_subject', [], 'users');

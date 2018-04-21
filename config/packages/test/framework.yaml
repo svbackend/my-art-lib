@@ -1,4 +1,5 @@
 framework:
     test: true
+    profiler: { collect: false }
     session:
         storage_id: session.storage.mock_file
