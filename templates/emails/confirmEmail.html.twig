@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to {{ globalApplicationName }}!</title>
+</head>
+<body>
+    Hello! Thanks for registration. Confirm your email please:<br>
+    <a href="{{ url('confirm_email', {'token': token}) }}">Confirm Email</a><br>
+    or you can copy url manually:<br>
+    {{ url('confirm_email', {'token': token}) }}<br>
+</body>
+</html>

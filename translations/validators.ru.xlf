@@ -21,8 +21,8 @@
     </unit>
     <unit id="kr5hODx" name="This token already taken">
       <notes>
+        <note category="file-source" priority="1">src/Entity/ConfirmationToken.php:0</note>
         <note category="file-source" priority="1">src/Entity/ApiToken.php:0</note>
-        <note category="state" priority="1">new</note>
       </notes>
       <segment>
         <source>This token already taken</source>

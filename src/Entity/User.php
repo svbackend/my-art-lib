@@ -42,6 +42,11 @@ class User implements UserInterface, \Serializable
     public $email;
 
     /**
+     * @ORM\Column(type="integer", length=1)
+     */
+    private $isEmailConfirmed;
+
+    /**
      * @ORM\Column(type="string", length=255, unique=true)
      */
     public $username;
@@ -54,7 +59,7 @@ class User implements UserInterface, \Serializable
     /**
      * @Exclude
      */
-    public $plainPassword;
+    private $plainPassword;
 
     /**
      * @Exclude
@@ -66,7 +71,7 @@ class User implements UserInterface, \Serializable
     {
         $this->addRole(self::ROLE_USER);
         $this->profile = new UserProfile($this);
-        #$this->tokens = new ArrayCollection();
+        $this->isEmailConfirmed = 0;
     }
 
     public function getProfile(): UserProfile
@@ -135,18 +140,25 @@ class User implements UserInterface, \Serializable
         return [self::ROLE_USER];
     }
 
-    /*
-    public function addApiToken(ApiToken $apiToken)
+    public function setPlainPassword(string $plainPassword): self
     {
-        $this->tokens->add($apiToken);
+        if (!empty($plainPassword)) {
+            $this->plainPassword = $plainPassword;
+            // Change some mapped values so preUpdate will get called.
+            $this->password = ''; // just blank it out
+        }
 
         return $this;
-    }*/
+    }
+
+    public function getPlainPassword(): string
+    {
+        return (string)$this->plainPassword;
+    }
 
     public function setPassword($password, UserPasswordEncoderInterface $passwordEncoder): self
     {
-        $this->plainPassword = $password;
-        $this->password = $passwordEncoder->encodePassword($this, $this->plainPassword);
+        $this->password = $passwordEncoder->encodePassword($this, $password);
 
         return $this;
     }
@@ -196,6 +208,21 @@ class User implements UserInterface, \Serializable
             $this->username,
             $this->roles,
             ) = unserialize($serialized);
+
+        return $this;
+    }
+
+    public function confirmEmail()
+    {
+        $this->isEmailConfirmed = 1;
+
+        return $this;
+    }
+
+    public function changeEmail($email)
+    {
+        $this->email = $email;
+        $this->isEmailConfirmed = 0;
 
         return $this;
     }

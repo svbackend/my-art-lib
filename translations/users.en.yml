@@ -1,2 +1,5 @@
 not_found_by_id: ''
 not_found_by_username: ''
+not_found_by_api_token: 'User not founded by provided api key'
+user_with_this_username_not_exist: ''
+wrong_password: ''

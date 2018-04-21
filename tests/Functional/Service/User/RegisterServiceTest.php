@@ -6,6 +6,7 @@ use App\Entity\User;
 use Doctrine\DBAL\Schema\Constraint;
 use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\Request\User\RegisterUserRequest;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -43,6 +44,11 @@ class RegisterServiceTest extends KernelTestCase
     private $validator;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    /**
      * {@inheritDoc}
      */
     protected function setUp()
@@ -52,11 +58,12 @@ class RegisterServiceTest extends KernelTestCase
         $this->passwordEncoder = $kernel->getContainer()->get('security.password_encoder');
         $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
         $this->validator = $kernel->getContainer()->get('validator');
+        $this->dispatcher = $kernel->getContainer()->get('event_dispatcher');
     }
 
     public function testSuccessRegister()
     {
-        $registerService = new RegisterService($this->passwordEncoder, $this->entityManager, $this->validator);
+        $registerService = new RegisterService($this->entityManager, $this->validator, $this->dispatcher);
         $this->registerUserRequest->method('get')->with('registration')->willReturn([
             'username' => 'registerServiceTester',
             'password' => 'registerServiceTester',
@@ -70,7 +77,7 @@ class RegisterServiceTest extends KernelTestCase
 
     public function testInvalidRegister()
     {
-        $registerService = new RegisterService($this->passwordEncoder, $this->entityManager, $this->validator);
+        $registerService = new RegisterService($this->entityManager, $this->validator, $this->dispatcher);
         $this->registerUserRequest->method('get')->with('registration')->willReturn([
             'username' => 'registerServiceTester',
             'password' => 'registerServiceTester',

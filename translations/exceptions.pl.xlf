@@ -3,7 +3,7 @@
   <file id="exceptions.pl">
     <unit id="hkeWxxd" name="wrong_action">
       <notes>
-        <note category="file-source" priority="1">src/Controller/UserController.php:66</note>
+        <note category="state" priority="1">obsolete</note>
       </notes>
       <segment>
         <source>wrong_action</source>
@@ -31,7 +31,6 @@
     <unit id="l58H2U8" name="invalid_user_provider">
       <notes>
         <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:42</note>
-        <note category="state" priority="1">new</note>
       </notes>
       <segment>
         <source>invalid_user_provider</source>

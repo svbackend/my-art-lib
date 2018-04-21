@@ -1,0 +1,15 @@
+# config/services/event_listener.yaml
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    App\EventListener\User\UserEntityEventListener:
+            tags:
+                - { name: doctrine.event_listener, event: prePersist }
+                - { name: doctrine.event_listener, event: preUpdate }
+
+    App\EventListener\User\UserRegisteredEventListener:
+            tags:
+                - { name: kernel.event_listener, event: user.registered }
