@@ -125,8 +125,8 @@ class UserController extends FOSRestController
      *
      * @Route("/api/users", methods={"GET"})
      * @SWG\Response(
-     *     description="REST action which returns user by id.",
-     *     response=201,
+     *     description="REST action which returns all users.",
+     *     response=200,
      *     @SWG\Schema(
      *         type="array",
      *         @SWG\Items(ref=@Model(type=User::class, groups={"full"}))

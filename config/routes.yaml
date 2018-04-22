@@ -4,7 +4,7 @@ api:
     type: rest
 
 confirm_email:
-    path: /api/doc
+    path: /api/confirmEmail
     methods: GET
 
 app.swagger_ui:
