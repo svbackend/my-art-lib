@@ -37,22 +37,12 @@ class GenreController extends FOSRestController
      *     )
      * )
      *
-     * @param Request $request
-     * @param TranslatedEntitySerializer $serializer
      * @return array
      */
-    public function getAll(Request $request, TranslatedEntitySerializer $serializer)
+    public function getAll()
     {
-        $genres = $this->getDoctrine()->getRepository(Genre::class)->findAll();
-        /**
-         * @var $genres Genre[]
-         */
-        $response = [];
-        foreach ($genres as $genre) {
-            $response[] = $serializer->serialize($genre, $request->getLocale());
-        }
+        return $this->getDoctrine()->getRepository(Genre::class)->findAll();
 
-        return $response;
     }
 
     /**
