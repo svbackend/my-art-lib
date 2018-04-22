@@ -18,7 +18,28 @@ class UsersFixtures extends Fixture
     const TESTER_API_TOKEN = 'tester_api_token';
     const TESTER_EMAIL_CONFIRMATION_TOKEN = '11kYJ3ut7aOISPQN0RSqceYDasNnb690';
 
+    const ADMIN_EMAIL = 'admin@fixture.com';
+    const ADMIN_USERNAME = 'admin_fixture';
+    const ADMIN_PASSWORD = '12345678';
+    const ADMIN_API_TOKEN = 'admin_api_token';
+
     public function load(ObjectManager $manager): void
+    {
+        $user = $this->createUser();
+        $admin = $this->createAdmin();
+
+        $manager->persist($user);
+        $manager->persist($admin);
+        $manager->flush();
+
+        // Tester
+        $this->createTestApiToken($user, self::TESTER_API_TOKEN, $manager);
+        $this->createEmailConfirmationToken($user, self::TESTER_EMAIL_CONFIRMATION_TOKEN, $manager);
+        // Admin
+        $this->createTestApiToken($admin, self::ADMIN_API_TOKEN, $manager);
+    }
+
+    private function createUser()
     {
         $user = new User();
         $user->username = self::TESTER_USERNAME;
@@ -33,11 +54,26 @@ class UsersFixtures extends Fixture
             $profile->addContacts("TestProvider #{$i}", "https://test.com/{$i}/info");
         }
 
-        $manager->persist($user);
-        $manager->flush();
+        return $user;
+    }
 
-        $this->createTestApiToken($user, self::TESTER_API_TOKEN, $manager);
-        $this->createEmailConfirmationToken($user, self::TESTER_EMAIL_CONFIRMATION_TOKEN, $manager);
+    private function createAdmin()
+    {
+        $user = new User();
+        $user->username = self::ADMIN_USERNAME;
+        $user->email = self::ADMIN_PASSWORD;
+        $user->setPlainPassword(self::ADMIN_PASSWORD);
+        $user->addRole(User::ROLE_ADMIN);
+
+        $profile = $user->getProfile();
+        $profile->first_name = 'Admin';
+        $profile->last_name = 'Admin';
+
+        for ($i = 3; $i--> 0;) {
+            $profile->addContacts("TestProvider #{$i}", "https://test.com/{$i}/info");
+        }
+
+        return $user;
     }
 
     private function createTestApiToken(User $user, string $token, ObjectManager $manager): void

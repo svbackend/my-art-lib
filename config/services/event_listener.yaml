@@ -13,3 +13,11 @@ services:
     App\EventListener\User\UserRegisteredEventListener:
             tags:
                 - { name: kernel.event_listener, event: user.registered }
+
+    App\EventListener\LocaleListener:
+            tags:
+                - { name: kernel.event_subscriber }
+
+    App\EventListener\TranslatedEntityResponseListener:
+            tags:
+                - { name: kernel.event_subscriber, event: kernel.view }

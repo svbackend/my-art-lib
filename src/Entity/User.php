@@ -20,6 +20,7 @@ use JMS\Serializer\Annotation\Expose;
 class User implements UserInterface, \Serializable
 {
     const ROLE_USER = 'ROLE_USER';
+    const ROLE_ADMIN = 'ROLE_ADMIN';
 
     /**
      * @ORM\Id()
@@ -42,9 +43,9 @@ class User implements UserInterface, \Serializable
     public $email;
 
     /**
-     * @ORM\Column(type="integer", length=1)
+     * @ORM\Column(type="integer", length=1, options={"default" : 0})
      */
-    private $isEmailConfirmed;
+    private $isEmailConfirmed = 0;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
@@ -71,7 +72,6 @@ class User implements UserInterface, \Serializable
     {
         $this->addRole(self::ROLE_USER);
         $this->profile = new UserProfile($this);
-        $this->isEmailConfirmed = 0;
     }
 
     public function getProfile(): UserProfile

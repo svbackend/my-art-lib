@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Fesor\RequestObject\ErrorResponseProvider;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Constraints as Assert;
 
 //todo How to inject TranslatorInterface ?
 class BaseRequest extends RequestObject implements ErrorResponseProvider
@@ -28,5 +29,10 @@ class BaseRequest extends RequestObject implements ErrorResponseProvider
                 ];
             }, iterator_to_array($errors)),
         ], 400);
+    }
+
+    public function eachItemValidation(array $constraints)
+    {
+        return new Assert\All([new Assert\Collection($constraints)]);
     }
 }
