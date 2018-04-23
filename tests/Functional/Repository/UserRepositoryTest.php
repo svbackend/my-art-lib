@@ -2,8 +2,8 @@
 
 namespace App\Tests\Functional\Repository;
 
-use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Users\Entity\User;
+use App\Users\Repository\UserRepository;
 use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;

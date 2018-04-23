@@ -2,12 +2,12 @@
 
 namespace App\Tests\Unit\Service\User;
 
-use App\DataFixtures\UsersFixtures;
-use App\Entity\ApiToken;
-use App\Entity\User;
-use App\Repository\UserRepository;
-use App\Request\User\AuthUserRequest;
-use App\Service\User\AuthService;
+use App\Users\DataFixtures\UsersFixtures;
+use App\Users\Entity\ApiToken;
+use App\Users\Entity\User;
+use App\Users\Repository\UserRepository;
+use App\Users\Request\AuthUserRequest;
+use App\Users\Service\AuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -17,7 +17,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 class AuthServiceTest extends KernelTestCase
 {
     /**
-     * @var AuthUserRequest|MockObject
+     * @var \App\Users\Request\AuthUserRequest|MockObject
      */
     private $authUserRequest;
 
@@ -29,7 +29,7 @@ class AuthServiceTest extends KernelTestCase
     private $entityManager;
 
     /**
-     * @var $userRepository UserRepository|MockObject
+     * @var $userRepository \App\Users\Repository\UserRepository|MockObject
      */
     private $userRepository;
 
@@ -42,7 +42,7 @@ class AuthServiceTest extends KernelTestCase
 
     public function setUp()
     {
-        $this->authUserRequest = $this->createMock(AuthUserRequest::class);
+        $this->authUserRequest = $this->createMock(\App\Users\Request\AuthUserRequest::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->userRepository = $this->createMock(UserRepository::class);
 

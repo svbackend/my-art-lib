@@ -1,7 +1,9 @@
-api:
-    resource: routes/api.yaml
-    prefix: /api
-    type: rest
+users:
+    resource: ../src/Users/Controller
+    type: annotation
+genres:
+    resource: ../src/Genres/Controller
+    type: annotation
 
 confirm_email:
     path: /api/confirmEmail

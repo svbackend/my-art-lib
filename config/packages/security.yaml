@@ -2,7 +2,7 @@ security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         db_user_provider:
-            id: App\Security\UserProvider
+            id: App\Users\Security\UserProvider
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -16,7 +16,7 @@ security:
             provider: db_user_provider
             guard:
               authenticators:
-                - App\Security\TokenAuthenticator
+                - App\Users\Security\TokenAuthenticator
     encoders:
-        App\Entity\User:
+        App\Users\Entity\User:
             algorithm: bcrypt

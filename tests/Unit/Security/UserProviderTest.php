@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Security;
 
-use App\Entity\ApiToken;
-use App\Entity\User;
-use App\Repository\ApiTokenRepository;
-use App\Repository\UserRepository;
-use App\Security\UserProvider;
+use App\Users\Entity\ApiToken;
+use App\Users\Entity\User;
+use App\Users\Repository\ApiTokenRepository;
+use App\Users\Repository\UserRepository;
+use App\Users\Security\UserProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -23,12 +23,12 @@ class UserProviderTest extends KernelTestCase
     private $userProvider;
 
     /**
-     * @var UserRepository|MockObject
+     * @var \App\Users\Repository\UserRepository|MockObject
      */
     private $userRepositoryMock;
 
     /**
-     * @var ApiTokenRepository|MockObject
+     * @var \App\Users\Repository\ApiTokenRepository|MockObject
      */
     private $apiTokenRepositoryMock;
 
@@ -44,7 +44,7 @@ class UserProviderTest extends KernelTestCase
         $this->translatorMock = $this->createMock(Translator::class);
         $this->translatorMock->method('trans')->will($this->returnArgument(0));
 
-        $this->userProvider = new UserProvider($this->userRepositoryMock, $this->apiTokenRepositoryMock, $this->translatorMock);
+        $this->userProvider = new \App\Users\Security\UserProvider($this->userRepositoryMock, $this->apiTokenRepositoryMock, $this->translatorMock);
     }
 
     /**

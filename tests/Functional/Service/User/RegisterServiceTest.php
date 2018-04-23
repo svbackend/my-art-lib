@@ -2,15 +2,15 @@
 
 namespace App\Tests\Functional\Service\User;
 
-use App\Entity\User;
+use App\Users\Entity\User;
 use Doctrine\DBAL\Schema\Constraint;
 use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use App\Request\User\RegisterUserRequest;
+use App\Users\Request\RegisterUserRequest;
 use PHPUnit\Framework\MockObject\MockObject;
-use App\Service\User\RegisterService;
+use App\Users\Service\RegisterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -54,7 +54,7 @@ class RegisterServiceTest extends KernelTestCase
     protected function setUp()
     {
         $kernel = self::bootKernel();
-        $this->registerUserRequest = $this->createMock(RegisterUserRequest::class);
+        $this->registerUserRequest = $this->createMock(\App\Users\Request\RegisterUserRequest::class);
         $this->passwordEncoder = $kernel->getContainer()->get('security.password_encoder');
         $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
         $this->validator = $kernel->getContainer()->get('validator');

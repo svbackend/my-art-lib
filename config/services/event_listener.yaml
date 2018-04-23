@@ -5,19 +5,19 @@ services:
         autoconfigure: true
         public: false
 
-    App\EventListener\User\UserEntityEventListener:
+    App\Users\EventListener\UserEntityEventListener:
             tags:
                 - { name: doctrine.event_listener, event: prePersist }
                 - { name: doctrine.event_listener, event: preUpdate }
 
-    App\EventListener\User\UserRegisteredEventListener:
+    App\Users\EventListener\UserRegisteredEventListener:
             tags:
                 - { name: kernel.event_listener, event: user.registered }
 
-    App\EventListener\LocaleListener:
+    App\Translation\EventListener\LocaleListener:
             tags:
                 - { name: kernel.event_subscriber }
 
-    App\EventListener\TranslatedEntityResponseListener:
+    App\Translation\EventListener\TranslatedEntityResponseListener:
             tags:
                 - { name: kernel.event_subscriber, event: kernel.view }

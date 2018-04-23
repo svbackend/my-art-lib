@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Translation\Translator;
-use App\Security\TokenAuthenticator;
+use App\Users\Security\TokenAuthenticator;
 
 class TokenAuthenticatorTest extends KernelTestCase
 {

@@ -2,11 +2,11 @@
 
 namespace App\Tests\Functional\Service\User;
 
-use App\DataFixtures\UsersFixtures;
-use App\Entity\ConfirmationToken;
-use App\Entity\User;
-use App\Repository\ConfirmationTokenRepository;
-use App\Service\User\ConfirmationTokenService;
+use App\Users\DataFixtures\UsersFixtures;
+use App\Users\Entity\ConfirmationToken;
+use App\Users\Entity\User;
+use App\Users\Repository\ConfirmationTokenRepository;
+use App\Users\Service\ConfirmationTokenService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Doctrine\ORM\EntityManagerInterface;

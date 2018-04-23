@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Entity;
 
-use App\Entity\User;
+use App\Users\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -26,7 +26,7 @@ class UserTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
 
-        $this->user = new User();
+        $this->user = new \App\Users\Entity\User();
         $this->passwordEncoder = $kernel->getContainer()->get('security.password_encoder');
     }
     
