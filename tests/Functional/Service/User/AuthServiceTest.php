@@ -2,19 +2,19 @@
 
 namespace App\Tests\Functional\Service\User;
 
-use App\DataFixtures\UsersFixtures;
-use App\Entity\ApiToken;
-use App\Entity\User;
-use App\Repository\UserRepository;
-use App\Request\User\AuthUserRequest;
-use App\Service\User\AuthService;
+use App\Users\DataFixtures\UsersFixtures;
+use App\Users\Entity\ApiToken;
+use App\Users\Entity\User;
+use App\Users\Repository\UserRepository;
+use App\Users\Request\AuthUserRequest;
+use App\Users\Service\AuthService;
 use Doctrine\DBAL\Schema\Constraint;
 use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use App\Request\User\RegisterUserRequest;
+use App\Users\Request\RegisterUserRequest;
 use PHPUnit\Framework\MockObject\MockObject;
-use App\Service\User\RegisterService;
+use App\Users\Service\RegisterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

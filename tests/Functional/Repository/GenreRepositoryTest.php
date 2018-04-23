@@ -2,10 +2,10 @@
 
 namespace App\Tests\Functional\Repository;
 
-use App\Entity\Genre;
-use App\Entity\Translations\GenreTranslations;
-use App\Repository\GenreRepository;
-use App\Repository\UserRepository;
+use App\Genres\Entity\Genre;
+use App\Genres\Entity\GenreTranslations;
+use App\Genres\Repository\GenreRepository;
+use App\Users\Repository\UserRepository;
 use Doctrine\ORM\ORMException;
 use function PHPSTORM_META\type;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -18,7 +18,7 @@ class GenreRepositoryTest extends KernelTestCase
     private $entityManager;
 
     /**
-     * @var Genre
+     * @var \App\Genres\Entity\Genre
      */
     private $genre;
 

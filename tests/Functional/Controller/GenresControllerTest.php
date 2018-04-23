@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\Controller;
 
-use App\DataFixtures\UsersFixtures;
+use App\Users\DataFixtures\UsersFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GenresControllerTest extends WebTestCase

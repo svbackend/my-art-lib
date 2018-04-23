@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace App\Tests\Entity;
 
-use App\Entity\User;
-use App\Entity\UserProfile;
-use App\Entity\UserProfileContacts;
+use App\Users\Entity\User;
+use App\Users\Entity\UserProfile;
+use App\Users\Entity\UserProfileContacts;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class UserProfileTest extends KernelTestCase
 {
     /**
-     * @var User
+     * @var \App\Users\Entity\User
      */
     protected $user;
 
     /**
-     * @var UserProfile
+     * @var \App\Users\Entity\UserProfile
      */
     protected $profile;
 
@@ -75,6 +75,6 @@ class UserProfileTest extends KernelTestCase
 
         $this->assertEquals($this->profile, $result);
         $this->assertEquals(1, $contacts->count());
-        $this->assertTrue($contacts->get(0) instanceof UserProfileContacts);
+        $this->assertTrue($contacts->get(0) instanceof \App\Users\Entity\UserProfileContacts);
     }
 }

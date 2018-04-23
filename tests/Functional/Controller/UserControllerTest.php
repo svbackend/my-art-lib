@@ -2,10 +2,10 @@
 
 namespace App\Tests\Functional\Controller;
 
-use App\DataFixtures\UsersFixtures;
+use App\Users\DataFixtures\UsersFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class PostControllerTest extends WebTestCase
+class UserControllerTest extends WebTestCase
 {
     public function testGetUsersNonAuth()
     {

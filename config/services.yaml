@@ -1,7 +1,4 @@
 # config/services.yaml
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     appName: 'MyArtLib'
     locale: 'en'
@@ -10,25 +7,18 @@ parameters:
     router.request_context.base_url: '/'
 
 services:
-    # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-        public: false       # Allows optimizing the container by removing unused services; this also means
-                            # fetching services directly from the container via $container->get() won't work.
-                            # The best practice is to be explicit about your dependencies anyway.
+        autowire: true
+        autoconfigure: true
+        public: false
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{EventListener,Entity,Migrations,Tests,Kernel.php}'
+        exclude: '../src/**/{EventListener,Entity,Migrations,Tests,Kernel.php}'
 
-    # controllers are imported separately to make sure services can be injected
-    # as action arguments even if you don't extend any base controller class
-    App\Controller\:
-        resource: '../src/Controller'
-        tags: ['controller.service_arguments']
+    _instanceof:
+        App\Controller\ControllerInterface:
+            tags: ['controller.service_arguments']
 
 imports:
-    - { resource: services/event_listener.yaml }
+    - { resource: services/*.yaml }
