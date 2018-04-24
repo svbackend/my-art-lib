@@ -18,19 +18,14 @@ class ConfirmationTokenService
 
     public function getEmailConfirmationToken(User $user): ConfirmationToken
     {
-        $expires_at = new \DateTimeImmutable();
-        $expires_at->modify('+14 days');
+        $expires_at = new \DateTimeImmutable('+14 days');
 
         return $this->getToken($user, ConfirmationToken::TYPE_CONFIRM_EMAIl, $expires_at);
     }
 
     private function getToken(User $user, string $type, \DateTimeInterface $expires_at = null): ConfirmationToken
     {
-        $confirmationToken = new ConfirmationToken($user, $type);
-
-        if ($expires_at instanceof \DateTimeInterface) {
-            $confirmationToken->setExpiresAt($expires_at);
-        }
+        $confirmationToken = new ConfirmationToken($user, $type, $expires_at);
 
         $this->entityManager->persist($confirmationToken);
         $this->entityManager->flush();

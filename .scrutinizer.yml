@@ -1,6 +1,6 @@
 filter:
     paths: [src/*]
-    excluded_paths: [vendor/*, tests/*, example/*]
+    excluded_paths: [vendor/*, tests/*, translations/*]
 
 checks:
     php: true

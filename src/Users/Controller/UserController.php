@@ -46,7 +46,7 @@ class UserController extends FOSRestController implements ControllerInterface
      *     @Model(type=User::class)
      * )
      * @param $request \App\Users\Request\RegisterUserRequest
-     * @return User
+     * @return User|JsonResponse
      */
     public function postUsers(RegisterUserRequest $request)
     {

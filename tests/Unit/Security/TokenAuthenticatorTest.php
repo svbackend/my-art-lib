@@ -7,6 +7,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Translation\Translator;
 use App\Users\Security\TokenAuthenticator;
@@ -68,5 +69,20 @@ class TokenAuthenticatorTest extends KernelTestCase
 
         self::assertTrue(is_string($result));
         self::assertEquals('{token}', $result);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testGetUserWithInvalidProvider()
+    {
+        $invalidUserProvider = $this->createMock(UserProviderInterface::class);
+        $this->tokenAuthenticator->getUser('apiToken', $invalidUserProvider);
+    }
+
+    public function testSupportsRememberMe()
+    {
+        $result = $this->tokenAuthenticator->supportsRememberMe();
+        self::assertEquals(false, $result);
     }
 }

@@ -7,6 +7,22 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class UserControllerTest extends WebTestCase
 {
+    private static $user;
+
+    private function getUser()
+    {
+        if (self::$user) {
+            return self::$user;
+        }
+
+        $client = static::createClient();
+        $api_token = UsersFixtures::TESTER_API_TOKEN;
+        $client->request('GET', "/api/users?api_token={$api_token}");
+        $allUsersResponse = json_decode($client->getResponse()->getContent(), true);
+        self::$user = reset($allUsersResponse);
+        return self::$user;
+    }
+
     public function testGetUsersNonAuth()
     {
         $client = static::createClient();
@@ -138,6 +154,8 @@ class UserControllerTest extends WebTestCase
         $api_token = UsersFixtures::TESTER_API_TOKEN;
         $client->request('GET', "/api/users?api_token={$api_token}");
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent(), true);
+        $this->assertTrue(count($response) > 0);
     }
 
     public function testGetAllUsersWithWrongApiToken()
@@ -150,5 +168,35 @@ class UserControllerTest extends WebTestCase
 
         $this->assertArrayHasKey('error', $response);
         $this->assertArrayHasKey('error_description', $response);
+    }
+
+    public function testGetUserSuccess()
+    {
+        $user = $this->getUser();
+        $client = static::createClient();
+        $api_token = UsersFixtures::TESTER_API_TOKEN;
+
+        $client->request('GET', "/api/users/{$user['id']}?api_token={$api_token}");
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        $user = json_decode($client->getResponse()->getContent(), true);
+        self::assertArrayHasKey('id', $user);
+        self::assertArrayHasKey('profile', $user);
+        self::assertArrayHasKey('username', $user);
+    }
+
+    public function testGetUserWithoutAuth()
+    {
+        $user = $this->getUser();
+        $client = static::createClient();
+        $client->request('GET', "/api/users/{$user['id']}");
+        self::assertEquals(401, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetUserNotFound()
+    {
+        $api_token = UsersFixtures::TESTER_API_TOKEN;
+        $client = static::createClient();
+        $client->request('GET', "/api/users/0?api_token={$api_token}");
+        self::assertEquals(404, $client->getResponse()->getStatusCode());
     }
 }

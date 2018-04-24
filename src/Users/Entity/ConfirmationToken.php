@@ -41,33 +41,33 @@ class ConfirmationToken
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @var \DateTimeImmutable
      */
     private $expires_at;
 
-    public function __construct(User $user, $type)
+    public function __construct(User $user, $type, \DateTimeInterface $expires_at = null)
     {
         if (in_array($type, $this->getValidTypes()) === false) {
             throw new \InvalidArgumentException(sprintf('$type should be valid type! Instead %s given', $type));
         }
 
+        if ($expires_at !== null) {
+            $now = new \DateTimeImmutable();
+            if ($expires_at <= $now) {
+                throw new \InvalidArgumentException(sprintf('You can not create already expired token'));
+            }
+        }
+
+
         $this->type = $type;
         $this->token = bin2hex(openssl_random_pseudo_bytes(16));
         $this->user = $user;
+        $this->expires_at = $expires_at;
     }
 
     public function getValidTypes(): array
     {
         return [self::TYPE_CONFIRM_EMAIl];
-    }
-
-    /**
-     * @param \DateTimeInterface $expires_at
-     * @return ConfirmationToken
-     */
-    public function setExpiresAt(\DateTimeInterface $expires_at)
-    {
-        $this->expires_at = $expires_at;
-        return $this;
     }
 
     /**
@@ -102,11 +102,13 @@ class ConfirmationToken
         return $this->type;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getExpiresAt()
+    public function isValid(): bool
     {
-        return $this->expires_at;
+        if (!$this->expires_at) {
+            return true;
+        }
+
+        $now = new \DateTimeImmutable();
+        return $this->expires_at > $now;
     }
 }
