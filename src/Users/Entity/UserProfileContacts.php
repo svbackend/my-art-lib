@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Users\Entity;
 
-use App\Users\Entity\UserProfile;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,18 +25,20 @@ class UserProfileContacts
     private $profile;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=30)
      */
-    public $provider;
+    private $provider;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    public $url;
+    private $url;
 
-    public function __construct(UserProfile $userProfile)
+    public function __construct(UserProfile $userProfile, string $provider, string $url)
     {
         $this->profile = $userProfile;
+        $this->provider = $provider;
+        $this->url = $url;
     }
 
     /**
@@ -51,8 +52,18 @@ class UserProfileContacts
     /**
      * @return UserProfile
      */
-    public function getProfile()
+    public function getProfile(): UserProfile
     {
         return $this->profile;
+    }
+
+    public function getProvider(): string
+    {
+        return $this->provider;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->url;
     }
 }

@@ -32,16 +32,14 @@ class UserRepositoryTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
 
-        $this->user = new User();
+        $this->user = new User('tester@tester.com', 'tester', 'tester');
         $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
         $this->passwordEncoder = $kernel->getContainer()->get('security.password_encoder');
     }
 
     protected function createUser($email, $username, $password)
     {
-        $this->user->email = $email;
-        $this->user->username = $username;
-        $this->user->setPlainPassword($password);
+        $this->user = new User($email, $username, $password);
 
         try {
             $this->entityManager->persist($this->user);

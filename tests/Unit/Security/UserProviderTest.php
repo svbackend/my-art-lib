@@ -58,7 +58,7 @@ class UserProviderTest extends KernelTestCase
 
     public function testLoadUserByUsernameSuccess()
     {
-        $user = new User();
+        $user = new User('tester@tester.com', 'tester', 'tester');
         $this->userRepositoryMock->method('loadUserByUsername')->willReturn($user);
         $result = $this->userProvider->loadUserByUsername('validUsername');
         self::assertInstanceOf(User::class, $result);
@@ -75,7 +75,7 @@ class UserProviderTest extends KernelTestCase
 
     public function testLoadUserByTokenSuccess()
     {
-        $user = new User();
+        $user = new User('tester@tester.com', 'tester', 'tester');
         $apiToken = new ApiToken($user);
         $this->apiTokenRepositoryMock->method('findByToken')->willReturn($apiToken);
         $result = $this->userProvider->loadUserByToken('validToken');
@@ -99,14 +99,14 @@ class UserProviderTest extends KernelTestCase
      */
     public function testRefreshUserWhenUserNotFound()
     {
-        $user = new User();
+        $user = new User('tester@tester.com', 'tester', 'tester');
         $this->userRepositoryMock->method('find')->willReturn(null);
         $this->userProvider->refreshUser($user);
     }
 
     public function testRefreshUserSuccess()
     {
-        $user = new User();
+        $user = new User('tester@tester.com', 'tester', 'tester');
         $this->userRepositoryMock->method('find')->willReturn($user);
         $result =  $this->userProvider->refreshUser($user);
         self::assertInstanceOf(User::class, $result);

@@ -20,19 +20,10 @@ class ConfirmationTokenRepository extends ServiceEntityRepository
         parent::__construct($registry, ConfirmationToken::class);
     }
 
-    public function findOneOrNullByToken(string $token): ?ConfirmationToken
+    public function findByToken(string $token): ?ConfirmationToken
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                'SELECT t, u FROM App\Users\Entity\ConfirmationToken t JOIN t.user u WHERE t.token = :token'
-            )->setParameter('token', $token);
-
-        try {
-            return $query->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
-            return null;
-        } catch (\Doctrine\ORM\NonUniqueResultException $e) {
-            return null;
-        }
+        return $this->findOneBy([
+            'token' => $token
+        ]);
     }
 }

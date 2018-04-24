@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Entity;
+namespace App\Tests\Unit\Entity;
 
 use App\Users\Entity\User;
+use App\Users\Entity\UserRoles;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -26,7 +27,7 @@ class UserTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
 
-        $this->user = new \App\Users\Entity\User();
+        $this->user = new User('tester@tester.com', 'tester', 'tester');
         $this->passwordEncoder = $kernel->getContainer()->get('security.password_encoder');
     }
     
@@ -37,26 +38,34 @@ class UserTest extends KernelTestCase
 
     public function testGetRoles()
     {
-        $this->assertEquals([$this->user::ROLE_USER], $this->user->getRoles());
+        $this->assertEquals([UserRoles::ROLE_USER], $this->user->getRoles());
     }
 
     public function testAddRole()
     {
-        $this->user->addRole('ROLE_MODERATOR');
-        $this->assertEquals([$this->user::ROLE_USER, 'ROLE_MODERATOR'], $this->user->getRoles());
+        $this->user->getRolesObject()->addRole(UserRoles::ROLE_MODERATOR);
+        $this->assertEquals([UserRoles::ROLE_USER, UserRoles::ROLE_MODERATOR], $this->user->getRoles());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddInvalidRole()
+    {
+        $this->user->getRolesObject()->addRole('InvalidRole');
     }
 
     public function testRemoveRole()
     {
-        $this->user->removeRole($this->user::ROLE_USER);
-        $this->assertEquals([$this->user::ROLE_USER], $this->user->getRoles());
+        $this->user->getRolesObject()->removeRole(UserRoles::ROLE_USER);
+        $this->assertEquals([UserRoles::ROLE_USER], $this->user->getRoles());
 
-        $this->user->addRole('ROLE_MODERATOR');
-        $this->user->removeRole($this->user::ROLE_USER);
-        $this->assertEquals(['ROLE_MODERATOR'], $this->user->getRoles());
+        $this->user->getRolesObject()->addRole(UserRoles::ROLE_MODERATOR);
+        $this->user->getRolesObject()->removeRole(UserRoles::ROLE_USER);
+        $this->assertEquals([UserRoles::ROLE_MODERATOR], $this->user->getRoles());
 
-        $this->user->removeRole('ROLE_MODERATOR');
-        $this->assertEquals([$this->user::ROLE_USER], $this->user->getRoles());
+        $this->user->getRolesObject()->removeRole(UserRoles::ROLE_MODERATOR);
+        $this->assertEquals([UserRoles::ROLE_USER], $this->user->getRoles());
     }
 
     public function testIsPasswordValid()
@@ -66,39 +75,17 @@ class UserTest extends KernelTestCase
         $this->assertEquals(true, $this->user->isPasswordValid('123456', $this->passwordEncoder));
     }
 
-    public function testGetSalt()
+    public function testDefaultRoles()
     {
-        $this->assertEquals(null, $this->user->getSalt());
+        $defaultRoles = $this->user->getRolesObject()->getDefaultRoles();
+
+        self::assertTrue(count($defaultRoles) > 0);
     }
 
-    public function testGetEmptyUsername()
+    public function testValidRoles()
     {
-        $this->assertEquals(null, $this->user->getUsername());
-    }
+        $validRoles = $this->user->getRolesObject()->getValidRoles();
 
-    public function testGetFilledUsername()
-    {
-        $this->user->username = 'Tester';
-        $this->assertEquals('Tester', $this->user->getUsername());
-    }
-
-    public function testEraseCredentials()
-    {
-        $this->user->setPassword('123456', $this->passwordEncoder);
-        $this->user->eraseCredentials();
-        $this->assertEquals(null, $this->user->getPlainPassword());
-    }
-
-    public function testSerialize()
-    {
-        $this->user->addRole('ROLE_MODERATOR');
-        $this->user->username = 'tester';
-        $this->user->email = 'tester@tester.com';
-        $serializedUser = $this->user->serialize();
-
-        $unserializedUser = (new User)->unserialize($serializedUser);
-        $this->assertEquals('tester', $unserializedUser->getUsername());
-        $this->assertEquals('tester@tester.com', $unserializedUser->email);
-        $this->assertEquals($this->user->getRoles(), $unserializedUser->getRoles());
+        self::assertTrue(count($validRoles) > 0);
     }
 }

@@ -72,7 +72,7 @@ class UserController extends FOSRestController implements ControllerInterface
     {
         $token = $request->get('token');
 
-        if (null === $confirmationToken = $confirmationTokenRepository->findOneOrNullByToken($token)) {
+        if (null === $confirmationToken = $confirmationTokenRepository->findByToken($token)) {
             throw new BadCredentialsException($this->translator->trans('bad_email_confirmation_token', [
                 'token' => $token,
             ], 'users'));

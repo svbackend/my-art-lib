@@ -48,7 +48,7 @@ class SendEmailService
 
         $subject = $this->translator->trans('user_registration_email_subject', [], 'users');
 
-        $this->sendEmail($user->email, $subject, $body);
+        $this->sendEmail($user->getEmail(), $subject, $body);
     }
 
     private function sendEmail($recipientEmail, string $subject, string $body)

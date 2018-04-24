@@ -44,17 +44,20 @@ class ConfirmationToken
      */
     private $expires_at;
 
-    public static $validTypes = [self::TYPE_CONFIRM_EMAIl];
-
     public function __construct(User $user, $type)
     {
-        if (in_array($type, self::$validTypes) === false) {
+        if (in_array($type, $this->getValidTypes()) === false) {
             throw new \InvalidArgumentException(sprintf('$type should be valid type! Instead %s given', $type));
         }
 
         $this->type = $type;
         $this->token = bin2hex(openssl_random_pseudo_bytes(16));
         $this->user = $user;
+    }
+
+    public function getValidTypes(): array
+    {
+        return [self::TYPE_CONFIRM_EMAIl];
     }
 
     /**
