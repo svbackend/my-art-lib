@@ -22,17 +22,8 @@ class ApiTokenRepository extends ServiceEntityRepository
 
     public function findByToken(string $token): ?ApiToken
     {
-        $query = $this->getEntityManager()
-            ->createQuery(
-                'SELECT t, u FROM App\Users\Entity\ApiToken t JOIN t.user u WHERE t.token = :token'
-            )->setParameter('token', $token);
-
-        try {
-            return $query->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
-            return null;
-        } catch (\Doctrine\ORM\NonUniqueResultException $e) {
-            return null;
-        }
+        return $this->findOneBy([
+            'token' => $token
+        ]);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Entity;
+namespace App\Tests\Unit\Entity;
 
 use App\Users\Entity\User;
 use App\Users\Entity\UserProfile;
@@ -27,9 +27,9 @@ class UserProfileContactsTest extends KernelTestCase
 
     protected function setUp()
     {
-        $this->user = new \App\Users\Entity\User();
+        $this->user = new User('tester@tester.com', 'tester', 'tester');
         $this->profile = $this->user->getProfile();
-        $this->contacts = new UserProfileContacts($this->profile);
+        $this->contacts = new UserProfileContacts($this->profile, 'Instagram', 'https://instagram.com/tester');
     }
 
     protected function tearDown()
@@ -48,5 +48,11 @@ class UserProfileContactsTest extends KernelTestCase
     public function testGetId()
     {
         $this->assertNull($this->contacts->getId());
+    }
+
+    public function testGetContactsData()
+    {
+        $this->assertEquals('Instagram', $this->contacts->getProvider());
+        $this->assertEquals('https://instagram.com/tester', $this->contacts->getUrl());
     }
 }

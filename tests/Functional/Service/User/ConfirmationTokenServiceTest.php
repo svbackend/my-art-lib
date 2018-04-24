@@ -43,7 +43,7 @@ class ConfirmationTokenServiceTest extends KernelTestCase
          * @var $confirmationTokenRepository ConfirmationTokenRepository
          */
         $confirmationTokenRepository = $this->entityManager->getRepository(ConfirmationToken::class);
-        $savedToken = $confirmationTokenRepository->findOneOrNullByToken($emailConfirmationToken->getToken());
+        $savedToken = $confirmationTokenRepository->findByToken($emailConfirmationToken->getToken());
 
         self::assertNotNull($savedToken);
         self::assertInstanceOf(ConfirmationToken::class, $savedToken);

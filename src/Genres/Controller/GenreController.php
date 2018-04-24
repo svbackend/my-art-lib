@@ -8,6 +8,7 @@ use App\Users\Entity\User;
 use App\Genres\Request\CreateGenreRequest;
 use App\Genres\Request\UpdateGenreRequest;
 use App\Genres\Service\GenreManageService;
+use App\Users\Entity\UserRoles;
 use FOS\RestBundle\Controller\FOSRestController;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Routing\Annotation\Route;
@@ -59,7 +60,7 @@ class GenreController extends FOSRestController implements ControllerInterface
      */
     public function postGenres(CreateGenreRequest $request, GenreManageService $genreManageService, ValidatorInterface $validator)
     {
-        $this->denyAccessUnlessGranted(User::ROLE_ADMIN);
+        $this->denyAccessUnlessGranted(UserRoles::ROLE_ADMIN);
 
         $genre = $genreManageService->createGenreByRequest($request);
         $errors = $validator->validate($genre);
@@ -92,7 +93,7 @@ class GenreController extends FOSRestController implements ControllerInterface
      */
     public function putGenres(UpdateGenreRequest $request, Genre $genre, GenreManageService $genreManageService, ValidatorInterface $validator)
     {
-        $this->denyAccessUnlessGranted(User::ROLE_ADMIN);
+        $this->denyAccessUnlessGranted(UserRoles::ROLE_ADMIN);
 
         $genre = $genreManageService->updateGenreByRequest($request, $genre);
         $errors = $validator->validate($genre);

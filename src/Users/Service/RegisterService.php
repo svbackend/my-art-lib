@@ -41,7 +41,7 @@ class RegisterService
         $this->dispatcher = $dispatcher;
     }
 
-    public function registerByRequest(\App\Users\Request\RegisterUserRequest $request)
+    public function registerByRequest(RegisterUserRequest $request)
     {
         $data = $request->get('registration');
 
@@ -70,11 +70,6 @@ class RegisterService
      */
     private function createUserInstance($email, $username, $password): User
     {
-        $user = new User();
-        $user->email = $email;
-        $user->username = $username;
-        $user->setPlainPassword($password);
-
-        return $user;
+        return new User($email, $username, $password);
     }
 }

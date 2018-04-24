@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\Entity;
+namespace App\Tests\Unit\Entity;
 
 use App\Users\Entity\User;
 use App\Users\Entity\UserProfile;
@@ -11,12 +11,12 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class UserProfileTest extends KernelTestCase
 {
     /**
-     * @var \App\Users\Entity\User
+     * @var User
      */
     protected $user;
 
     /**
-     * @var \App\Users\Entity\UserProfile
+     * @var UserProfile
      */
     protected $profile;
 
@@ -25,7 +25,7 @@ class UserProfileTest extends KernelTestCase
      */
     protected function setUp()
     {
-        $this->user = new User();
+        $this->user = new User('tester@tester.com', 'tester', 'tester');
         $this->profile = $this->user->getProfile();
     }
 
@@ -75,6 +75,6 @@ class UserProfileTest extends KernelTestCase
 
         $this->assertEquals($this->profile, $result);
         $this->assertEquals(1, $contacts->count());
-        $this->assertTrue($contacts->get(0) instanceof \App\Users\Entity\UserProfileContacts);
+        $this->assertTrue($contacts->get(0) instanceof UserProfileContacts);
     }
 }

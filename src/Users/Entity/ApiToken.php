@@ -35,7 +35,6 @@ class ApiToken
     public function __construct(User $user)
     {
         $this->token = bin2hex(openssl_random_pseudo_bytes(128));
-        #$user->addApiToken($this);
         $this->user = $user;
     }
 

@@ -14,12 +14,12 @@ class UserRegisteredEventListener
      */
     private $emailService;
 
-    public function __construct(\App\Users\Service\SendEmailService $emailService)
+    public function __construct(SendEmailService $emailService)
     {
         $this->emailService = $emailService;
     }
 
-    public function onUserRegistered(\App\Users\Event\UserRegisteredEvent $event): void
+    public function onUserRegistered(UserRegisteredEvent $event): void
     {
         $user = $event->getUser();
 

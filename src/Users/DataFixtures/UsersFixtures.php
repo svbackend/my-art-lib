@@ -4,6 +4,7 @@ namespace App\Users\DataFixtures;
 
 use App\Users\Entity\ConfirmationToken;
 use App\Users\Entity\User;
+use App\Users\Entity\UserRoles;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -38,14 +39,9 @@ class UsersFixtures extends Fixture
 
     private function createUser()
     {
-        $user = new User();
-        $user->username = self::TESTER_USERNAME;
-        $user->email = self::TESTER_EMAIL;
-        $user->setPlainPassword(self::TESTER_PASSWORD);
-
+        $user = new User(self::TESTER_EMAIL, self::TESTER_USERNAME, self::TESTER_PASSWORD);
         $profile = $user->getProfile();
-        $profile->first_name = 'First';
-        $profile->last_name = 'Last';
+        $profile->setFirstName('First')->setLastName('Last');
 
         for ($i = 3; $i--> 0;) {
             $profile->addContacts("TestProvider #{$i}", "https://test.com/{$i}/info");
@@ -56,15 +52,11 @@ class UsersFixtures extends Fixture
 
     private function createAdmin()
     {
-        $user = new User();
-        $user->username = self::ADMIN_USERNAME;
-        $user->email = self::ADMIN_PASSWORD;
-        $user->setPlainPassword(self::ADMIN_PASSWORD);
-        $user->addRole(User::ROLE_ADMIN);
+        $user = new User(self::ADMIN_EMAIL, self::ADMIN_USERNAME, self::ADMIN_PASSWORD);
+        $user->getRolesObject()->addRole(UserRoles::ROLE_ADMIN);
 
         $profile = $user->getProfile();
-        $profile->first_name = 'Admin';
-        $profile->last_name = 'Admin';
+        $profile->setFirstName('Admin')->setLastName('Admin');
 
         for ($i = 3; $i--> 0;) {
             $profile->addContacts("TestProvider #{$i}", "https://test.com/{$i}/info");

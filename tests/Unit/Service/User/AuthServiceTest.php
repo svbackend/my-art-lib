@@ -85,7 +85,7 @@ class AuthServiceTest extends KernelTestCase
 
         $this->passwordEncoder->method('isPasswordValid')->willReturn(false);
 
-        $user = new User();
+        $user = new User('tester@tester.com', 'tester', 'tester');
         $user->setPassword('fakePassword', $this->passwordEncoder);
 
         $this->userRepository->method('loadUserByUsername')->willReturn($user); // Will return user with fake password
@@ -103,7 +103,7 @@ class AuthServiceTest extends KernelTestCase
 
         $this->passwordEncoder->method('isPasswordValid')->willReturn(true);
 
-        $user = new User();
+        $user = new User('tester@tester.com', 'tester', 'tester');
         $user->setPassword(UsersFixtures::TESTER_PASSWORD, $this->passwordEncoder);
 
         $this->userRepository->method('loadUserByUsername')->willReturn($user); // Will return user with correct password
