@@ -27,29 +27,6 @@ If all tests passed then you'r ready!
 
 To run project again simply type `docker-compose up` (without `--build` at this time)
 
-To get access to postgres cli type: 
-* `docker-compose exec postgres bash`
-
-To get access to redis cli type: 
-* `docker-compose exec redis bash`
-
-### pgAdmin
-
-If you need web interface to manage ur databases set-up new postgres server for pgAdmin:
-
-* Open in browser pg Admin (pgAdmin default host is: http://127.0.0.1:5050)
-* Create new server and define server name to display
-* Switch to "Connection" tab and use this data: 
-* -Host: postgres
-* -Port: 5432
-* -Username: my_art_lib
-* -Password: my_art_lib
-* Save
-
-Done!
-
-Notice: test database (defined in .env.test) will be truncated before each test run so don't put any important data there.
-
 ### Api Documentation
 
 Can be found at: http://127.0.0.1:8080/api/doc
