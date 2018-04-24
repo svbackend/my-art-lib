@@ -26,7 +26,7 @@ class GenreManageService
         return $this->createGenre($request->get('genre')['translations']);
     }
 
-    public function updateGenreByRequest(\App\Genres\Request\UpdateGenreRequest $request, Genre $genre): Genre
+    public function updateGenreByRequest(UpdateGenreRequest $request, Genre $genre): Genre
     {
         return $this->updateGenre($genre, $request->get('genre')['translations']);
     }
