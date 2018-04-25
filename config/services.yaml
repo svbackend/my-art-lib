@@ -14,7 +14,7 @@ services:
 
     App\:
         resource: '../src/*'
-        exclude: '../src/**/{EventListener,Entity,Migrations,Tests,Kernel.php}'
+        exclude: '../src/**/{EventListener,Entity,DTO,Migrations,Tests,Kernel.php}'
 
     _instanceof:
         App\Controller\ControllerInterface:

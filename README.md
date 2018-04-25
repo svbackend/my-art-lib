@@ -27,6 +27,8 @@ If all tests passed then you'r ready!
 
 To run project again simply type `docker-compose up` (without `--build` at this time)
 
+More information for developers can be found in [project docs](docs/current.md).
+
 ### Api Documentation
 
 Can be found at: http://127.0.0.1:8080/api/doc
