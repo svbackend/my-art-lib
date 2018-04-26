@@ -28,6 +28,13 @@ class MoviesControllerTest extends WebTestCase
         return $genresIds;
     }
 
+    public function testGetAll()
+    {
+        $client = static::createClient();
+        $client->request('get', '/api/movies');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
     public function testCreateMovieWithInvalidData()
     {
         $client = static::createClient();

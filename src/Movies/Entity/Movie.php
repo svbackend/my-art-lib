@@ -12,6 +12,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Type;
 
 //todo production_countries, production_companies, actors
 
@@ -93,6 +94,7 @@ class Movie implements TranslatableInterface
     /**
      * @Expose
      * @ORM\Column(type="date", nullable=true)
+     * @Type("DateTimeInterface")
      */
     private $releaseDate;
 

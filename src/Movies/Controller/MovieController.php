@@ -28,7 +28,7 @@ class MovieController extends FOSRestController implements ControllerInterface
      *     response=200,
      *     @SWG\Schema(
      *         type="array",
-     *         @SWG\Items(ref=@Model(type=Movie::class, groups={"full"}))
+     *         @SWG\Items(ref=@Model(type=Movie::class))
      *     )
      * )
      *

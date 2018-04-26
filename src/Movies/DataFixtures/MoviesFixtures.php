@@ -23,6 +23,10 @@ class MoviesFixtures extends Fixture
             ->addTranslation(new MovieTranslations($movie, 'en', 'Original Title (en)', 'http://placehold.it/480x320', 'Overview (en)'))
             ->addTranslation(new MovieTranslations($movie, 'uk', 'Оригінальная назва (uk)', 'http://placehold.it/480x320', 'Overview (uk)'))
             ->addTranslation(new MovieTranslations($movie, 'ru', 'Оригинальное название (ru)', 'http://placehold.it/480x320', 'Overview (ru)'));
+        $movie->setReleaseDate(new \DateTimeImmutable('-10 years'));
+        $movie->setRuntime(100);
+        $movie->setBudget(60000);
+        $movie->setImdbId('imdb-test-id');
 
         $testGenre = new Genre();
         $testGenre

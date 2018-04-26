@@ -21,6 +21,7 @@ Install:
 * Add new crontab line: `* * * * * docker-compose exec app bin/console swiftmailer:spool:send`
 * `docker-compose exec app bash`
 * `php bin/console doctrine:schema:update --force`
+* Not required, but recommended: `php bin/console doctrine:fixtures:load --purge-with-truncate`
 * `php bin/phpunit`
 
 If all tests passed then you'r ready!
