@@ -7,17 +7,14 @@ use App\Genres\Entity\Genre;
 use App\Genres\Entity\GenreTranslations;
 use App\Genres\Request\CreateGenreRequest;
 use App\Genres\Request\UpdateGenreRequest;
-use App\Translation\TranslatedEntityHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GenreManageService
 {
-    private $translatedEntityHelper;
     private $entityManager;
 
-    public function __construct(TranslatedEntityHelper $translatedEntityHelper, EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->translatedEntityHelper = $translatedEntityHelper;
         $this->entityManager = $entityManager;
     }
 
@@ -41,7 +38,7 @@ class GenreManageService
             );
         };
 
-        $this->translatedEntityHelper->updateTranslations($genre, $translations, $addTranslation);
+        $genre->updateTranslations($translations, $addTranslation);
         $this->entityManager->persist($genre);
 
         return $genre;
@@ -59,7 +56,7 @@ class GenreManageService
             $oldTranslation->changeName($translation['name']);
         };
 
-        $this->translatedEntityHelper->updateTranslations($genre, $translations, $addTranslation, $updateTranslation);
+        $genre->updateTranslations($translations, $addTranslation, $updateTranslation);
         $this->entityManager->persist($genre);
 
         return $genre;
