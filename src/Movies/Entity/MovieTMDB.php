@@ -25,10 +25,30 @@ class MovieTMDB
      */
     private $voteCount;
 
-    public function __construct(int $id, float $voteAverage = null, int $voteCount = null)
+    public function __construct(int $tmdbId)
     {
-        $this->id = $id;
-        $this->voteAverage = $voteAverage;
-        $this->voteCount = $voteCount;
+        $this->id = $tmdbId;
     }
+
+    /**
+     * @param float $voteAverage
+     * @return MovieTMDB
+     */
+    public function setVoteAverage(float $voteAverage): self
+    {
+        $this->voteAverage = $voteAverage;
+        return $this;
+    }
+
+    /**
+     * @param int $voteCount
+     * @return MovieTMDB
+     */
+    public function setVoteCount(int $voteCount): self
+    {
+        $this->voteCount = $voteCount;
+        return $this;
+    }
+
+
 }

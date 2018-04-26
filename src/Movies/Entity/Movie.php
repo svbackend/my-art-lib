@@ -12,6 +12,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Type;
 
 //todo production_countries, production_companies, actors
 
@@ -37,6 +38,7 @@ class Movie implements TranslatableInterface
      * @var $translations MovieTranslations[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Movies\Entity\MovieTranslations", mappedBy="movie", cascade={"persist", "remove"})
      * @Assert\Valid(traverse=true)
+     * @Expose
      */
     private $translations;
 
@@ -90,10 +92,11 @@ class Movie implements TranslatableInterface
     private $budget;
 
     /**
+     * @Type("DateTimeImmutable<'Y-m-d'>")
      * @Expose
      * @ORM\Column(type="date", nullable=true)
      */
-    private $release_date;
+    private $releaseDate;
 
     public function __construct(string $originalTitle, string $posterUrl, MovieTMDB $tmdb)
     {
@@ -148,6 +151,16 @@ class Movie implements TranslatableInterface
     public function setBudget(int $budget)
     {
         $this->budget = $budget;
+        return $this;
+    }
+
+    /**
+     * @param \DateTimeInterface $releaseDate
+     * @return Movie
+     */
+    public function setReleaseDate(\DateTimeInterface $releaseDate)
+    {
+        $this->releaseDate = $releaseDate;
         return $this;
     }
 }

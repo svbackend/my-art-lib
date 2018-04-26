@@ -14,7 +14,10 @@ class MoviesFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $tmdb = new MovieTMDB(1, 7.8, 100);
+        $tmdb = new MovieTMDB(1);
+        $tmdb->setVoteAverage(7.8);
+        $tmdb->setVoteCount(100);
+
         $movie = new Movie('Original Title', 'http://placehold.it/320x480', $tmdb);
         $movie
             ->addTranslation(new MovieTranslations($movie, 'en', 'Original Title (en)', 'http://placehold.it/480x320', 'Overview (en)'))
