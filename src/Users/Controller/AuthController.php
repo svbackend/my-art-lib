@@ -2,15 +2,16 @@
 
 namespace App\Users\Controller;
 
+use App\Controller\BaseController;
 use App\Controller\ControllerInterface;
 use App\Users\Request\AuthUserRequest;
 use App\Users\Service\AuthService;
-use FOS\RestBundle\Controller\FOSRestController;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 
-class AuthController extends FOSRestController implements ControllerInterface
+class AuthController extends BaseController
 {
     /**
      * Endpoint action to get Access Token for authentication.
@@ -52,7 +53,7 @@ class AuthController extends FOSRestController implements ControllerInterface
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      * @param $authUserRequest AuthUserRequest
      * @param $authService AuthService
-     * @return array
+     * @return JsonResponse
      */
     public function login(AuthUserRequest $authUserRequest, AuthService $authService)
     {
@@ -60,6 +61,6 @@ class AuthController extends FOSRestController implements ControllerInterface
 
         $apiToken = $authService->getTokenByRequest($authUserRequest);
 
-        return ['api_token' => $apiToken->getToken()];
+        return $this->json(['api_token' => $apiToken->getToken()]);
     }
 }

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Expose;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity
@@ -29,6 +30,8 @@ class GenreTranslations implements EntityTranslationInterface
 
     /**
      * @ORM\Column(type="string", length=5)
+     * @Expose
+     * @Groups({"list", "view"})
      */
     private $locale;
 
@@ -41,6 +44,7 @@ class GenreTranslations implements EntityTranslationInterface
 
     /**
      * @Expose
+     * @Groups({"list", "view"})
      * @ORM\Column(type="string", length=50)
      */
     private $name;
