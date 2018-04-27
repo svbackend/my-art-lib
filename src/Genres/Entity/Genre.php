@@ -12,6 +12,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Genres\Repository\GenreRepository")
@@ -28,6 +30,7 @@ class Genre implements TranslatableInterface
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      * @Expose
+     * @Groups({"list", "view"})
      */
     private $id;
 
@@ -35,6 +38,8 @@ class Genre implements TranslatableInterface
      * @var $translations GenreTranslations[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Genres\Entity\GenreTranslations", mappedBy="genre", cascade={"persist", "remove"})
      * @Assert\Valid(traverse=true)
+     * @Expose
+     * @Groups({"list", "view"})
      */
     private $translations;
 

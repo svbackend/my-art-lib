@@ -2,6 +2,7 @@
 
 namespace App\Genres\Controller;
 
+use App\Controller\BaseController;
 use App\Controller\ControllerInterface;
 use App\Genres\Entity\Genre;
 use App\Users\Entity\User;
@@ -10,16 +11,19 @@ use App\Genres\Request\UpdateGenreRequest;
 use App\Genres\Service\GenreManageService;
 use App\Users\Entity\UserRoles;
 use FOS\RestBundle\Controller\FOSRestController;
+use JMS\Serializer\SerializerInterface;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use FOS\RestBundle\Controller\Annotations\View;
 
 /**
  * Class GenreController
  * @package App\Genres\Controller
  */
-class GenreController extends FOSRestController implements ControllerInterface
+class GenreController extends BaseController
 {
     /**
      * Get all genres
@@ -34,12 +38,22 @@ class GenreController extends FOSRestController implements ControllerInterface
      *     )
      * )
      *
-     * @return array
+     * @View(serializerGroups={"list"})
+     *
+     * @return JsonResponse
      */
-    public function getAll()
+    public function getAll(SerializerInterface $serializer)
     {
-        return $this->getDoctrine()->getRepository(Genre::class)->findAll();
+        $genres = $this->getDoctrine()->getRepository(Genre::class)->findAll();
 
+        return $this->response($genres[0], 200, [], [
+            'groups' => ['list'],
+        ]);
+
+
+        return $this->json($genres, 200, [], [
+            'groups' => ['list'],
+        ]);
     }
 
     /**

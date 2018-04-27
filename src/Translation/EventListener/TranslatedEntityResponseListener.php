@@ -4,6 +4,7 @@ namespace App\Translation\EventListener;
 
 use App\Translation\TranslatableInterface;
 use App\Translation\TranslatedEntitySerializer;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -23,6 +24,26 @@ class TranslatedEntityResponseListener implements EventSubscriberInterface
     {
         $result = $event->getControllerResult();
 
+        if (is_object($result) === true) {
+            if ($result instanceof TranslatableInterface) {
+                // If its single entity response
+                $response = $this->serializer->serialize($result, $event->getRequest()->getLocale());
+                $event->setControllerResult($response);
+                return;
+            }
+
+            if ($result instanceof JsonResponse) {
+                $response = json_decode($result->getContent(), true);
+                if (is_array($response)) {
+                    echo '1';
+                    echo var_export($response);
+                } else {
+                    echo var_export($response);
+                }
+                exit;
+            }
+        }
+
         if (is_array($result) === true) {
             $probablyEntity = reset($result);
             if (is_object($probablyEntity) && $result[0] instanceof TranslatableInterface) {
@@ -31,13 +52,6 @@ class TranslatedEntityResponseListener implements EventSubscriberInterface
                 $event->setControllerResult($response);
                 return;
             }
-        }
-
-        if (is_object($result) === true && $result instanceof TranslatableInterface) {
-            // If its single entity response
-            $response = $this->serializer->serialize($result, $event->getRequest()->getLocale());
-            $event->setControllerResult($response);
-            return;
         }
     }
 
