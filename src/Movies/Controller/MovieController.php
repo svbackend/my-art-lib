@@ -2,6 +2,7 @@
 
 namespace App\Movies\Controller;
 
+use App\Controller\BaseController;
 use App\Controller\ControllerInterface;
 use App\Movies\Entity\Movie;
 use App\Movies\Request\CreateMovieRequest;
@@ -17,7 +18,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * Class MovieController
  * @package App\Movies\Controller
  */
-class MovieController extends FOSRestController implements ControllerInterface
+class MovieController extends BaseController
 {
     /**
      * Get all movies
@@ -36,7 +37,10 @@ class MovieController extends FOSRestController implements ControllerInterface
      */
     public function getAll()
     {
-        return $this->getDoctrine()->getRepository(Movie::class)->findAll();
+        $movies = $this->getDoctrine()->getRepository(Movie::class)->findAll();
+        return $this->response($movies, 200, [], [
+            'groups' => ['list'],
+        ]);
     }
 
     /**

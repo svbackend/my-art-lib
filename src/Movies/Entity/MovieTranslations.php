@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Expose;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity
@@ -27,6 +28,7 @@ class MovieTranslations implements EntityTranslationInterface
     private $id;
 
     /**
+     * @Groups({"list", "view"})
      * @ORM\Column(type="string", length=5)
      */
     private $locale;
@@ -41,18 +43,21 @@ class MovieTranslations implements EntityTranslationInterface
     /**
      * @Expose
      * @ORM\Column(type="string", length=100)
+     * @Groups({"list", "view"})
      */
     private $title;
 
     /**
      * @Expose
      * @ORM\Column(type="string", length=255)
+     * @Groups({"list", "view"})
      */
     private $posterUrl;
 
     /**
      * @Expose
      * @ORM\Column(type="text")
+     * @Groups({"view"})
      */
     private $overview;
 
@@ -78,5 +83,21 @@ class MovieTranslations implements EntityTranslationInterface
     public function getLocale(): string
     {
         return $this->locale;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPosterUrl()
+    {
+        return $this->posterUrl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOverview()
+    {
+        return $this->overview;
     }
 }

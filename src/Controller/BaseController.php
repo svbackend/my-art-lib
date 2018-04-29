@@ -7,6 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -20,10 +22,11 @@ abstract class BaseController extends Controller implements ControllerInterface
     protected $normalizer;
     protected $currentRequest;
 
-    public function __construct(SerializerInterface $serializer, NormalizerInterface $normalizer)
+    public function __construct(SerializerInterface $serializer, NormalizerInterface $normalizer, RequestStack $requestStack)
     {
         $this->serializer = $serializer;
         $this->normalizer = $normalizer;
+        $this->currentRequest = $requestStack->getCurrentRequest();
     }
 
     protected function response($data, int $status = 200, array $headers = array(), array $context = array())
@@ -41,19 +44,45 @@ abstract class BaseController extends Controller implements ControllerInterface
         foreach ($data as $key => $value) {
             if ($key === 'translations') {
                 $translatedData = array_merge($translatedData, $this->getEntityTranslation($value));
+
+                if ($recursive === true) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+
+            if (is_array($value)) {
+                $data[$key] = $this->translateEntities($value, $recursive);
             }
         }
 
-        echo '<pre>';
-        echo var_export($data); exit;
+        unset($data['translations']);
+        $data = array_merge($data, $translatedData);
+
+        return $data;
     }
 
     private function getEntityTranslation(array $translations)
     {
-        $locale = $this->currentRequest->getLocale() ?? $this->currentRequest->getDefaultLocale();
+        $userLocale = $this->getUserPreferredLocale(array_keys($translations));
+        return $translations[$userLocale];
+    }
 
-        if (isset($translations[$locale])) return $translations[$locale];
+    private function getUserPreferredLocale(array $locales = [])
+    {
+        if (!isset($locales[0])) {
+            // there's no translations for this entity
+            throw new NotFoundHttpException();
+        }
 
-        echo var_export($this->currentRequest->getLanguages()); exit;
+        $preferredLocale = $this->currentRequest->getPreferredLanguage($locales);
+
+        $locale = $this->currentRequest->getLocale(); // can be set by query param (?language=ru) or by symfony
+        if ($locale !== $this->currentRequest->getDefaultLocale() && in_array($locale, $locales) === true) {
+            $preferredLocale = $locale;
+        }
+
+        return $preferredLocale;
     }
 }

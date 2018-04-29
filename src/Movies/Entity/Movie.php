@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 //todo production_countries, production_companies, actors
 
@@ -29,7 +30,7 @@ class Movie implements TranslatableInterface
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      * @JMS\Expose
-     * @JMS\Groups({"list", "view"})
+     * @Groups({"list", "view"})
      */
     private $id;
 
@@ -38,6 +39,7 @@ class Movie implements TranslatableInterface
      * @ORM\OneToMany(targetEntity="App\Movies\Entity\MovieTranslations", mappedBy="movie", cascade={"persist", "remove"})
      * @Assert\Valid(traverse=true)
      * @JMS\Expose
+     * @Groups({"list", "view"})
      */
     private $translations;
 
@@ -51,17 +53,20 @@ class Movie implements TranslatableInterface
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid(traverse=true)
      * @JMS\Expose
+     * @Groups({"list", "view"})
      */
     private $genres;
 
     /**
      * @JMS\Expose
+     * @Groups({"list", "view"})
      * @ORM\Column(type="string", length=100)
      */
     private $originalTitle;
 
     /**
      * @JMS\Expose
+     * @Groups({"list", "view"})
      * @ORM\Column(type="string", length=255)
      */
     private $originalPosterUrl;
@@ -69,29 +74,34 @@ class Movie implements TranslatableInterface
     /**
      * @ORM\Embedded(class="App\Movies\Entity\MovieTMDB", columnPrefix="tmdb_")
      * @Assert\Valid(traverse=true)
+     * @Groups({"list", "view"})
      */
     private $tmdb;
 
     /**
      * @JMS\Expose
      * @ORM\Column(type="string", length=20, nullable=true)
+     * @Groups({"list", "view"})
      */
     private $imdbId;
 
     /**
      * @JMS\Expose
+     * @Groups({"list", "view"})
      * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $runtime;
 
     /**
      * @JMS\Expose
+     * @Groups({"list", "view"})
      * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $budget;
 
     /**
      * @JMS\Expose
+     * @Groups({"list", "view"})
      * @ORM\Column(type="date", nullable=true)
      * @JMS\Type("DateTimeInterface")
      */
@@ -116,6 +126,11 @@ class Movie implements TranslatableInterface
     {
         $this->genres->add($genre);
         return $this;
+    }
+
+    public function getGenres()
+    {
+        return $this->genres->toArray();
     }
 
     public function updateTmdb(MovieTMDB $tmdb)
@@ -161,5 +176,61 @@ class Movie implements TranslatableInterface
     {
         $this->releaseDate = $releaseDate;
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOriginalTitle()
+    {
+        return $this->originalTitle;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOriginalPosterUrl()
+    {
+        return $this->originalPosterUrl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTmdb()
+    {
+        return $this->tmdb;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImdbId()
+    {
+        return $this->imdbId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRuntime()
+    {
+        return $this->runtime;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBudget()
+    {
+        return $this->budget;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReleaseDate()
+    {
+        return $this->releaseDate;
     }
 }

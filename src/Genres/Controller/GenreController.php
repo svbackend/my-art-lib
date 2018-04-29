@@ -42,16 +42,10 @@ class GenreController extends BaseController
      *
      * @return JsonResponse
      */
-    public function getAll(SerializerInterface $serializer)
+    public function getAll()
     {
         $genres = $this->getDoctrine()->getRepository(Genre::class)->findAll();
-
-        return $this->response($genres[0], 200, [], [
-            'groups' => ['list'],
-        ]);
-
-
-        return $this->json($genres, 200, [], [
+        return $this->response($genres, 200, [], [
             'groups' => ['list'],
         ]);
     }
