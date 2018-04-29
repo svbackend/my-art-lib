@@ -62,7 +62,7 @@ class UserProfileTest extends KernelTestCase
     public function testGetContacts()
     {
         $contacts = $this->profile->getContacts();
-        $this->assertEquals(0, $contacts->count());
+        $this->assertEquals(0, count($contacts));
     }
 
     public function testAddContacts()
@@ -74,7 +74,7 @@ class UserProfileTest extends KernelTestCase
         $contacts = $this->profile->getContacts();
 
         $this->assertEquals($this->profile, $result);
-        $this->assertEquals(1, $contacts->count());
-        $this->assertTrue($contacts->get(0) instanceof UserProfileContacts);
+        $this->assertEquals(1, count($contacts));
+        $this->assertTrue($contacts[0] instanceof UserProfileContacts);
     }
 }

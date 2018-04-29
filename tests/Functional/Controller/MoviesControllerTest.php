@@ -153,12 +153,15 @@ class MoviesControllerTest extends WebTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
-        self::assertArrayHasKey('translations', $response);
+
+        // because entity should be already translated and merged with translation based on user preferred locale:
+        self::assertArrayNotHasKey('translations', $response);
+
         self::assertArrayHasKey('genres', $response);
-        self::assertArrayHasKey('release_date', $response);
+        self::assertArrayHasKey('releaseDate', $response);
         self::assertArrayHasKey('budget', $response);
-        self::assertArrayHasKey('imdb_id', $response);
-        self::assertArrayHasKey('original_poster_url', $response);
-        self::assertArrayHasKey('original_title', $response);
+        self::assertArrayHasKey('imdbId', $response);
+        self::assertArrayHasKey('originalPosterUrl', $response);
+        self::assertArrayHasKey('originalTitle', $response);
     }
 }

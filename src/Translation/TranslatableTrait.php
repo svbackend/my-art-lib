@@ -41,7 +41,7 @@ trait TranslatableTrait
     public function getTranslations(): array
     {
         if ($this->isTranslationsMappedByLocale === true) {
-            return $this->translations;
+            return $this->translations->toArray();
         }
 
         $this->mapTranslationsByLocale();

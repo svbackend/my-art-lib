@@ -80,6 +80,8 @@ class MovieController extends BaseController
 
         $this->getDoctrine()->getManager()->flush();
 
-        return $movie;
+        return $this->response($movie, 200, [], [
+            'groups' => ['view'],
+        ]);
     }
 }

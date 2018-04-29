@@ -79,7 +79,9 @@ class GenreController extends BaseController
 
         $this->getDoctrine()->getManager()->flush();
 
-        return $genre;
+        return $this->response($genre, 200, [], [
+            'groups' => ['view'],
+        ]);
     }
 
     /**
@@ -112,6 +114,8 @@ class GenreController extends BaseController
 
         $this->getDoctrine()->getManager()->flush();
 
-        return $genre;
+        return $this->response($genre, 200, [], [
+            'groups' => ['view'],
+        ]);
     }
 }

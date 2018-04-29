@@ -2,14 +2,17 @@
 
 namespace App\Users\Controller;
 
+use App\Controller\BaseController;
 use App\Controller\ControllerInterface;
 use App\Users\Entity\User;
+use App\Users\Event\UserRegisteredEvent;
 use App\Users\Repository\ConfirmationTokenRepository;
 use App\Users\Repository\UserRepository;
 use App\Users\Request\ConfirmEmailRequest;
 use App\Users\Request\RegisterUserRequest;
 use App\Users\Service\RegisterService;
 use FOS\RestBundle\Controller\FOSRestController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Swagger\Annotations as SWG;
@@ -17,22 +20,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserController extends FOSRestController implements ControllerInterface
+class UserController extends BaseController
 {
-    /**
-     * @var \App\Users\Service\RegisterService
-     */
-    private $registerService;
-
-    private $translator;
-
-    public function __construct(RegisterService $registerService, TranslatorInterface $translator)
-    {
-        $this->registerService = $registerService;
-        $this->translator = $translator;
-    }
-
     /**
      * Registration
      *
@@ -48,11 +39,25 @@ class UserController extends FOSRestController implements ControllerInterface
      * @param $request \App\Users\Request\RegisterUserRequest
      * @return User|JsonResponse
      */
-    public function postUsers(RegisterUserRequest $request)
+    public function postUsers(RegisterUserRequest $request, RegisterService $registerService, EventDispatcherInterface $dispatcher, ValidatorInterface $validator)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY');
 
-        return $this->registerService->registerByRequest($request);
+        $registeredUser = $registerService->registerByRequest($request);
+        $errors = $validator->validate($registeredUser);
+
+        if ($errors && 0 !== $errors->count()) {
+            return $request->getErrorResponse($errors);
+        }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        $userRegisteredEvent = new UserRegisteredEvent($registeredUser);
+        $dispatcher->dispatch(UserRegisteredEvent::NAME, $userRegisteredEvent);
+
+        return $this->response($registeredUser, 200, [], [
+            'groups' => ['view'],
+        ]);
     }
 
     /**
@@ -68,12 +73,12 @@ class UserController extends FOSRestController implements ControllerInterface
      * @param $confirmationTokenRepository \App\Users\Repository\ConfirmationTokenRepository
      * @return JsonResponse
      */
-    public function postConfirmEmail(ConfirmEmailRequest $request, ConfirmationTokenRepository $confirmationTokenRepository)
+    public function postConfirmEmail(ConfirmEmailRequest $request, ConfirmationTokenRepository $confirmationTokenRepository, TranslatorInterface $translator)
     {
         $token = $request->get('token');
 
         if (null === $confirmationToken = $confirmationTokenRepository->findByToken($token)) {
-            throw new BadCredentialsException($this->translator->trans('bad_email_confirmation_token', [
+            throw new BadCredentialsException($translator->trans('bad_email_confirmation_token', [
                 'token' => $token,
             ], 'users'));
         }
@@ -102,7 +107,7 @@ class UserController extends FOSRestController implements ControllerInterface
      * @param int $id
      * @return User
      */
-    public function getUsers($id)
+    public function getUsers($id, TranslatorInterface $translator)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
@@ -113,12 +118,14 @@ class UserController extends FOSRestController implements ControllerInterface
         $user = $userRepository->find($id);
 
         if ($user === null) {
-            throw new NotFoundHttpException($this->translator->trans('not_found_by_id', [
+            throw new NotFoundHttpException($translator->trans('not_found_by_id', [
                 'user_id' => $id,
             ], 'users'));
         }
 
-        return $user;
+        return $this->response($user, 200, [], [
+            'groups' => ['view'],
+        ]);
     }
 
     /**
@@ -146,6 +153,8 @@ class UserController extends FOSRestController implements ControllerInterface
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         $users = $userRepository->findAll();
 
-        return $users;
+        return $this->response($users, 200, [], [
+            'groups' => ['list'],
+        ]);
     }
 }

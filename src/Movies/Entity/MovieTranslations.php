@@ -6,8 +6,6 @@ namespace App\Movies\Entity;
 use App\Translation\EntityTranslationInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -23,7 +21,6 @@ class MovieTranslations implements EntityTranslationInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Exclude
      */
     private $id;
 
@@ -34,28 +31,24 @@ class MovieTranslations implements EntityTranslationInterface
     private $locale;
 
     /**
-     * @Exclude
      * @ORM\ManyToOne(targetEntity="App\Movies\Entity\Movie", inversedBy="translations")
      * @ORM\JoinColumn(nullable=false)
      */
     private $movie;
 
     /**
-     * @Expose
      * @ORM\Column(type="string", length=100)
      * @Groups({"list", "view"})
      */
     private $title;
 
     /**
-     * @Expose
      * @ORM\Column(type="string", length=255)
      * @Groups({"list", "view"})
      */
     private $posterUrl;
 
     /**
-     * @Expose
      * @ORM\Column(type="text")
      * @Groups({"view"})
      */

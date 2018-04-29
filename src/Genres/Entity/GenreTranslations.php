@@ -3,12 +3,9 @@ declare(strict_types=1);
 
 namespace App\Genres\Entity;
 
-use App\Genres\Entity\Genre;
 use App\Translation\EntityTranslationInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -24,26 +21,22 @@ class GenreTranslations implements EntityTranslationInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Exclude
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=5)
-     * @Expose
      * @Groups({"list", "view"})
      */
     private $locale;
 
     /**
-     * @Exclude
      * @ORM\ManyToOne(targetEntity="App\Genres\Entity\Genre", inversedBy="translations")
      * @ORM\JoinColumn(nullable=false)
      */
     private $genre;
 
     /**
-     * @Expose
      * @Groups({"list", "view"})
      * @ORM\Column(type="string", length=50)
      */

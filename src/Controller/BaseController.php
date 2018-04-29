@@ -22,19 +22,39 @@ abstract class BaseController extends Controller implements ControllerInterface
     protected $normalizer;
     protected $currentRequest;
 
-    public function __construct(SerializerInterface $serializer, NormalizerInterface $normalizer, RequestStack $requestStack)
+    public function __construct(NormalizerInterface $normalizer, RequestStack $requestStack)
     {
-        $this->serializer = $serializer;
         $this->normalizer = $normalizer;
         $this->currentRequest = $requestStack->getCurrentRequest();
     }
 
     protected function response($data, int $status = 200, array $headers = array(), array $context = array())
     {
-        $response = $this->normalizer->normalize($data, null, $context);
+        $contextWithRoles = $this->appendRolesToContextGroups($context);
+
+        $response = $this->normalizer->normalize($data, null, $contextWithRoles);
         $response = $this->translateEntities(is_array($response) ? $response : [$response]);
 
         return $this->json($response, $status, $headers, $context);
+    }
+
+    private function appendRolesToContextGroups(?array $context): array
+    {
+        if ($this->getUser() === null) return $context;
+
+        if ($context === null) {
+            return [
+                'groups' => $this->getUser()->getRoles(),
+            ];
+        }
+
+        if (isset($context['groups'])) {
+            $context['groups'] = array_merge($context['groups'], $this->getUser()->getRoles());
+        } else {
+            $context['groups'] = $this->getUser()->getRoles();
+        }
+
+        return $context;
     }
 
     protected function translateEntities(array $data, $recursive = true): array

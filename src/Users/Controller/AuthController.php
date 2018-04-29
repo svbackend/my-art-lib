@@ -61,6 +61,6 @@ class AuthController extends BaseController
 
         $apiToken = $authService->getTokenByRequest($authUserRequest);
 
-        return $this->json(['api_token' => $apiToken->getToken()]);
+        return $this->response(['api_token' => $apiToken->getToken()]);
     }
 }

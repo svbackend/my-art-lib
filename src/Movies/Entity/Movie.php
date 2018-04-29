@@ -10,7 +10,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 //todo production_countries, production_companies, actors
@@ -18,7 +17,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass="App\Movies\Repository\MovieRepository")
  * @ORM\Table(name="movies")
- * @JMS\ExclusionPolicy("all")
  * @method MovieTranslations getTranslation(string $locale, bool $useFallbackLocale = true)
  */
 class Movie implements TranslatableInterface
@@ -29,7 +27,6 @@ class Movie implements TranslatableInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @JMS\Expose
      * @Groups({"list", "view"})
      */
     private $id;
@@ -38,7 +35,6 @@ class Movie implements TranslatableInterface
      * @var $translations MovieTranslations[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Movies\Entity\MovieTranslations", mappedBy="movie", cascade={"persist", "remove"})
      * @Assert\Valid(traverse=true)
-     * @JMS\Expose
      * @Groups({"list", "view"})
      */
     private $translations;
@@ -52,20 +48,17 @@ class Movie implements TranslatableInterface
      *      )
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid(traverse=true)
-     * @JMS\Expose
      * @Groups({"list", "view"})
      */
     private $genres;
 
     /**
-     * @JMS\Expose
      * @Groups({"list", "view"})
      * @ORM\Column(type="string", length=100)
      */
     private $originalTitle;
 
     /**
-     * @JMS\Expose
      * @Groups({"list", "view"})
      * @ORM\Column(type="string", length=255)
      */
@@ -79,31 +72,26 @@ class Movie implements TranslatableInterface
     private $tmdb;
 
     /**
-     * @JMS\Expose
      * @ORM\Column(type="string", length=20, nullable=true)
      * @Groups({"list", "view"})
      */
     private $imdbId;
 
     /**
-     * @JMS\Expose
      * @Groups({"list", "view"})
      * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $runtime;
 
     /**
-     * @JMS\Expose
      * @Groups({"list", "view"})
      * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $budget;
 
     /**
-     * @JMS\Expose
      * @Groups({"list", "view"})
      * @ORM\Column(type="date", nullable=true)
-     * @JMS\Type("DateTimeInterface")
      */
     private $releaseDate;
 
