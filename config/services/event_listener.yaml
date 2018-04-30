@@ -18,6 +18,6 @@ services:
             tags:
                 - { name: kernel.event_subscriber }
 
-    App\Translation\EventListener\TranslatedEntityResponseListener:
+    App\EventListener\ExceptionListener:
             tags:
-                - { name: kernel.event_subscriber, event: kernel.view }
+                - { name: kernel.event_subscriber }

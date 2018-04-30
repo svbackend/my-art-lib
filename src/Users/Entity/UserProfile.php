@@ -21,13 +21,6 @@ class UserProfile
     private $id;
 
     /**
-     * @var $user User
-     * @ORM\OneToOne(targetEntity="App\Users\Entity\User", inversedBy="profile")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $user;
-
-    /**
      * @var $contacts UserProfileContacts[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Users\Entity\UserProfileContacts", mappedBy="profile", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
@@ -65,9 +58,8 @@ class UserProfile
      */
     private $public_email;
 
-    public function __construct(User $user)
+    public function __construct()
     {
-        $this->user = $user;
         $this->contacts = new ArrayCollection();
     }
 
@@ -149,14 +141,6 @@ class UserProfile
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser(): User
-    {
-        return $this->user;
     }
 
     /**

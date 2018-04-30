@@ -7,7 +7,7 @@
       </notes>
       <segment>
         <source>not_found_by_id</source>
-        <target></target>
+        <target>User not found by provided id</target>
       </segment>
     </unit>
     <unit id="leFh34_" name="not_found_by_username">
@@ -16,7 +16,7 @@
       </notes>
       <segment>
         <source>not_found_by_username</source>
-        <target></target>
+        <target>User not found by provided username</target>
       </segment>
     </unit>
     <unit id="rHa3rS_" name="not_found_by_api_token">
@@ -25,7 +25,7 @@
       </notes>
       <segment>
         <source>not_found_by_api_token</source>
-        <target>User not founded by provided api key</target>
+        <target>User not found by provided api key</target>
       </segment>
     </unit>
     <unit id="UHZkiu3" name="user_with_this_username_not_exist">
@@ -34,7 +34,7 @@
       </notes>
       <segment>
         <source>user_with_this_username_not_exist</source>
-        <target></target>
+        <target>User not found by provided username</target>
       </segment>
     </unit>
     <unit id="i2MINB7" name="wrong_password">
@@ -43,7 +43,7 @@
       </notes>
       <segment>
         <source>wrong_password</source>
-        <target></target>
+        <target>Wrong password</target>
       </segment>
     </unit>
     <unit id="KRx.u3l" name="bad_email_confirmation_token">
@@ -53,7 +53,7 @@
       </notes>
       <segment>
         <source>bad_email_confirmation_token</source>
-        <target></target>
+        <target>Bad email confirmation token</target>
       </segment>
     </unit>
     <unit id="wHtHVzn" name="user_registration_email_subject">
@@ -63,7 +63,7 @@
       </notes>
       <segment>
         <source>user_registration_email_subject</source>
-        <target></target>
+        <target>Welcome to MyArtLib</target>
       </segment>
     </unit>
   </file>

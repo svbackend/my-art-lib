@@ -38,6 +38,9 @@ trait TranslatableTrait
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getTranslations(): array
     {
         if ($this->isTranslationsMappedByLocale === true) {

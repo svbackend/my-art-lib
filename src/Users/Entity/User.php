@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace App\Users\Entity;
 
-use App\Users\Entity\UserProfile;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -53,6 +51,7 @@ class User implements UserInterface
     private $username;
 
     /**
+     * @Groups({"ROLE_ADMIN", "ROLE_MODER"})
      * @ORM\Embedded(class="App\Users\Entity\UserRoles", columnPrefix=false)
      */
     private $roles;
@@ -70,7 +69,7 @@ class User implements UserInterface
     public function __construct(string $email, string $username, string $password)
     {
         $this->roles = new UserRoles();
-        $this->profile = new UserProfile($this);
+        $this->profile = new UserProfile();
 
         $this->email = $email;
         $this->username = $username;
@@ -121,6 +120,11 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @param $password
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @return bool
+     */
     public function isPasswordValid($password, UserPasswordEncoderInterface $passwordEncoder): bool
     {
         return $passwordEncoder->isPasswordValid($this, $password);

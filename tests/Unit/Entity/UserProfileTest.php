@@ -41,12 +41,6 @@ class UserProfileTest extends KernelTestCase
         $this->assertNull($this->profile->getId());
     }
 
-    public function testGetUser()
-    {
-        $user = $this->profile->getUser();
-        $this->assertEquals($this->user, $user);
-    }
-
     public function testGetBirthDate()
     {
         $this->assertNull($this->profile->getBirthDate());

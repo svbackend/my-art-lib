@@ -3,7 +3,6 @@
 namespace App\Users\Controller;
 
 use App\Controller\BaseController;
-use App\Controller\ControllerInterface;
 use App\Users\Entity\User;
 use App\Users\Event\UserRegisteredEvent;
 use App\Users\Repository\ConfirmationTokenRepository;
@@ -11,13 +10,10 @@ use App\Users\Repository\UserRepository;
 use App\Users\Request\ConfirmEmailRequest;
 use App\Users\Request\RegisterUserRequest;
 use App\Users\Service\RegisterService;
-use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Swagger\Annotations as SWG;
 use Symfony\Component\Routing\Annotation\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -28,20 +24,15 @@ class UserController extends BaseController
      * Registration
      *
      * @Route("/api/users", methods={"POST"})
-     * @SWG\Parameter(name="registration.username", in="formData", type="string")
-     * @SWG\Parameter(name="registration.password", in="formData", type="string")
-     * @SWG\Parameter(name="registration.email", in="formData", type="string")
-     * @SWG\Response(
-     *     description="Registration.",
-     *     response=202,
-     *     @Model(type=User::class)
-     * )
-     * @param $request \App\Users\Request\RegisterUserRequest
-     * @return User|JsonResponse
+     * @param RegisterUserRequest $request
+     * @param RegisterService $registerService
+     * @param EventDispatcherInterface $dispatcher
+     * @param ValidatorInterface $validator
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function postUsers(RegisterUserRequest $request, RegisterService $registerService, EventDispatcherInterface $dispatcher, ValidatorInterface $validator)
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY'); // todo (not working)
 
         $registeredUser = $registerService->registerByRequest($request);
         $errors = $validator->validate($registeredUser);
@@ -64,13 +55,9 @@ class UserController extends BaseController
      * Confirm email
      *
      * @Route("/api/confirmEmail", methods={"POST"})
-     * @SWG\Parameter(name="token", in="formData", type="string")
-     * @SWG\Response(
-     *     description="Email confirmed.",
-     *     response=202
-     * )
-     * @param $request ConfirmEmailRequest
-     * @param $confirmationTokenRepository \App\Users\Repository\ConfirmationTokenRepository
+     * @param ConfirmEmailRequest $request
+     * @param ConfirmationTokenRepository $confirmationTokenRepository
+     * @param TranslatorInterface $translator
      * @return JsonResponse
      */
     public function postConfirmEmail(ConfirmEmailRequest $request, ConfirmationTokenRepository $confirmationTokenRepository, TranslatorInterface $translator)
@@ -98,14 +85,9 @@ class UserController extends BaseController
      * Get single user
      *
      * @Route("/api/users/{id}", methods={"GET"})
-     * @SWG\Response(
-     *     description="REST action which returns user by id.",
-     *     response=200,
-     *     @Model(type=User::class)
-     * )
-     *
-     * @param int $id
-     * @return User
+     * @param $id
+     * @param TranslatorInterface $translator
+     * @return JsonResponse
      */
     public function getUsers($id, TranslatorInterface $translator)
     {
@@ -132,14 +114,6 @@ class UserController extends BaseController
      * Get all users
      *
      * @Route("/api/users", methods={"GET"})
-     * @SWG\Response(
-     *     description="REST action which returns all users.",
-     *     response=200,
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=User::class, groups={"full"}))
-     *     )
-     * )
      *
      * @return User[]
      */
