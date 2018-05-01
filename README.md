@@ -21,15 +21,16 @@ Install:
 * Add new crontab line: `* * * * * docker-compose exec app bin/console swiftmailer:spool:send`
 * `docker-compose exec app bash`
 * `php bin/console doctrine:schema:update --force`
+* Not required, but recommended: `php bin/console doctrine:fixtures:load --purge-with-truncate`
 * `php bin/phpunit`
 
 If all tests passed then you'r ready!
 
 To run project again simply type `docker-compose up` (without `--build` at this time)
 
-### Api Documentation
+To setup queue daemon run: `bin/console enqueue:consume --setup-broker -vvv`
 
-Can be found at: http://127.0.0.1:8080/api/doc
+More information for developers can be found in [project docs](docs/current.md).
 
 ### Translations
 

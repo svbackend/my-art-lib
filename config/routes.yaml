@@ -4,6 +4,9 @@ users:
 genres:
     resource: ../src/Genres/Controller
     type: annotation
+movies:
+    resource: ../src/Movies/Controller
+    type: annotation
 
 confirm_email:
     path: /api/confirmEmail

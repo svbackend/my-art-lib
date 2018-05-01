@@ -2,78 +2,70 @@
 
 namespace App\Users\Controller;
 
-use App\Controller\ControllerInterface;
+use App\Controller\BaseController;
 use App\Users\Entity\User;
+use App\Users\Event\UserRegisteredEvent;
 use App\Users\Repository\ConfirmationTokenRepository;
 use App\Users\Repository\UserRepository;
 use App\Users\Request\ConfirmEmailRequest;
 use App\Users\Request\RegisterUserRequest;
 use App\Users\Service\RegisterService;
-use FOS\RestBundle\Controller\FOSRestController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Swagger\Annotations as SWG;
 use Symfony\Component\Routing\Annotation\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserController extends FOSRestController implements ControllerInterface
+class UserController extends BaseController
 {
-    /**
-     * @var \App\Users\Service\RegisterService
-     */
-    private $registerService;
-
-    private $translator;
-
-    public function __construct(RegisterService $registerService, TranslatorInterface $translator)
-    {
-        $this->registerService = $registerService;
-        $this->translator = $translator;
-    }
-
     /**
      * Registration
      *
      * @Route("/api/users", methods={"POST"})
-     * @SWG\Parameter(name="registration.username", in="formData", type="string")
-     * @SWG\Parameter(name="registration.password", in="formData", type="string")
-     * @SWG\Parameter(name="registration.email", in="formData", type="string")
-     * @SWG\Response(
-     *     description="Registration.",
-     *     response=202,
-     *     @Model(type=User::class)
-     * )
-     * @param $request \App\Users\Request\RegisterUserRequest
-     * @return User|JsonResponse
+     * @param RegisterUserRequest $request
+     * @param RegisterService $registerService
+     * @param EventDispatcherInterface $dispatcher
+     * @param ValidatorInterface $validator
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function postUsers(RegisterUserRequest $request)
+    public function postUsers(RegisterUserRequest $request, RegisterService $registerService, EventDispatcherInterface $dispatcher, ValidatorInterface $validator)
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY'); // todo (not working)
 
-        return $this->registerService->registerByRequest($request);
+        $registeredUser = $registerService->registerByRequest($request);
+        $errors = $validator->validate($registeredUser);
+
+        if ($errors && 0 !== $errors->count()) {
+            return $request->getErrorResponse($errors);
+        }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        $userRegisteredEvent = new UserRegisteredEvent($registeredUser);
+        $dispatcher->dispatch(UserRegisteredEvent::NAME, $userRegisteredEvent);
+
+        return $this->response($registeredUser, 200, [], [
+            'groups' => ['view'],
+        ]);
     }
 
     /**
      * Confirm email
      *
      * @Route("/api/confirmEmail", methods={"POST"})
-     * @SWG\Parameter(name="token", in="formData", type="string")
-     * @SWG\Response(
-     *     description="Email confirmed.",
-     *     response=202
-     * )
-     * @param $request ConfirmEmailRequest
-     * @param $confirmationTokenRepository \App\Users\Repository\ConfirmationTokenRepository
+     * @param ConfirmEmailRequest $request
+     * @param ConfirmationTokenRepository $confirmationTokenRepository
+     * @param TranslatorInterface $translator
      * @return JsonResponse
      */
-    public function postConfirmEmail(ConfirmEmailRequest $request, ConfirmationTokenRepository $confirmationTokenRepository)
+    public function postConfirmEmail(ConfirmEmailRequest $request, ConfirmationTokenRepository $confirmationTokenRepository, TranslatorInterface $translator)
     {
         $token = $request->get('token');
 
         if (null === $confirmationToken = $confirmationTokenRepository->findByToken($token)) {
-            throw new BadCredentialsException($this->translator->trans('bad_email_confirmation_token', [
+            throw new BadCredentialsException($translator->trans('bad_email_confirmation_token', [
                 'token' => $token,
             ], 'users'));
         }
@@ -93,16 +85,11 @@ class UserController extends FOSRestController implements ControllerInterface
      * Get single user
      *
      * @Route("/api/users/{id}", methods={"GET"})
-     * @SWG\Response(
-     *     description="REST action which returns user by id.",
-     *     response=200,
-     *     @Model(type=User::class)
-     * )
-     *
-     * @param int $id
-     * @return User
+     * @param $id
+     * @param TranslatorInterface $translator
+     * @return JsonResponse
      */
-    public function getUsers($id)
+    public function getUsers($id, TranslatorInterface $translator)
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
@@ -113,26 +100,20 @@ class UserController extends FOSRestController implements ControllerInterface
         $user = $userRepository->find($id);
 
         if ($user === null) {
-            throw new NotFoundHttpException($this->translator->trans('not_found_by_id', [
+            throw new NotFoundHttpException($translator->trans('not_found_by_id', [
                 'user_id' => $id,
             ], 'users'));
         }
 
-        return $user;
+        return $this->response($user, 200, [], [
+            'groups' => ['view'],
+        ]);
     }
 
     /**
      * Get all users
      *
      * @Route("/api/users", methods={"GET"})
-     * @SWG\Response(
-     *     description="REST action which returns all users.",
-     *     response=200,
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=User::class, groups={"full"}))
-     *     )
-     * )
      *
      * @return User[]
      */
@@ -146,6 +127,8 @@ class UserController extends FOSRestController implements ControllerInterface
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         $users = $userRepository->findAll();
 
-        return $users;
+        return $this->response($users, 200, [], [
+            'groups' => ['list'],
+        ]);
     }
 }

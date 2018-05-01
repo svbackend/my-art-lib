@@ -4,15 +4,51 @@ namespace App\Translation;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+/**
+ * Trait TranslatableTrait
+ * @package App\Translation
+ * @property ArrayCollection $translations
+ */
 trait TranslatableTrait
 {
     private $isTranslationsMappedByLocale = false;
+
+    public function updateTranslations(array $translations, callable $add, callable $update = null)
+    {
+        foreach ($translations as $translation) {
+            if (null === $oldTranslation = $this->getTranslation($translation['locale'], false)) {
+                $add($translation);
+                continue;
+            }
+
+            if ($update === null) {
+                // This will called only when there's update action and $update function not defined
+                // But you still can keep it as null if you creating entity
+                throw new \InvalidArgumentException('Unexpected behavior: founded old translation but $update function not defined');
+            }
+
+            $update($translation, $oldTranslation);
+        }
+    }
 
     public function addTranslation(EntityTranslationInterface $translation): self
     {
         $this->translations->set($translation->getLocale(), $translation);
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTranslations(): array
+    {
+        if ($this->isTranslationsMappedByLocale === true) {
+            return $this->translations->toArray();
+        }
+
+        $this->mapTranslationsByLocale();
+        return $this->translations->toArray();
     }
 
     public function getTranslation(string $locale, bool $useFallbackLocale = true): ?EntityTranslationInterface

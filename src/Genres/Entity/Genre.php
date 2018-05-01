@@ -9,14 +9,12 @@ use App\Translation\TranslatableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Genres\Repository\GenreRepository")
  * @ORM\Table(name="genres")
- * @ExclusionPolicy("all")
  * @method GenreTranslations getTranslation(string $locale, bool $useFallbackLocale = true)
  */
 class Genre implements TranslatableInterface
@@ -27,7 +25,7 @@ class Genre implements TranslatableInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Expose
+     * @Groups({"list", "view"})
      */
     private $id;
 
@@ -35,6 +33,7 @@ class Genre implements TranslatableInterface
      * @var $translations GenreTranslations[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Genres\Entity\GenreTranslations", mappedBy="genre", cascade={"persist", "remove"})
      * @Assert\Valid(traverse=true)
+     * @Groups({"list", "view"})
      */
     private $translations;
 

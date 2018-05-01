@@ -5,13 +5,11 @@ namespace App\Users\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="users_profiles")
- * @ExclusionPolicy("all")
  */
 class UserProfile
 {
@@ -23,53 +21,45 @@ class UserProfile
     private $id;
 
     /**
-     * @var $user User
-     * @ORM\OneToOne(targetEntity="App\Users\Entity\User", inversedBy="profile")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $user;
-
-    /**
      * @var $contacts UserProfileContacts[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Users\Entity\UserProfileContacts", mappedBy="profile", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
-     * @Expose
+     * @Groups({"view"})
      */
     private $contacts;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Expose
+     * @Groups({"list", "view"})
      */
     private $first_name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Expose
+     * @Groups({"list", "view"})
      */
     private $last_name;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Expose
+     * @Groups({"view"})
      */
     private $birth_date;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Expose
+     * @Groups({"view"})
      */
     private $about;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Expose
+     * @Groups({"view"})
      */
     private $public_email;
 
-    public function __construct(User $user)
+    public function __construct()
     {
-        $this->user = $user;
         $this->contacts = new ArrayCollection();
     }
 
@@ -154,14 +144,6 @@ class UserProfile
     }
 
     /**
-     * @return User
-     */
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    /**
      * @return mixed
      */
     public function getBirthDate()
@@ -184,7 +166,7 @@ class UserProfile
      */
     public function getContacts()
     {
-        return $this->contacts;
+        return $this->contacts->toArray();
     }
 
     /**

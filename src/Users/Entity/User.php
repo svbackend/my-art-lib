@@ -3,21 +3,17 @@ declare(strict_types=1);
 
 namespace App\Users\Entity;
 
-use App\Users\Entity\UserProfile;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Users\Repository\UserRepository")
  * @ORM\Table(name="users")
  * @UniqueEntity(fields="email", message="Email already taken")
  * @UniqueEntity(fields="username", message="Username already taken")
- * @ExclusionPolicy("all")
  */
 class User implements UserInterface
 {
@@ -25,34 +21,37 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Expose
+     * @Groups({"list", "view"})
      */
     private $id;
 
     /**
      * @var $profile UserProfile
      * @ORM\OneToOne(targetEntity="App\Users\Entity\UserProfile", cascade={"persist", "remove"})
-     * @Expose
+     * @Groups({"list", "view"})
      */
     private $profile;
 
     /**
+     * @Groups({"ROLE_ADMIN", "ROLE_MODER"})
      * @ORM\Column(type="string", length=255, unique=true)
      */
     private $email;
 
     /**
+     * @Groups({"ROLE_ADMIN", "ROLE_MODER"})
      * @ORM\Column(type="integer", length=1, options={"default": 0})
      */
     private $isEmailConfirmed = 0;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Expose
+     * @Groups({"list", "view"})
      */
     private $username;
 
     /**
+     * @Groups({"ROLE_ADMIN", "ROLE_MODER"})
      * @ORM\Embedded(class="App\Users\Entity\UserRoles", columnPrefix=false)
      */
     private $roles;
@@ -70,7 +69,7 @@ class User implements UserInterface
     public function __construct(string $email, string $username, string $password)
     {
         $this->roles = new UserRoles();
-        $this->profile = new UserProfile($this);
+        $this->profile = new UserProfile();
 
         $this->email = $email;
         $this->username = $username;
@@ -90,6 +89,11 @@ class User implements UserInterface
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    public function isEmailConfirmed(): bool
+    {
+        return (bool)$this->isEmailConfirmed;
     }
 
     public function setPlainPassword(string $plainPassword): self
@@ -116,6 +120,11 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * @param $password
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @return bool
+     */
     public function isPasswordValid($password, UserPasswordEncoderInterface $passwordEncoder): bool
     {
         return $passwordEncoder->isPasswordValid($this, $password);

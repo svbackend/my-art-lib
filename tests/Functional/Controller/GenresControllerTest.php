@@ -18,7 +18,7 @@ class GenresControllerTest extends WebTestCase
 
         self::assertTrue(is_array($response) && count($response) > 0);
 
-        $genre = array_pop($response); // last item of genres array
+        $genre = reset($response); // first item of genres array
         self::assertArrayHasKey('id', $genre);
         self::assertArrayHasKey('locale', $genre);
         self::assertArrayHasKey('name', $genre);
@@ -142,27 +142,13 @@ class GenresControllerTest extends WebTestCase
     public function testUpdateGenreSuccess()
     {
         $client = static::createClient();
-
         $adminApiToken = UsersFixtures::ADMIN_API_TOKEN;
-        $client->request('POST', "/api/genres?api_token={$adminApiToken}", [
-            'genre' => [
-                'translations' => [
-                    [
-                        'name' => 'Valid Genre Name',
-                        'locale' => 'en',
-                    ],
-                    [
-                        'name' => 'Валидное название жанра',
-                        'locale' => 'ru',
-                    ],
-                ]
-            ]
-        ]);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $client->request('GET', "/api/genres");
         $response = json_decode($client->getResponse()->getContent(), true);
+        $firstGenre = reset($response);
 
-        $client->request('POST', "/api/genres/{$response['id']}?api_token={$adminApiToken}", [
+        $client->request('POST', "/api/genres/{$firstGenre['id']}?api_token={$adminApiToken}", [
             'genre' => [
                 'translations' => [
                     [
