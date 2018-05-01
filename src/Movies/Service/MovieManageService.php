@@ -3,21 +3,19 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
-use App\Genres\Entity\Genre;
 use App\Genres\Repository\GenreRepository;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTMDB;
 use App\Movies\Entity\MovieTranslations;
 use App\Movies\Request\CreateMovieRequest;
-use Doctrine\ORM\EntityManagerInterface;
 
 class MovieManageService
 {
-    private $entityManager;
+    private $genreRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(GenreRepository $genreRepository)
     {
-        $this->entityManager = $entityManager;
+        $this->genreRepository = $genreRepository;
     }
 
     public function createMovieByRequest(CreateMovieRequest $request): Movie
@@ -38,11 +36,7 @@ class MovieManageService
         if (isset($movieArray['runtime'])) $movie->setRuntime($movieArray['runtime']);
         if (isset($movieArray['releaseDate'])) $movie->setReleaseDate(new \DateTimeImmutable($movieArray['releaseDate']));
 
-        /**
-         * @var $genresRepository GenreRepository
-         */
-        $genresRepository = $this->entityManager->getRepository(Genre::class);
-        $genres = $genresRepository->findBy([
+        $genres = $this->genreRepository->findBy([
             'id' => array_map(function ($genre) { return $genre['id']; }, $genres)
         ]);
         foreach ($genres as $genre) {
@@ -56,7 +50,6 @@ class MovieManageService
         };
 
         $movie->updateTranslations($translations, $addTranslation);
-        $this->entityManager->persist($movie);
 
         return $movie;
     }

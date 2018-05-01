@@ -183,7 +183,7 @@ class Movie implements TranslatableInterface
     }
 
     /**
-     * @return mixed
+     * @return MovieTMDB
      */
     public function getTmdb()
     {

@@ -5,8 +5,11 @@ namespace App\Movies\Controller;
 use App\Controller\BaseController;
 use App\Movies\Entity\Movie;
 use App\Movies\Request\CreateMovieRequest;
+use App\Movies\Request\SearchRequest;
 use App\Movies\Service\MovieManageService;
+use App\Movies\Service\SearchService;
 use App\Users\Entity\UserRoles;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -32,6 +35,22 @@ class MovieController extends BaseController
     }
 
     /**
+     * Get movies by title
+     *
+     * @Route("/api/movies/search", methods={"POST"})
+     *
+     */
+    public function getSearch(SearchRequest $request, SearchService $searchService, Request $currentRequest)
+    {
+        $query = $request->get('query');
+        $movies = $searchService->findByQuery($query, $currentRequest->getLocale());
+
+        return $this->response($movies, 200, [], [
+            'groups' => ['list']
+        ]);
+    }
+
+    /**
      * Create new movie
      *
      * @Route("/api/movies", methods={"POST"})
@@ -52,7 +71,9 @@ class MovieController extends BaseController
             return $request->getErrorResponse($errors);
         }
 
-        $this->getDoctrine()->getManager()->flush();
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($movie);
+        $entityManager->flush();
 
         return $this->response($movie, 200, [], [
             'groups' => ['view'],

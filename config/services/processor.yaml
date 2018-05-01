@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    app.async.movie_sync_processor:
+        class: App\Movies\Event\MovieSyncProcessor
+        tags:
+            - { name: enqueue.client.processor }
