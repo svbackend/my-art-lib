@@ -181,6 +181,8 @@ class MoviesControllerTest extends WebTestCase
 
     public function testFindExistingMovieInOurDatabase()
     {
+        $this->checkIsApiKeyProvided();
+
         $client = self::$client;
         $client->request('POST', "/api/movies/search", [
             'query' => MoviesFixtures::MOVIE_TITLE, // Title of created movie
@@ -199,6 +201,8 @@ class MoviesControllerTest extends WebTestCase
 
     public function testFindMovieInTMDB()
     {
+        $this->checkIsApiKeyProvided();
+
         $movieTitle = 'The 15:17 to Paris'; // Name of movie https://www.themoviedb.org/movie/453201-the-15-17-to-paris
         $client = self::$client;
         $client->request('POST', "/api/movies/search?language=ru", [
@@ -237,5 +241,12 @@ class MoviesControllerTest extends WebTestCase
     private function getProducer($client)
     {
         return $client->getContainer()->get(TraceableProducer::class);
+    }
+
+    private function checkIsApiKeyProvided()
+    {
+        if (!\getenv('MOVIE_DB_API_KEY')) {
+            $this->fail('You should provide MOVIE_DB_API_KEY in your .env.test');
+        }
     }
 }
