@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
+use App\Genres\Entity\Genre;
 use App\Genres\Repository\GenreRepository;
+use App\Movies\DTO\MovieDTO;
+use App\Movies\DTO\MovieTranslationDTO;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTMDB;
 use App\Movies\Entity\MovieTranslations;
@@ -18,39 +21,77 @@ class MovieManageService
         $this->genreRepository = $genreRepository;
     }
 
+    /**
+     * @param CreateMovieRequest $request
+     * @return Movie
+     * @throws \Exception
+     */
     public function createMovieByRequest(CreateMovieRequest $request): Movie
     {
         $movie = $request->get('movie');
-        return $this->createMovie($movie, $movie['tmdb'], $movie['genres'], $movie['translations']);
+        $tmdb = $movie['tmdb'];
+        $movie['genres'] = array_map(function ($genre) { return $genre['id']; }, $movie['genres']);
+        $genres = $this->getGenresByIds($movie['genres']);
+
+        $translations = array_map(function (array $translation) {
+            return new MovieTranslationDTO(
+                $translation['locale'],
+                $translation['title'],
+                $translation['overview'] ?? null,
+                $translation['posterUrl'] ?? null
+            );
+        }, $movie['translations']);
+
+        $movieTMDB = new MovieTMDB(
+            $tmdb['id'],
+            $tmdb['voteAverage'] ?? null,
+            $tmdb['voteCount'] ?? null
+        );
+
+        $movieDTO = new MovieDTO(
+            $movie['originalTitle'],
+            $movie['originalPosterUrl'],
+            $movie['imdbId'] ?? null,
+            $movie['budget'] ?? null,
+            $movie['runtime'] ?? null,
+            $movie['releaseDate'] ?? null
+        );
+
+        return $this->createMovieByDTO($movieDTO, $movieTMDB, $genres, $translations);
     }
 
-    public function createMovie(array $movieArray, array $tmdbArray, array $genres, array $translations): Movie
+    /**
+     * @param MovieDTO $movieDTO
+     * @param MovieTMDB $movieTMDB
+     * @param Genre[] $genres
+     * @param MovieTranslationDTO[] $translations
+     * @return Movie
+     */
+    public function createMovieByDTO(MovieDTO $movieDTO, MovieTMDB $movieTMDB, array $genres, array $translations): Movie
     {
-        $tmdb = new MovieTMDB($tmdbArray['id']);
-        if (isset($tmdbArray['voteAverage'])) $tmdb->setVoteAverage($tmdbArray['voteAverage']);
-        if (isset($tmdbArray['voteCount'])) $tmdb->setVoteCount($tmdbArray['voteCount']);
+        $movie = new Movie($movieDTO, $movieTMDB);
 
-        $movie = new Movie($movieArray['originalTitle'], $movieArray['originalPosterUrl'], $tmdb);
-        if (isset($movieArray['imdbId'])) $movie->setImdbId($movieArray['imdbId']);
-        if (isset($movieArray['budget'])) $movie->setBudget($movieArray['budget']);
-        if (isset($movieArray['runtime'])) $movie->setRuntime($movieArray['runtime']);
-        if (isset($movieArray['releaseDate'])) $movie->setReleaseDate(new \DateTimeImmutable($movieArray['releaseDate']));
-
-        $genres = $this->genreRepository->findBy([
-            'id' => array_map(function ($genre) { return $genre['id']; }, $genres)
-        ]);
         foreach ($genres as $genre) {
             $movie->addGenre($genre);
         }
 
-        $addTranslation = function ($translation) use ($movie) {
+        $addTranslation = function (MovieTranslationDTO $translation) use ($movie) {
             $movie->addTranslation(
-                new MovieTranslations($movie, $translation['locale'], $translation['title'], $translation['posterUrl'], $translation['overview'])
+                new MovieTranslations($movie, $translation)
             );
         };
 
         $movie->updateTranslations($translations, $addTranslation);
 
         return $movie;
+    }
+
+    /**
+     * @param array $ids
+     * @return Genre[]
+     */
+    private function getGenresByIds(array $ids)
+    {
+        return $this->genreRepository->findBy(['id' => $ids]);
     }
 }

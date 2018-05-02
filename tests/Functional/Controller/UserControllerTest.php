@@ -7,6 +7,16 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class UserControllerTest extends WebTestCase
 {
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\Client
+     */
+    protected static $client;
+
+    public static function setUpBeforeClass()
+    {
+        self::$client = static::createClient();
+    }
+
     private static $user;
 
     private function getUser()
@@ -15,7 +25,7 @@ class UserControllerTest extends WebTestCase
             return self::$user;
         }
 
-        $client = static::createClient();
+        $client = self::$client;
         $api_token = UsersFixtures::TESTER_API_TOKEN;
         $client->request('GET', "/api/users?api_token={$api_token}");
         $allUsersResponse = json_decode($client->getResponse()->getContent(), true);
@@ -25,7 +35,7 @@ class UserControllerTest extends WebTestCase
 
     public function testGetUsersNonAuth()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('GET', '/api/users');
 
@@ -38,7 +48,7 @@ class UserControllerTest extends WebTestCase
 
     public function testPostUsersValid()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', '/api/users', [
             'registration' => [
@@ -58,7 +68,7 @@ class UserControllerTest extends WebTestCase
 
     public function testConfirmEmailWithValidToken()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', '/api/confirmEmail', [
             'token' => UsersFixtures::TESTER_EMAIL_CONFIRMATION_TOKEN
@@ -69,7 +79,7 @@ class UserControllerTest extends WebTestCase
 
     public function testConfirmEmailWithWrongToken()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', '/api/confirmEmail', [
             'token' => str_repeat('t', 32)
@@ -84,7 +94,7 @@ class UserControllerTest extends WebTestCase
 
     public function testConfirmEmailWithInvalidToken()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', '/api/confirmEmail', [
             'token' => '_invalidToken_'
@@ -129,7 +139,7 @@ class UserControllerTest extends WebTestCase
 
     public function testPostUsersInvalid()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', '/api/users', [
             'registration' => [
@@ -149,7 +159,7 @@ class UserControllerTest extends WebTestCase
 
     public function testGetAllUsersByAuthenticatedUser()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $api_token = UsersFixtures::TESTER_API_TOKEN;
         $client->request('GET', "/api/users?api_token={$api_token}");
@@ -160,7 +170,7 @@ class UserControllerTest extends WebTestCase
 
     public function testGetAllUsersWithWrongApiToken()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('GET', "/api/users?api_token=WRONG_API_TOKEN");
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -173,7 +183,7 @@ class UserControllerTest extends WebTestCase
     public function testGetUserSuccess()
     {
         $user = $this->getUser();
-        $client = static::createClient();
+        $client = self::$client;
         $api_token = UsersFixtures::TESTER_API_TOKEN;
 
         $client->request('GET', "/api/users/{$user['id']}?api_token={$api_token}");
@@ -187,7 +197,7 @@ class UserControllerTest extends WebTestCase
     public function testGetUserWithoutAuth()
     {
         $user = $this->getUser();
-        $client = static::createClient();
+        $client = self::$client;
         $client->request('GET', "/api/users/{$user['id']}");
         self::assertEquals(401, $client->getResponse()->getStatusCode());
     }
@@ -195,7 +205,7 @@ class UserControllerTest extends WebTestCase
     public function testGetUserNotFound()
     {
         $api_token = UsersFixtures::TESTER_API_TOKEN;
-        $client = static::createClient();
+        $client = self::$client;
         $client->request('GET', "/api/users/0?api_token={$api_token}");
         self::assertEquals(404, $client->getResponse()->getStatusCode());
     }

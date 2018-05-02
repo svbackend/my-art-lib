@@ -3,11 +3,9 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
-use App\Movies\Repository\MovieRepository;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class TmdbSearchService
 {
@@ -23,12 +21,12 @@ class TmdbSearchService
         $this->logger = $logger;
     }
 
-    public function findMoviesByQuery(string $query, string $locale = 'en-US'): array
+    public function findMoviesByQuery(string $query, string $locale = 'en'): array
     {
         $movies = $this->request('/search/movie', 'GET', [
             'query' => [
                 'api_key' => $this->apiKey,
-                'locale' => $locale,
+                'language' => $locale,
                 'query' => $query
             ],
         ]);

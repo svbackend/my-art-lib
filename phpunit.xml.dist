@@ -26,10 +26,6 @@
         <!-- ###+ enqueue/enqueue-bundle ### -->
         <env name="ENQUEUE_DSN" value="null://"/>
         <!-- ###- enqueue/enqueue-bundle ### -->
-
-        <!-- ###+ enqueue/redis ### -->
-        <env name="ENQUEUE_DSN" value="redis:"/>
-        <!-- ###- enqueue/redis ### -->
     </php>
 
     <testsuites>

@@ -23,9 +23,12 @@ class CreateMovieRequest extends BaseRequest
                 'budget' => new Assert\Type(['type' => 'integer']),
                 'releaseDate' => new Assert\Date(),
                 // MovieTranslations[]
-                'translations' => $this->eachItemValidation(
-                    MovieTranslationRules::getDefaultRules()
-                ),
+                'translations' => $this->eachItemValidation([
+                    'locale' => [new Assert\NotBlank(), new Assert\Locale()],
+                    'title' => [new Assert\NotBlank(), new Assert\Length(['min' => 3, 'max' => 50])],
+                    'posterUrl' => [new Assert\NotBlank(), new Assert\Length(['min' => 10, 'max' => 255])],
+                    'overview' => [new Assert\NotBlank(), new Assert\Length(['min' => 50])],
+                ]),
                 'genres' => $this->eachItemValidation([
                     'id' => [new Assert\NotBlank(), new Assert\Type('integer')],
                 ]),

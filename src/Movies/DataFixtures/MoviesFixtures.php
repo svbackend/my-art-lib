@@ -4,29 +4,35 @@ namespace App\Movies\DataFixtures;
 
 use App\Genres\Entity\Genre;
 use App\Genres\Entity\GenreTranslations;
+use App\Movies\DTO\MovieDTO;
+use App\Movies\DTO\MovieTranslationDTO;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTMDB;
 use App\Movies\Entity\MovieTranslations;
+use App\Movies\Service\MovieManageService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
 class MoviesFixtures extends Fixture
 {
+    const MOVIE_TITLE = 'zMs1Os7qwEqWxXvb';
+
+    private $movieManageService;
+
+    public function __construct(MovieManageService $movieManageService)
+    {
+        $this->movieManageService = $movieManageService;
+    }
+    
+    /**
+     * @param ObjectManager $manager
+     * @throws \Exception
+     */
     public function load(ObjectManager $manager): void
     {
-        $tmdb = new MovieTMDB(1);
-        $tmdb->setVoteAverage(7.8);
-        $tmdb->setVoteCount(100);
-
-        $movie = new Movie('Original Title', 'http://placehold.it/320x480', $tmdb);
-        $movie
-            ->addTranslation(new MovieTranslations($movie, 'en', 'Original Title (en)', 'http://placehold.it/480x320', 'Overview (en)'))
-            ->addTranslation(new MovieTranslations($movie, 'uk', 'Оригінальная назва (uk)', 'http://placehold.it/480x320', 'Overview (uk)'))
-            ->addTranslation(new MovieTranslations($movie, 'ru', 'Оригинальное название (ru)', 'http://placehold.it/480x320', 'Overview (ru)'));
-        $movie->setReleaseDate(new \DateTimeImmutable('-10 years'));
-        $movie->setRuntime(100);
-        $movie->setBudget(60000);
-        $movie->setImdbId('imdb-test-id');
+        $movieTitle = self::MOVIE_TITLE;
+        $movieDTO = new MovieDTO($movieTitle, 'http://placehold.it/320x480', 'imdb-test-id', 60000, 100, '-10 years');
+        $tmdb = new MovieTMDB(1, 7.8, 100);
 
         $testGenre = new Genre();
         $testGenre
@@ -34,7 +40,11 @@ class MoviesFixtures extends Fixture
             ->addTranslation(new GenreTranslations($testGenre, 'uk', 'Test Genre (uk)'))
             ->addTranslation(new GenreTranslations($testGenre, 'ru', 'Test Genre (ru)'));
 
-        $movie->addGenre($testGenre);
+        $movie = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [$testGenre], [
+            new MovieTranslationDTO('en', "$movieTitle (en)", 'http://placehold.it/480x320', 'Overview (en)'),
+            new MovieTranslationDTO('uk', "$movieTitle (uk)", 'http://placehold.it/480x320', 'Overview (uk)'),
+            new MovieTranslationDTO('ru', "$movieTitle (ru)", 'http://placehold.it/480x320', 'Overview (ru)'),
+        ]);
 
         $manager->persist($movie);
         $manager->flush();

@@ -6,56 +6,36 @@ namespace App\Movies\Service;
 use App\Movies\Entity\Movie;
 use App\Movies\Event\MovieSyncProcessor;
 use App\Movies\Repository\MovieRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Enqueue\Client\ProducerInterface;
 
 class TmdbSyncService
 {
-    private $logger;
     private $repository;
-    private $em;
     private $producer;
 
-    public function __construct(LoggerInterface $logger, MovieRepository $repository, EntityManagerInterface $entityManager, ProducerInterface $producer)
+    public function __construct(MovieRepository $repository, ProducerInterface $producer)
     {
-        $this->logger = $logger;
         $this->repository = $repository;
-        $this->em = $entityManager;
         $this->producer = $producer;
     }
 
+    /**
+     * @param array|Movie[] $movies
+     */
     public function syncMovies(array $movies): void
     {
         if (false === $this->isSupport(reset($movies))) {
-            $this->logger->error('Unsupported array of movies provided', [
-                'movies' => $movies
-            ]);
             throw new \InvalidArgumentException('Unsupported array of movies provided');
         }
 
-        // todo movies to update
         $moviesToSave = $this->getMoviesToSave($movies);
         $this->addMovies($moviesToSave);
     }
 
     private function addMovies(array $movies): void
     {
-        $this->logger->debug('START Send event ADD_MOVIES_TMDB');
         $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, serialize($movies));
-        $this->logger->debug('END Send event ADD_MOVIES_TMDB');
-        /*
-        // todo call method to add movies into the queue and then insert them into the database
-        foreach ($movies as $movie) {
-            $this->em->persist($movie);
-        }
-
-        $this->em->flush();*/
-    }
-
-    private function updateMovies(array $movies)
-    {
-        // todo call method to update movies in the database (use queue)
     }
 
     /**
@@ -73,9 +53,9 @@ class TmdbSyncService
         });
     }
 
-    private function getAlreadySavedMoviesIdsByTmdbIds(array $ids)
+    private function getAlreadySavedMoviesIdsByTmdbIds(array $tmdb_ids)
     {
-         return $this->repository->getTmdbIds($ids);
+         return $this->repository->getExistedTmdbIds($tmdb_ids);
     }
 
     private function isSupport($movie)
