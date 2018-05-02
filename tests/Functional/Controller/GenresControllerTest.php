@@ -7,9 +7,19 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GenresControllerTest extends WebTestCase
 {
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\Client
+     */
+    protected static $client;
+
+    public static function setUpBeforeClass()
+    {
+        self::$client = static::createClient();
+    }
+
     public function testGetAllGenresWithSpecifiedLanguage()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('GET', "/api/genres?language=ru");
 
@@ -28,7 +38,7 @@ class GenresControllerTest extends WebTestCase
 
     public function testGetAllGenresWithWrongLanguage()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('GET', "/api/genres?language=WRONG_LANGUAGE");
 
@@ -47,7 +57,7 @@ class GenresControllerTest extends WebTestCase
 
     public function testGetAllGenresWithoutLanguage()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('GET', "/api/genres");
 
@@ -66,7 +76,7 @@ class GenresControllerTest extends WebTestCase
 
     public function testCreateGenreWithInvalidData()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', "/api/genres", [
             'genre' => [
@@ -88,7 +98,7 @@ class GenresControllerTest extends WebTestCase
 
     public function testCreateGenreWithoutPermissions()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $userApiToken = UsersFixtures::TESTER_API_TOKEN; // api token with role ROLE_USER
         $client->request('POST', "/api/genres?api_token={$userApiToken}", [
@@ -113,7 +123,7 @@ class GenresControllerTest extends WebTestCase
 
     public function testCreateGenreSuccess()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $adminApiToken = UsersFixtures::ADMIN_API_TOKEN;
         $client->request('POST', "/api/genres?api_token={$adminApiToken}", [
@@ -141,7 +151,7 @@ class GenresControllerTest extends WebTestCase
 
     public function testUpdateGenreSuccess()
     {
-        $client = static::createClient();
+        $client = self::$client;
         $adminApiToken = UsersFixtures::ADMIN_API_TOKEN;
 
         $client->request('GET', "/api/genres");

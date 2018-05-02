@@ -23,12 +23,13 @@ class SearchService
 
     /**
      * @param string $query
-     * @param $locale
-     * @return Movie[]|array
+     * @param string $locale
+     * @return Movie[]
+     * @throws \Exception
      */
-    public function findByQuery(string $query, $locale): array
+    public function findByQuery(string $query, string $locale): array
     {
-        $movies = $this->repository->search($query);
+        $movies = $this->repository->findByTitle($query);
         if (reset($movies)) {
             return $movies;
         }

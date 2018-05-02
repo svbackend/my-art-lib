@@ -2,11 +2,25 @@
 
 namespace App\Tests\Functional\Controller;
 
+use App\Movies\DataFixtures\MoviesFixtures;
+use App\Movies\Entity\Movie;
+use App\Movies\Event\MovieSyncProcessor;
 use App\Users\DataFixtures\UsersFixtures;
+use Enqueue\Client\TraceableProducer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MoviesControllerTest extends WebTestCase
 {
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\Client
+     */
+    protected static $client;
+
+    public static function setUpBeforeClass()
+    {
+        self::$client = static::createClient();
+    }
+
     private static $genresIds;
 
     private static function getGenresIds()
@@ -15,7 +29,7 @@ class MoviesControllerTest extends WebTestCase
             return self::$genresIds;
         }
 
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('GET', "/api/genres");
         $genres = json_decode($client->getResponse()->getContent(), true);
@@ -30,14 +44,14 @@ class MoviesControllerTest extends WebTestCase
 
     public function testGetAll()
     {
-        $client = static::createClient();
+        $client = self::$client;
         $client->request('get', '/api/movies');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     public function testCreateMovieWithInvalidData()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', "/api/movies", [
             'movie' => [
@@ -79,7 +93,7 @@ class MoviesControllerTest extends WebTestCase
 
     public function testCreateMovieWithoutPermissions()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', "/api/movies", [
             'movie' => [
@@ -117,7 +131,7 @@ class MoviesControllerTest extends WebTestCase
 
     public function testCreateMovieSuccess()
     {
-        $client = static::createClient();
+        $client = self::$client;
         $apiToken = UsersFixtures::ADMIN_API_TOKEN;
 
         $client->request('POST', "/api/movies?api_token={$apiToken}", [
@@ -163,5 +177,65 @@ class MoviesControllerTest extends WebTestCase
         self::assertArrayHasKey('imdbId', $response);
         self::assertArrayHasKey('originalPosterUrl', $response);
         self::assertArrayHasKey('originalTitle', $response);
+    }
+
+    public function testFindExistingMovieInOurDatabase()
+    {
+        $client = self::$client;
+        $client->request('POST', "/api/movies/search", [
+            'query' => MoviesFixtures::MOVIE_TITLE, // Title of created movie
+        ]);
+
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent(), true);
+        self::assertTrue(count($response) > 0);
+        $movie = reset($response);
+        self::assertArrayHasKey('id', $movie);
+        self::assertArrayHasKey('originalTitle', $movie);
+        self::assertArrayHasKey('originalPosterUrl', $movie);
+        self::assertArrayHasKey('locale', $movie);
+        self::assertNotEmpty($movie['id']);
+    }
+
+    public function testFindMovieInTMDB()
+    {
+        $movieTitle = 'The 15:17 to Paris'; // Name of movie https://www.themoviedb.org/movie/453201-the-15-17-to-paris
+        $client = self::$client;
+        $client->request('POST', "/api/movies/search?language=ru", [
+            'query' => $movieTitle,
+        ]);
+
+        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent(), true);
+        self::assertTrue(count($response) > 0);
+        $movie = reset($response);
+        self::assertArrayHasKey('id', $movie);
+        self::assertArrayHasKey('originalTitle', $movie);
+        self::assertArrayHasKey('originalPosterUrl', $movie);
+        self::assertArrayHasKey('locale', $movie);
+
+        self::assertArrayHasKey('tmdb', $movie);
+        self::assertArrayHasKey('id', $movie['tmdb']);
+        self::assertNotEmpty($movie['tmdb']['id']); // use this id to open movie details page
+
+        self::assertEmpty($movie['id']); // because movie should not be saved instantly
+        self::assertEquals('ru', $movie['locale']);
+        self::assertEquals($movieTitle, $movie['originalTitle']);
+
+        // Test that movies will be saved in background
+        $traces = $this->getProducer($client)->getTopicTraces(MovieSyncProcessor::ADD_MOVIES_TMDB);
+        $this->assertCount(1, $traces);
+        $movies = unserialize($traces[0]['body']);
+        $movie = reset($movies);
+        self::assertInstanceOf(Movie::class, $movie);
+    }
+
+    /**
+     * @param $client
+     * @return TraceableProducer
+     */
+    private function getProducer($client)
+    {
+        return $client->getContainer()->get(TraceableProducer::class);
     }
 }

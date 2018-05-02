@@ -7,9 +7,19 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AuthControllerTest extends WebTestCase
 {
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\Client
+     */
+    protected static $client;
+
+    public static function setUpBeforeClass()
+    {
+        self::$client = static::createClient();
+    }
+    
     public function testGetAuthTokenWithIncorrectCredentials()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', '/api/auth/login', [
             'credentials' => [
@@ -27,7 +37,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testGetAuthTokenWithIncorrectPassword()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', '/api/auth/login', [
             'credentials' => [
@@ -45,7 +55,7 @@ class AuthControllerTest extends WebTestCase
 
     public function testGetAuthTokenValid()
     {
-        $client = static::createClient();
+        $client = self::$client;
 
         $client->request('POST', '/api/auth/login', [
             'credentials' => [

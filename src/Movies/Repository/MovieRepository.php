@@ -4,11 +4,7 @@ declare(strict_types=1);
 namespace App\Movies\Repository;
 
 use App\Movies\Entity\Movie;
-use App\Movies\Entity\MovieTranslations;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Expr\Expression;
-use Doctrine\Common\Collections\ExpressionBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -24,7 +20,7 @@ class MovieRepository extends ServiceEntityRepository
         parent::__construct($registry, Movie::class);
     }
 
-    public function search(string $query)
+    public function findByTitle(string $query)
     {
         $query = mb_strtolower($query);
         $result = $this->createQueryBuilder('m')
@@ -36,12 +32,18 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function getTmdbIds(array $ids)
+    /**
+     * This method will return array of already existed tmdb ids in our database
+     *
+     * @param array $tmdb_ids
+     * @return array
+     */
+    public function getExistedTmdbIds(array $tmdb_ids)
     {
         $result = $this->createQueryBuilder('m')
             ->select('m.tmdb.id')
             ->where('m.tmdb.id IN (:ids)')
-            ->setParameter('ids', $ids)
+            ->setParameter('ids', $tmdb_ids)
             ->getQuery()->getArrayResult();
 
         return $result;

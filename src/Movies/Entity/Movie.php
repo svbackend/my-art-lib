@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Movies\Entity;
 
 use App\Genres\Entity\Genre;
+use App\Movies\DTO\MovieDTO;
 use App\Translation\TranslatableTrait;
 use App\Translation\TranslatableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -60,7 +61,7 @@ class Movie implements TranslatableInterface
 
     /**
      * @Groups({"list", "view"})
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $originalPosterUrl;
 
@@ -95,13 +96,13 @@ class Movie implements TranslatableInterface
      */
     private $releaseDate;
 
-    public function __construct(string $originalTitle, string $posterUrl, MovieTMDB $tmdb)
+    public function __construct(MovieDTO $movieDTO, MovieTMDB $tmdb)
     {
         $this->translations = new ArrayCollection();
         $this->genres = new ArrayCollection();
 
-        $this->originalTitle = $originalTitle;
-        $this->originalPosterUrl = $posterUrl;
+        $this->originalTitle = $movieDTO->getOriginalTitle();
+        $this->originalPosterUrl = $movieDTO->getOriginalPosterUrl();
         $this->tmdb = $tmdb;
     }
 

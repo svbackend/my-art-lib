@@ -38,12 +38,15 @@ class MovieController extends BaseController
      * Get movies by title
      *
      * @Route("/api/movies/search", methods={"POST"})
-     *
+     * @param SearchRequest $request
+     * @param SearchService $searchService
+     * @throws \Exception
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getSearch(SearchRequest $request, SearchService $searchService, Request $currentRequest)
+    public function getSearch(SearchRequest $request, SearchService $searchService)
     {
         $query = $request->get('query');
-        $movies = $searchService->findByQuery($query, $currentRequest->getLocale());
+        $movies = $searchService->findByQuery($query, $this->currentRequest->getLocale());
 
         return $this->response($movies, 200, [], [
             'groups' => ['list']
@@ -58,6 +61,7 @@ class MovieController extends BaseController
      * @param CreateMovieRequest $request
      * @param MovieManageService $service
      * @param ValidatorInterface $validator
+     * @throws \Exception
      * @return Movie|\Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function postMovies(CreateMovieRequest $request, MovieManageService $service, ValidatorInterface $validator)

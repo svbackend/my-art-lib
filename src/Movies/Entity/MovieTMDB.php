@@ -29,52 +29,25 @@ class MovieTMDB
      */
     private $voteCount;
 
-    public function __construct(int $tmdbId)
+    public function __construct(int $tmdbId, ?float $voteAverage, ?int $voteCount)
     {
         $this->id = $tmdbId;
-    }
-
-    /**
-     * @param float $voteAverage
-     * @return MovieTMDB
-     */
-    public function setVoteAverage(float $voteAverage): self
-    {
         $this->voteAverage = $voteAverage;
-        return $this;
-    }
-
-    /**
-     * @param int $voteCount
-     * @return MovieTMDB
-     */
-    public function setVoteCount(int $voteCount): self
-    {
         $this->voteCount = $voteCount;
-        return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getVoteAverage()
+    public function getVoteAverage(): ?float
     {
-        return $this->voteAverage;
+        return (float)$this->voteAverage;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getVoteCount()
+    public function getVoteCount(): ?int
     {
-        return $this->voteCount;
+        return (int)$this->voteCount;
     }
 }

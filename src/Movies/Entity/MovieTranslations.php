@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Movies\Entity;
 
+use App\Movies\DTO\MovieTranslationDTO;
 use App\Translation\EntityTranslationInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -43,7 +44,7 @@ class MovieTranslations implements EntityTranslationInterface
     private $title;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"list", "view"})
      */
     private $posterUrl;
@@ -54,13 +55,13 @@ class MovieTranslations implements EntityTranslationInterface
      */
     private $overview;
 
-    public function __construct(Movie $movie, string $locale, string $title, string $posterUrl, string $overview)
+    public function __construct(Movie $movie, MovieTranslationDTO $movieTranslationDTO)
     {
         $this->movie = $movie;
-        $this->locale = $locale;
-        $this->title = $title;
-        $this->posterUrl = $posterUrl;
-        $this->overview = $overview;
+        $this->locale = $movieTranslationDTO->getLocale();
+        $this->title = $movieTranslationDTO->getTitle();
+        $this->posterUrl = $movieTranslationDTO->getPosterUrl();
+        $this->overview = $movieTranslationDTO->getOverview();
     }
 
     public function getId()

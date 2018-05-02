@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
+use App\Movies\DTO\MovieDTO;
+use App\Movies\DTO\MovieTranslationDTO;
 use App\Movies\Entity\Movie;
+use App\Movies\Entity\MovieTMDB;
 
 class TmdbNormalizerService
 {
@@ -18,33 +21,27 @@ class TmdbNormalizerService
     /**
      * @param array $movies
      * @param string $locale
+     * @throws \Exception
      * @return Movie[]
      */
     public function normalizeMoviesToObjects(array $movies, string $locale = 'en'): array
     {
         $normalizedMovies = [];
         foreach ($movies as $movie) {
-            $movieArray = [
-                'originalTitle' => $movie['original_title'],
-                'originalPosterUrl' => self::IMAGE_HOST . $movie['poster_path'],
-            ];
-            if (isset($movie['release_date'])) $movieArray['releaseDate'] = $movie['release_date'];
+            $movieDTO = new MovieDTO(
+                $movie['original_title'],
+                self::IMAGE_HOST . $movie['poster_path'],
+                null,
+                null,
+                null,
+                $movie['release_date'] ?? null
+            );
+            $tmdb = new MovieTMDB((int)$movie['id'], null, null);
+            $locale = isset($movie['locale']) ? substr($movie['locale'], 0, 2) : $locale; // "en-US" to "en"
 
-            $tmdbArray = [
-                'id' => $movie['id']
-            ];
-            if (isset($movie['vote_average'])) $tmdbArray['voteAverage'] = $movie['vote_average'];
-            if (isset($movie['vote_count'])) $tmdbArray['voteCount'] = $movie['vote_count'];
-
-            $translation = [
-                'locale' => $locale,
-                'title' => $movie['title'],
-                'posterUrl' => $movieArray['originalPosterUrl'],
-                'overview' => $movie['overview']
-            ];
-
-            $movieObject = $this->movieManageService->createMovie($movieArray, $tmdbArray, [], [$translation]);
-            $normalizedMovies[] = $movieObject;
+            $normalizedMovies[] = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [], [
+                new MovieTranslationDTO($locale, $movie['title'], $movie['overview'], null)
+            ]);
         }
 
         return $normalizedMovies;
