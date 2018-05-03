@@ -65,6 +65,7 @@ class MovieManageService
      * @param MovieTMDB $movieTMDB
      * @param Genre[] $genres
      * @param MovieTranslationDTO[] $translations
+     * @throws \ErrorException
      * @return Movie
      */
     public function createMovieByDTO(MovieDTO $movieDTO, MovieTMDB $movieTMDB, array $genres, array $translations): Movie

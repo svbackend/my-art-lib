@@ -31,29 +31,55 @@ class TmdbNormalizerService
     {
         $normalizedMovies = [];
         foreach ($movies as $movie) {
-            $movieDTO = new MovieDTO(
-                $movie['original_title'],
-                self::IMAGE_HOST . $movie['poster_path'],
-                null,
-                null,
-                null,
-                $movie['release_date'] ?? null
-            );
+            $movieDTO = $this->createMovieDTO($movie);
             $tmdb = new MovieTMDB((int)$movie['id'], null, null);
-            $locale = isset($movie['locale']) ? substr($movie['locale'], 0, 2) : $locale; // "en-US" to "en"
+            $locale = $this->getMovieLocale($movie, $locale);
 
             $movieObject = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [], [
-                new MovieTranslationDTO($locale, $movie['title'], $movie['overview'], null)
+                $this->createMovieTranslation($locale, $movie)
             ]);
-
-            $genres = $this->genreRepository->findByTmdbIds($movie['genre_ids']);
-            foreach ($genres as $genre) {
-                $movieObject->addGenre($genre);
-            }
+            $movieObject = $this->addGenres($movieObject, $movie['genre_ids']);
 
             $normalizedMovies[] = $movieObject;
         }
 
         return $normalizedMovies;
+    }
+
+    /**
+     * @param array $movie
+     * @return MovieDTO
+     * @throws \Exception
+     */
+    private function createMovieDTO(array $movie): MovieDTO
+    {
+        return new MovieDTO(
+            $movie['original_title'],
+            self::IMAGE_HOST . $movie['poster_path'],
+            null,
+            null,
+            null,
+            $movie['release_date'] ?? null
+        );
+    }
+
+    private function createMovieTranslation(string $locale, array $movie)
+    {
+        return new MovieTranslationDTO($locale, $movie['title'], $movie['overview'], null);
+    }
+
+    private function addGenres(Movie $movie, array $tmdbGenresIds): Movie
+    {
+        $genres = $this->genreRepository->findByTmdbIds($tmdbGenresIds);
+        foreach ($genres as $genre) {
+            $movie->addGenre($genre);
+        }
+
+        return $movie;
+    }
+
+    private function getMovieLocale(array $movie, string $defaultLocale)
+    {
+        return isset($movie['locale']) ? substr($movie['locale'], 0, 2) : $defaultLocale; // "en-US" to "en"
     }
 }
