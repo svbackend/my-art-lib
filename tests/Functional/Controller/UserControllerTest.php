@@ -157,6 +157,27 @@ class UserControllerTest extends WebTestCase
         $this->assertGreaterThanOrEqual(3, count($response['errors']));
     }
 
+    public function testPostUsersWithAlreadyRegisteredUsername()
+    {
+        $client = self::$client;
+        // change sensitivity to check that "UsErNaMe" and "username" are equal
+        $username = mb_strtoupper(UsersFixtures::TESTER_USERNAME);
+        $client->request('POST', '/api/users', [
+            'registration' => [
+                'username' => $username,
+                'password' => '123456789',
+                'email' => UsersFixtures::TESTER_EMAIL,
+            ]
+        ]);
+
+        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('errors', $response);
+        $this->assertArrayHasKey('message', $response);
+        $this->assertGreaterThanOrEqual(2, count($response['errors']));
+    }
+
     public function testGetAllUsersByAuthenticatedUser()
     {
         $client = self::$client;
@@ -182,8 +203,8 @@ class UserControllerTest extends WebTestCase
 
     public function testGetUserSuccess()
     {
-        $user = $this->getUser();
         $client = self::$client;
+        $user = $this->getUser();
         $api_token = UsersFixtures::TESTER_API_TOKEN;
 
         $client->request('GET', "/api/users/{$user['id']}?api_token={$api_token}");
@@ -196,8 +217,8 @@ class UserControllerTest extends WebTestCase
 
     public function testGetUserWithoutAuth()
     {
-        $user = $this->getUser();
         $client = self::$client;
+        $user = $this->getUser();
         $client->request('GET', "/api/users/{$user['id']}");
         self::assertEquals(401, $client->getResponse()->getStatusCode());
     }

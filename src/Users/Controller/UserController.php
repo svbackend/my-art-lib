@@ -95,9 +95,7 @@ class UserController extends BaseController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        /**
-         * @var $userRepository \App\Users\Repository\UserRepository
-         */
+        /** @var $userRepository \App\Users\Repository\UserRepository */
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         $user = $userRepository->find($id);
 
@@ -116,8 +114,6 @@ class UserController extends BaseController
      * Get all users
      *
      * @Route("/api/users", methods={"GET"})
-     *
-     * @return User[]
      */
     public function getAll()
     {
