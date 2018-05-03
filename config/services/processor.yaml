@@ -5,6 +5,6 @@ services:
         public: true
 
     app.async.movie_sync_processor:
-        class: App\Movies\Event\MovieSyncProcessor
+        class: App\Movies\EventListener\MovieSyncProcessor
         tags:
             - { name: enqueue.client.processor }

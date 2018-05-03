@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Movies\Event;
+namespace App\Movies\EventListener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Interop\Queue\PsrMessage;

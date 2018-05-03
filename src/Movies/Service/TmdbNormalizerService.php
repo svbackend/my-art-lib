@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
+use App\Genres\Repository\GenreRepository;
 use App\Movies\DTO\MovieDTO;
 use App\Movies\DTO\MovieTranslationDTO;
 use App\Movies\Entity\Movie;
@@ -11,11 +12,13 @@ use App\Movies\Entity\MovieTMDB;
 class TmdbNormalizerService
 {
     private $movieManageService;
+    private $genreRepository;
     private const IMAGE_HOST = 'https://image.tmdb.org/t/p/original';
 
-    public function __construct(MovieManageService $movieManageService)
+    public function __construct(MovieManageService $movieManageService, GenreRepository $genreRepository)
     {
         $this->movieManageService = $movieManageService;
+        $this->genreRepository = $genreRepository;
     }
 
     /**
@@ -39,9 +42,16 @@ class TmdbNormalizerService
             $tmdb = new MovieTMDB((int)$movie['id'], null, null);
             $locale = isset($movie['locale']) ? substr($movie['locale'], 0, 2) : $locale; // "en-US" to "en"
 
-            $normalizedMovies[] = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [], [
+            $movieObject = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [], [
                 new MovieTranslationDTO($locale, $movie['title'], $movie['overview'], null)
             ]);
+
+            $genres = $this->genreRepository->findByTmdbIds($movie['genre_ids']);
+            foreach ($genres as $genre) {
+                $movieObject->addGenre($genre);
+            }
+
+            $normalizedMovies[] = $movieObject;
         }
 
         return $normalizedMovies;

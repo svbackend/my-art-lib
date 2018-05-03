@@ -4,9 +4,8 @@ declare(strict_types=1);
 namespace App\Movies\Service;
 
 use App\Movies\Entity\Movie;
-use App\Movies\Event\MovieSyncProcessor;
+use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\Repository\MovieRepository;
-use Psr\Log\LoggerInterface;
 use Enqueue\Client\ProducerInterface;
 
 class TmdbSyncService
