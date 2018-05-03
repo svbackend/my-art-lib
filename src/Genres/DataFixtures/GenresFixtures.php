@@ -9,15 +9,17 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class GenresFixtures extends Fixture
 {
+    const GENRE_TMDB_ID = 18;
+
     public function load(ObjectManager $manager): void
     {
-        $comedy = new Genre();
-        $comedy
-            ->addTranslation(new GenreTranslations($comedy, 'en', 'Comedy'))
-            ->addTranslation(new GenreTranslations($comedy, 'uk', 'Комедія'))
-            ->addTranslation(new GenreTranslations($comedy, 'ru', 'Комедия'));
+        $drama = new Genre(self::GENRE_TMDB_ID); // https://www.themoviedb.org/genre/18-drama/movie
+        $drama
+            ->addTranslation(new GenreTranslations($drama, 'en', 'Drama'))
+            ->addTranslation(new GenreTranslations($drama, 'uk', 'Драма'))
+            ->addTranslation(new GenreTranslations($drama, 'ru', 'Драма'));
 
-        $manager->persist($comedy);
+        $manager->persist($drama);
         $manager->flush();
     }
 }

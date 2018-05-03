@@ -19,4 +19,13 @@ class GenreRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Genre::class);
     }
+
+    public function findByTmdbIds(array $ids)
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.tmdb_id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
 }

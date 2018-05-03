@@ -2,9 +2,10 @@
 
 namespace App\Tests\Functional\Controller;
 
+use App\Genres\DataFixtures\GenresFixtures;
 use App\Movies\DataFixtures\MoviesFixtures;
 use App\Movies\Entity\Movie;
-use App\Movies\Event\MovieSyncProcessor;
+use App\Movies\EventListener\MovieSyncProcessor;
 use App\Users\DataFixtures\UsersFixtures;
 use Enqueue\Client\TraceableProducer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -199,6 +200,10 @@ class MoviesControllerTest extends WebTestCase
         self::assertNotEmpty($movie['id']);
     }
 
+    /**
+     * This movie (The 15:17 to Paris) has DRAMA genre as in our GenresFixtures
+     * Test that movie will be saved correctly with all related attributes like genres/translations/tmdb data etc.
+     */
     public function testFindMovieInTMDB()
     {
         $this->checkIsApiKeyProvided();
@@ -231,7 +236,11 @@ class MoviesControllerTest extends WebTestCase
         $this->assertCount(1, $traces);
         $movies = unserialize($traces[0]['body']);
         $movie = reset($movies);
+        /** @var $movie Movie */
         self::assertInstanceOf(Movie::class, $movie);
+        $genres = $movie->getGenres();
+        $genre = reset($genres);
+        self::assertEquals(GenresFixtures::GENRE_TMDB_ID, $genre->getTmdbId());
     }
 
     /**

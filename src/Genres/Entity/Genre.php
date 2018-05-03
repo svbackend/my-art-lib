@@ -30,6 +30,12 @@ class Genre implements TranslatableInterface
     private $id;
 
     /**
+     * @ORM\Column(type="integer", options={"default": 0})
+     * @Groups({"ROLE_MODER", "ROLE_ADMIN"})
+     */
+    private $tmdb_id;
+
+    /**
      * @var $translations GenreTranslations[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Genres\Entity\GenreTranslations", mappedBy="genre", cascade={"persist", "remove"})
      * @Assert\Valid(traverse=true)
@@ -37,13 +43,19 @@ class Genre implements TranslatableInterface
      */
     private $translations;
 
-    public function __construct()
+    public function __construct(?int $tmdb_id = 0)
     {
         $this->translations = new ArrayCollection();
+        $this->tmdb_id = $tmdb_id ?? 0;
     }
 
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getTmdbId()
+    {
+        return $this->tmdb_id;
     }
 }
