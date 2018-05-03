@@ -10,6 +10,7 @@ use App\Users\Request\AuthUserRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class AuthService
@@ -47,7 +48,7 @@ class AuthService
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function getTokenByRequest(\App\Users\Request\AuthUserRequest $request): ApiToken
+    public function getTokenByRequest(AuthUserRequest $request): ApiToken
     {
         $credentials = $request->get('credentials');
 
@@ -84,17 +85,12 @@ class AuthService
             );
         }
 
-        if ($this->isPasswordValid($password, $user) === false) {
+        if ($this->passwordEncoder->isPasswordValid($user, $password) === false) {
             throw new BadCredentialsException(
                 $this->translator->trans('wrong_password', [], 'users')
             );
         }
 
         return $user;
-    }
-
-    private function isPasswordValid(string $password, User $user): bool
-    {
-        return $user->isPasswordValid($password, $this->passwordEncoder);
     }
 }

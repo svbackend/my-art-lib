@@ -41,10 +41,17 @@ class ConfirmationToken
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @var \DateTimeImmutable
+     * @var \DateTimeImmutable|\DateTimeInterface
      */
     private $expires_at;
 
+    /**
+     * ConfirmationToken constructor.
+     * @param \App\Users\Entity\User $user
+     * @param $type
+     * @param \DateTimeInterface|null $expires_at
+     * @throws \Exception
+     */
     public function __construct(User $user, $type, \DateTimeInterface $expires_at = null)
     {
         if (in_array($type, $this->getValidTypes()) === false) {
@@ -102,6 +109,10 @@ class ConfirmationToken
         return $this->type;
     }
 
+    /**
+     * @return bool
+     * @throws \Exception
+     */
     public function isValid(): bool
     {
         if (!$this->expires_at) {

@@ -7,6 +7,7 @@ use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 
 class UsersFixtures extends Fixture
 {
@@ -21,6 +22,10 @@ class UsersFixtures extends Fixture
     const ADMIN_PASSWORD = '12345678';
     const ADMIN_API_TOKEN = 'admin_api_token';
 
+    /**
+     * @param ObjectManager $manager
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function load(ObjectManager $manager): void
     {
         $user = $this->createUser();
@@ -30,6 +35,11 @@ class UsersFixtures extends Fixture
         $manager->persist($admin);
         $manager->flush();
 
+        if ($manager instanceof EntityManager === false) {
+            throw new \InvalidArgumentException('UsersFixtures $manager should be instance of EntityManager');
+        }
+
+        /** @var $manager EntityManager */
         // Tester
         $this->createTestApiToken($user, self::TESTER_API_TOKEN, $manager);
         $this->createEmailConfirmationToken($user, self::TESTER_EMAIL_CONFIRMATION_TOKEN, $manager);
@@ -65,12 +75,24 @@ class UsersFixtures extends Fixture
         return $user;
     }
 
-    private function createTestApiToken(User $user, string $token, ObjectManager $manager): void
+    /**
+     * @param User $user
+     * @param string $token
+     * @param EntityManager $manager
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function createTestApiToken(User $user, string $token, EntityManager $manager): void
     {
         $manager->getConnection()->exec("INSERT INTO users_api_tokens (id, user_id, token) VALUES (NEXTVAL('users_api_tokens_id_seq'), {$user->getId()}, '{$token}');");
     }
 
-    private function createEmailConfirmationToken(User $user, string $token, ObjectManager $manager): void
+    /**
+     * @param User $user
+     * @param string $token
+     * @param EntityManager $manager
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function createEmailConfirmationToken(User $user, string $token, EntityManager $manager): void
     {
         $type = ConfirmationToken::TYPE_CONFIRM_EMAIl;
         $manager->getConnection()->exec("INSERT INTO users_confirmation_tokens (id, user_id, token, type) VALUES (NEXTVAL('users_confirmation_tokens_id_seq'), {$user->getId()}, '{$token}', '{$type}');");

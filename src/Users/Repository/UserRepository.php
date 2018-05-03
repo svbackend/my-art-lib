@@ -22,13 +22,35 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
         parent::__construct($registry, User::class);
     }
 
+    /**
+     * @param string $username
+     * @return User|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function loadUserByUsername($username): ?User
     {
+        $username = mb_strtolower($username);
         return $this->createQueryBuilder('u')
-            ->where('u.username = :username OR u.email = :email')
+            ->where('LOWER(u.username) = :username OR LOWER(u.email) = :email')
             ->setParameter('username', $username)
             ->setParameter('email', $username)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * @param array $criteria
+     * @return mixed
+     */
+    public function isUserExists(array $criteria)
+    {
+        $field = key($criteria);
+        $value = mb_strtolower(reset($criteria));
+
+        return $this->createQueryBuilder('u')
+            ->where("LOWER(u.{$field}) = :value")
+            ->setParameter('value', $value)
+            ->getQuery()
+            ->getResult();
     }
 }

@@ -25,7 +25,7 @@ class LocaleListener implements EventSubscriberInterface
         $request->setLocale($locale);
     }
 
-    static public function getSubscribedEvents()
+    public static function getSubscribedEvents()
     {
         return [
             // must be registered before the default Locale listener

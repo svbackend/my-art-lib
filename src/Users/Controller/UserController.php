@@ -41,7 +41,9 @@ class UserController extends BaseController
             return $request->getErrorResponse($errors);
         }
 
-        $this->getDoctrine()->getManager()->flush();
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($registeredUser);
+        $em->flush();
 
         $userRegisteredEvent = new UserRegisteredEvent($registeredUser);
         $dispatcher->dispatch(UserRegisteredEvent::NAME, $userRegisteredEvent);

@@ -8,11 +8,18 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Trait TranslatableTrait
  * @package App\Translation
  * @property ArrayCollection $translations
+ * @property int|null $id
  */
 trait TranslatableTrait
 {
     private $isTranslationsMappedByLocale = false;
 
+    /**
+     * @param array $translations
+     * @param callable $add
+     * @param callable|null $update
+     * @throws \ErrorException
+     */
     public function updateTranslations(array $translations, callable $add, callable $update = null)
     {
         foreach ($translations as $translation) {
@@ -52,6 +59,12 @@ trait TranslatableTrait
         return $this->translations->toArray();
     }
 
+    /**
+     * @param string $locale
+     * @param bool $useFallbackLocale
+     * @return EntityTranslationInterface|null
+     * @throws \ErrorException
+     */
     public function getTranslation(string $locale, bool $useFallbackLocale = true): ?EntityTranslationInterface
     {
         if ($this->isTranslationsMappedByLocale === false) {
@@ -67,7 +80,11 @@ trait TranslatableTrait
         return $translation;
     }
 
-    private function getFallbackTranslation()
+    /**
+     * @return mixed
+     * @throws \ErrorException
+     */
+    private function getFallbackTranslation(): EntityTranslationInterface
     {
         if (null === $translation = $this->translations->first()) {
             throw new \ErrorException(sprintf('You are trying to get translation for %s with ID %s but there\'s no translations found.', self::class, $this->id));

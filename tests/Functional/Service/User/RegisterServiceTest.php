@@ -34,22 +34,25 @@ class RegisterServiceTest extends KernelTestCase
     protected function setUp()
     {
         $kernel = self::bootKernel();
-        $this->registerUserRequest = $this->createMock(\App\Users\Request\RegisterUserRequest::class);
+        $this->registerUserRequest = $this->createMock(RegisterUserRequest::class);
         $this->entityManager = $kernel->getContainer()->get('doctrine')->getManager();
     }
 
     public function testSuccessRegister()
     {
-        $registerService = new RegisterService($this->entityManager);
+        $registerService = new RegisterService();
         $this->registerUserRequest->method('get')->with('registration')->willReturn([
             'username' => 'registerServiceTester',
             'password' => 'registerServiceTester',
             'email' => 'register@Service.Tester',
         ]);
-        $registerServiceResult = $registerService->registerByRequest($this->registerUserRequest);
+        $registeredUser = $registerService->registerByRequest($this->registerUserRequest);
 
-        $this->assertInstanceOf(User::class, $registerServiceResult);
-        $this->assertNotEmpty($registerServiceResult->getId(), 'User Id not provided.');
+        $this->assertInstanceOf(User::class, $registeredUser);
+        $this->assertNotEmpty($registeredUser->getUsername(), 'Username not provided.');
+        $this->assertNotEmpty($registeredUser->getEmail(), 'Email not provided.');
+        $this->assertEquals('registerServiceTester', $registeredUser->getUsername());
+        $this->assertEquals('register@Service.Tester', $registeredUser->getEmail());
     }
 
     /**

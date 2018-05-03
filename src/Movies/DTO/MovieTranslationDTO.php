@@ -5,7 +5,10 @@ namespace App\Movies\DTO;
 
 class MovieTranslationDTO
 {
-    private $locale, $title, $overview, $posterUrl;
+    private $locale;
+    private $title;
+    private $overview;
+    private $posterUrl;
 
     public function __construct(string $locale, string $title, ?string $overview, ?string $posterUrl)
     {

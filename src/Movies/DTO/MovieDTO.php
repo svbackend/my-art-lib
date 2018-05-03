@@ -5,7 +5,12 @@ namespace App\Movies\DTO;
 
 class MovieDTO
 {
-    private $originalTitle, $originalPosterUrl, $imdbId, $budget, $runtime, $releaseDate;
+    private $originalTitle;
+    private $originalPosterUrl;
+    private $imdbId;
+    private $budget;
+    private $runtime;
+    private $releaseDate;
 
     /**
      * MovieDTO constructor.
