@@ -48,4 +48,13 @@ class MovieRepository extends ServiceEntityRepository
 
         return $result;
     }
+
+    public function findOneByIdOrTmdbId(?int $id = null, ?int $tmdb_id = null)
+    {
+        if ($id === null && $tmdb_id === null) {
+            throw new \InvalidArgumentException('Movie ID or TMDB ID should be provided');
+        }
+
+        return $id ? $this->find($id) : $this->findOneBy(['tmdb.id' => $tmdb_id]);
+    }
 }

@@ -32,13 +32,15 @@ class TmdbNormalizerService
         $normalizedMovies = [];
         foreach ($movies as $movie) {
             $movieDTO = $this->createMovieDTO($movie);
-            $tmdb = new MovieTMDB((int)$movie['id'], null, null);
+            $tmdb = $this->createMovieTmdbDTO($movie);
             $locale = $this->getMovieLocale($movie, $locale);
 
             $movieObject = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [], [
                 $this->createMovieTranslation($locale, $movie)
             ]);
-            $movieObject = $this->addGenres($movieObject, $movie['genre_ids']);
+
+            $genresIds = $this->getGenresIds($movie);
+            $movieObject = $this->addGenres($movieObject, $genresIds);
 
             $normalizedMovies[] = $movieObject;
         }
@@ -56,10 +58,19 @@ class TmdbNormalizerService
         return new MovieDTO(
             $movie['original_title'],
             self::IMAGE_HOST . $movie['poster_path'],
-            null,
-            null,
-            null,
+            $movie['imdb_id'] ?? null,
+            (int)$movie['budget'] ?? null,
+            (int)$movie['runtime'] ?? null,
             $movie['release_date'] ?? null
+        );
+    }
+
+    private function createMovieTmdbDTO(array $movie): MovieTMDB
+    {
+        return new MovieTMDB(
+            (int)$movie['id'],
+            (float)$movie['vote_average'] ?? null,
+            (int)$movie['vote_count'] ?? null
         );
     }
 
@@ -76,6 +87,17 @@ class TmdbNormalizerService
         }
 
         return $movie;
+    }
+
+    private function getGenresIds(array $movie): array
+    {
+        if (isset($movie['genres'])) {
+            $movie['genre_ids'] = array_map(function ($genre) {
+                return $genre['id'];
+            }, $movie['genres']);
+        }
+
+        return $movie['genre_ids'] ?? [];
     }
 
     private function getMovieLocale(array $movie, string $defaultLocale)

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
+use App\Movies\Exception\TmdbMovieNotFoundException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
@@ -34,6 +35,28 @@ class TmdbSearchService
         return $movies;
     }
 
+    /**
+     * @param int $tmdb_id
+     * @param string $locale
+     * @return array
+     * @throws TmdbMovieNotFoundException
+     */
+    public function findMovieById(int $tmdb_id, string $locale = 'en'): array
+    {
+        $movie = $this->request("/movie/{$tmdb_id}", 'GET', [
+            'query' => [
+                'api_key' => $this->apiKey,
+                'language' => $locale,
+            ],
+        ]);
+
+        if (isset($movie['status_code']) && $movie['status_code'] == 34) {
+            throw new TmdbMovieNotFoundException();
+        }
+
+        return $movie;
+    }
+
     private function request(string $url, string $method = 'GET', array $params = []): array
     {
         $url = self::ApiUrl . $url;
@@ -55,7 +78,14 @@ class TmdbSearchService
                 'exceptionMessage' => $exception->getMessage(),
                 'exceptionCode' => $exception->getCode(),
             ]);
+
             $response = [];
+
+            if ($exception->getCode() == 404) {
+                $response = [
+                    'status_code' => 34
+                ];
+            }
         }
 
         return $response;

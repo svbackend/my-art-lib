@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Users\Entity;
 
+use App\Movies\Entity\UserWatchedMovie;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;

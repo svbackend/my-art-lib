@@ -103,10 +103,14 @@ class Movie implements TranslatableInterface
 
         $this->originalTitle = $movieDTO->getOriginalTitle();
         $this->originalPosterUrl = $movieDTO->getOriginalPosterUrl();
+        $this->setImdbId($movieDTO->getImdbId());
+        $this->setBudget($movieDTO->getBudget());
+        $this->setRuntime($movieDTO->getRuntime());
+        $this->setReleaseDate($movieDTO->getReleaseDate());
         $this->tmdb = $tmdb;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -131,7 +135,7 @@ class Movie implements TranslatableInterface
      * @param string $imdbId
      * @return Movie
      */
-    public function setImdbId(string $imdbId)
+    private function setImdbId(?string $imdbId)
     {
         $this->imdbId = $imdbId;
         return $this;
@@ -141,7 +145,7 @@ class Movie implements TranslatableInterface
      * @param int $runtime
      * @return Movie
      */
-    public function setRuntime(int $runtime)
+    private function setRuntime(int $runtime)
     {
         $this->runtime = $runtime;
         return $this;
@@ -151,7 +155,7 @@ class Movie implements TranslatableInterface
      * @param int $budget
      * @return Movie
      */
-    public function setBudget(int $budget)
+    private function setBudget(int $budget)
     {
         $this->budget = $budget;
         return $this;
@@ -161,7 +165,7 @@ class Movie implements TranslatableInterface
      * @param \DateTimeInterface $releaseDate
      * @return Movie
      */
-    public function setReleaseDate(\DateTimeInterface $releaseDate)
+    private function setReleaseDate(\DateTimeInterface $releaseDate)
     {
         $this->releaseDate = $releaseDate;
         return $this;

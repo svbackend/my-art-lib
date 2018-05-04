@@ -41,9 +41,9 @@ class MoviesFixtures extends Fixture
             ->addTranslation(new GenreTranslations($testGenre, 'ru', 'Test Genre (ru)'));
 
         $movie = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [$testGenre], [
-            new MovieTranslationDTO('en', "$movieTitle (en)", 'http://placehold.it/480x320', 'Overview (en)'),
-            new MovieTranslationDTO('uk', "$movieTitle (uk)", 'http://placehold.it/480x320', 'Overview (uk)'),
-            new MovieTranslationDTO('ru', "$movieTitle (ru)", 'http://placehold.it/480x320', 'Overview (ru)'),
+            new MovieTranslationDTO('en', "$movieTitle (en)", 'Overview (en)', 'http://placehold.it/480x320'),
+            new MovieTranslationDTO('uk', "$movieTitle (uk)", 'Overview (uk)', 'http://placehold.it/480x320'),
+            new MovieTranslationDTO('ru', "$movieTitle (ru)", 'Overview (ru)', 'http://placehold.it/480x320'),
         ]);
 
         $manager->persist($movie);
