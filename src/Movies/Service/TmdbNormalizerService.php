@@ -59,9 +59,9 @@ class TmdbNormalizerService
             $movie['original_title'],
             self::IMAGE_HOST . $movie['poster_path'],
             $movie['imdb_id'] ?? null,
-            (int)$movie['budget'] ?? null,
-            (int)$movie['runtime'] ?? null,
-            $movie['release_date'] ?? null
+            isset($movie['budget']) ? (int)$movie['budget'] : null,
+            isset($movie['runtime']) ? (int)$movie['runtime'] : null,
+            isset($movie['release_date']) ? $movie['release_date'] : null
         );
     }
 
@@ -69,8 +69,8 @@ class TmdbNormalizerService
     {
         return new MovieTMDB(
             (int)$movie['id'],
-            (float)$movie['vote_average'] ?? null,
-            (int)$movie['vote_count'] ?? null
+            isset($movie['vote_average']) ? (float)$movie['vote_average'] : null,
+            isset($movie['vote_count']) ? (int)$movie['vote_count'] : null
         );
     }
 
