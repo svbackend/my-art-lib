@@ -53,7 +53,7 @@ class WatchedMovie
         $this->watchedAt = $watchedAt;
 
         if ($vote !== null) {
-            $this->vote = $vote > 0.0 ? $vote : null;
+            $this->vote = $vote > 0.0 ? (float)$vote : null;
         }
     }
 
@@ -69,7 +69,7 @@ class WatchedMovie
 
     public function getVote(): ?float
     {
-        return $this->vote;
+        return (float)$this->vote;
     }
 
     public function getAddedAt(): ?\DateTimeInterface

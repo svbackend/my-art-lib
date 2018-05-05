@@ -12,10 +12,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass="App\Movies\Repository\WatchedMoviesRepository")
+ * @ORM\Entity(repositoryClass="App\Users\Repository\WatchedMovieRepository")
  * @ORM\Table(name="users_watched_movies",
  *     uniqueConstraints={
- *      @ORM\UniqueConstraint(name="idx_UserWatchedMovies_user_id_movie_id", columns={"user_id", "movie_id"})
+ *      @ORM\UniqueConstraint(name="idx_UserWatchedMovie_user_id_movie_id", columns={"user_id", "movie_id"})
  *     })
  */
 class UserWatchedMovie extends WatchedMovie
@@ -46,6 +46,11 @@ class UserWatchedMovie extends WatchedMovie
     {
         $this->user = $user;
         parent::__construct($movie, $vote, $watchedAt);
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     public function getUser(): ?User

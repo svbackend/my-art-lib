@@ -47,6 +47,7 @@ class MoviesFixtures extends Fixture
             new MovieTranslationDTO('ru', "$movieTitle (ru)", 'Overview (ru)', 'http://placehold.it/480x320'),
         ]);
 
+        $manager->persist($testGenre);
         $manager->persist($movie);
         $manager->flush();
     }

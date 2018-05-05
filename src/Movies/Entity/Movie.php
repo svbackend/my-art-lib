@@ -42,7 +42,7 @@ class Movie implements TranslatableInterface
 
     /**
      * @var $genres Genre[]|ArrayCollection
-     * @ORM\ManyToMany(targetEntity="App\Genres\Entity\Genre", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="App\Genres\Entity\Genre")
      * @ORM\JoinTable(name="movies_genres",
      *      joinColumns={@ORM\JoinColumn(name="movie_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="genre_id", referencedColumnName="id")}
@@ -121,6 +121,15 @@ class Movie implements TranslatableInterface
         return $this;
     }
 
+    public function removeAllGenres()
+    {
+        $this->genres->clear();
+        return $this;
+    }
+
+    /**
+     * @return Genre[]|array
+     */
     public function getGenres()
     {
         return $this->genres->toArray();
