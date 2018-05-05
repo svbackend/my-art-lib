@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Users\Entity;
+namespace App\Guests\Entity;
 
 use App\Users\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ORM\Entity(repositoryClass="App\Users\Repository\GuestRepository")
+ * @ORM\Entity(repositoryClass="App\Guests\Repository\GuestRepository")
  * @ORM\Table(name="guest_sessions")
  * @UniqueEntity(fields="token", message="This token already taken")
  */
@@ -30,7 +30,7 @@ class GuestSession
      * @var \DateTimeInterface
      * @ORM\Column(type="date")
      */
-    private $expires_at;
+    private $expiresAt;
 
     /**
      * GuestSession constructor.
@@ -39,7 +39,7 @@ class GuestSession
     public function __construct()
     {
         $this->token = bin2hex(openssl_random_pseudo_bytes(32));
-        $this->expires_at = new \DateTimeImmutable('+1 week');
+        $this->expiresAt = new \DateTimeImmutable('+1 week');
     }
 
     public function getId()

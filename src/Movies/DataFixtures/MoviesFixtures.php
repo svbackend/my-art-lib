@@ -16,6 +16,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 class MoviesFixtures extends Fixture
 {
     const MOVIE_TITLE = 'zMs1Os7qwEqWxXvb';
+    const MOVIE_TMDB_ID = 1;
 
     private $movieManageService;
 
@@ -32,7 +33,7 @@ class MoviesFixtures extends Fixture
     {
         $movieTitle = self::MOVIE_TITLE;
         $movieDTO = new MovieDTO($movieTitle, 'http://placehold.it/320x480', 'imdb-test-id', 60000, 100, '-10 years');
-        $tmdb = new MovieTMDB(1, 7.8, 100);
+        $tmdb = new MovieTMDB(self::MOVIE_TMDB_ID, 7.8, 100);
 
         $testGenre = new Genre();
         $testGenre

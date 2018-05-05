@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Users\Controller;
+namespace App\Guests\Controller;
 
 use App\Controller\BaseController;
+use App\Guests\Entity\GuestSession;
 use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
 use App\Users\Entity\UserWatchedMovie;
@@ -20,19 +21,30 @@ use Symfony\Component\Routing\Annotation\Route;
 class WatchedMovieController extends BaseController
 {
     /**
-     * @Route("/api/users/watchedMovies", methods={"POST"});
+     * @Route("/api/guests/{token}/watchedMovies", methods={"POST"});
+     * @param $token
      * @param AddWatchedMovieRequest $addWatchedMovieRequest
      * @param Request $request
      * @param WatchedMovieService $watchedMovieService
      * @return JsonResponse
-     * @throws \Exception|NotFoundHttpException
+     * @throws \Exception
      */
-    public function postWatchedMovies(AddWatchedMovieRequest $addWatchedMovieRequest, Request $request, WatchedMovieService $watchedMovieService)
+    public function postWatchedMovies($token, AddWatchedMovieRequest $addWatchedMovieRequest, Request $request, WatchedMovieService $watchedMovieService)
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $em = $this->getDoctrine()->getManager();
+        $guestSessionRepository = $em->getRepository(GuestSession::class);
+
+        /** @var $guestSession GuestSession|null */
+        $guestSession = $guestSessionRepository->findOneBy([
+            'token' => $token
+        ]);
+
+        if ($guestSession === null) {
+            throw new NotFoundHttpException('Guest session not found by provided token');
+        }
 
         $watchedMovieDTO = $addWatchedMovieRequest->getWatchedMovieDTO();
-        $isMovieAdded = $watchedMovieService->addUserWatchedMovie($this->getUser(), $watchedMovieDTO, $request->getLocale());
+        $isMovieAdded = $watchedMovieService->addGuestWatchedMovie($guestSession, $watchedMovieDTO, $request->getLocale());
 
         if ($isMovieAdded === false) {
             throw new NotFoundHttpException('Movie not found by provided ID / TMDB ID');

@@ -3,6 +3,9 @@
 namespace App\Movies\EventListener;
 
 use App\Movies\Entity\Movie;
+use App\Movies\Entity\WatchedMovie;
+use App\Guests\Entity\GuestSession;
+use App\Guests\Entity\GuestWatchedMovie;
 use App\Users\Entity\UserWatchedMovie;
 use App\Users\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,25 +38,52 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
          */
         foreach ($watchedMovies as $watchedMovie) {
             $movie = $watchedMovie->getMovie();
+            $this->persistMovie($watchedMovie, $movie);
 
-            // Because after unserialization doctrine think that User is new and trying to save it
-            $user = $this->em->find(User::class, $watchedMovie->getUser()->getId());
-            $watchedMovie->updateUser($user);
-
-            // If movie not saved yet
-            if ($movie->getId() === null) {
-                $this->em->persist($movie);
-            } else {
-                $movie = $this->em->find(Movie::class, $watchedMovie->getMovie()->getId());
-                $watchedMovie->updateMovie($movie);
+            if ($watchedMovie instanceof UserWatchedMovie) {
+                $this->persistUserWatchedMovie($watchedMovie);
             }
 
-            $this->em->persist($watchedMovie);
+            if ($watchedMovie instanceof GuestWatchedMovie) {
+                $this->persistGuestWatchedMovie($watchedMovie);
+            }
         }
 
         $this->em->flush();
 
         return self::ACK;
+    }
+
+    private function persistUserWatchedMovie(UserWatchedMovie $userWatchedMovie)
+    {
+        // Because after unserialization doctrine think that User is new and trying to save it
+        $user = $this->em->find(User::class, $userWatchedMovie->getUser()->getId());
+        /** @var $user User */
+        $userWatchedMovie->updateUser($user);
+
+        $this->em->persist($userWatchedMovie);
+    }
+
+    private function persistGuestWatchedMovie(GuestWatchedMovie $guestWatchedMovie)
+    {
+        $guestSession = $this->em->find(GuestSession::class, $guestWatchedMovie->getGuestSession()->getId());
+        /** @var $guestSession GuestSession */
+        $guestWatchedMovie->setGuestSession($guestSession);
+
+        $this->em->persist($guestWatchedMovie);
+    }
+
+    private function persistMovie(WatchedMovie $watchedMovie, Movie $movie)
+    {
+        // If movie not saved yet
+        if ($movie->getId() === null) {
+            $this->em->persist($movie);
+        } else {
+            // But if movie already saved (almost impossible) then just load it from db
+            $movie = $this->em->find(Movie::class, $movie->getId());
+            /** @var $movie Movie */
+            $watchedMovie->updateMovie($movie);
+        }
     }
 
     public static function getSubscribedTopics()

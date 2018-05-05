@@ -1,3 +1,6 @@
+guests:
+    resource: ../src/Guests/Controller
+    type: annotation
 users:
     resource: ../src/Users/Controller
     type: annotation
@@ -8,11 +11,7 @@ movies:
     resource: ../src/Movies/Controller
     type: annotation
 
+# Confirm email route used for generating url to confirmation url in email letters
 confirm_email:
     path: /api/confirmEmail
     methods: GET
-
-app.swagger_ui:
-    path: /api/doc
-    methods: GET
-    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Users\Entity;
+namespace App\Guests\Entity;
 
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\WatchedMovie;
@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass="App\Movies\Repository\GuestWatchedMovieRepository")
+ * @ORM\Entity(repositoryClass="App\Guests\Repository\GuestWatchedMovieRepository")
  * @ORM\Table(name="guests_watched_movies",
  *     uniqueConstraints={
  *      @ORM\UniqueConstraint(name="idx_GuestWatchedMovie_guest_session_id_movie_id", columns={"guest_session_id", "movie_id"})
@@ -29,7 +29,7 @@ class GuestWatchedMovie extends WatchedMovie
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Users\Entity\GuestSession")
+     * @ORM\ManyToOne(targetEntity="App\Guests\Entity\GuestSession")
      * @ORM\JoinColumn(nullable=false)
      */
     private $guestSession;
