@@ -5,7 +5,7 @@ namespace App\Users\Controller;
 use App\Controller\BaseController;
 use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
-use App\Movies\Entity\UserWatchedMovie;
+use App\Users\Entity\UserWatchedMovie;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\SearchService;
 use App\Users\Request\AddWatchedMovieRequest;

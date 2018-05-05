@@ -5,7 +5,7 @@ namespace App\Users\Service;
 
 use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
-use App\Movies\Entity\UserWatchedMovie;
+use App\Users\Entity\UserWatchedMovie;
 use App\Movies\EventListener\WatchedMovieProcessor;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\SearchService;

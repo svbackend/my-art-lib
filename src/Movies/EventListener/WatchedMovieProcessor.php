@@ -3,7 +3,7 @@
 namespace App\Movies\EventListener;
 
 use App\Movies\Entity\Movie;
-use App\Movies\Entity\UserWatchedMovie;
+use App\Users\Entity\UserWatchedMovie;
 use App\Users\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Interop\Queue\PsrMessage;
