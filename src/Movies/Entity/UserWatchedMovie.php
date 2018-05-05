@@ -83,9 +83,14 @@ class UserWatchedMovie
         return $this->user;
     }
 
-    public function setUser(User $user)
+    public function updateUser(User $user)
     {
         $this->user = $user;
+    }
+
+    public function updateMovie(Movie $movie)
+    {
+        $this->movie = $movie;
     }
 
     public function getMovie(): ?Movie

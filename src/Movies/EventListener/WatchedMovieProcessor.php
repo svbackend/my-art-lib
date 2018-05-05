@@ -2,6 +2,7 @@
 
 namespace App\Movies\EventListener;
 
+use App\Movies\Entity\Movie;
 use App\Movies\Entity\UserWatchedMovie;
 use App\Users\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,8 +34,20 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
          * @var $watchedMovies UserWatchedMovie[]
          */
         foreach ($watchedMovies as $watchedMovie) {
-            #$user = $this->em->find(User::class, $watchedMovie->getUser()->getId());
-            #$watchedMovie->setUser($user);
+            $movie = $watchedMovie->getMovie();
+
+            // Because after unserialization doctrine think that User is new and trying to save it
+            $user = $this->em->find(User::class, $watchedMovie->getUser()->getId());
+            $watchedMovie->updateUser($user);
+
+            // If movie not saved yet
+            if ($movie->getId() === null) {
+                $this->em->persist($movie);
+            } else {
+                $movie = $this->em->find(Movie::class, $watchedMovie->getMovie()->getId());
+                $watchedMovie->updateMovie($movie);
+            }
+
             $this->em->persist($watchedMovie);
         }
 

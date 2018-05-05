@@ -36,7 +36,7 @@ class TmdbNormalizerService
             $locale = $this->getMovieLocale($movie, $locale);
 
             $movieObject = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [], [
-                $this->createMovieTranslation($locale, $movie)
+                $this->createMovieTranslationDTO($locale, $movie)
             ]);
 
             $genresIds = $this->getGenresIds($movie);
@@ -74,7 +74,7 @@ class TmdbNormalizerService
         );
     }
 
-    private function createMovieTranslation(string $locale, array $movie)
+    private function createMovieTranslationDTO(string $locale, array $movie): MovieTranslationDTO
     {
         return new MovieTranslationDTO($locale, $movie['title'], $movie['overview'], null);
     }
