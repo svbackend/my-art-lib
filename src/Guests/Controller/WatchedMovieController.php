@@ -4,8 +4,11 @@ namespace App\Guests\Controller;
 
 use App\Controller\BaseController;
 use App\Guests\Entity\GuestSession;
+use App\Guests\Entity\GuestWatchedMovie;
+use App\Guests\Repository\WatchedMovieRepository;
 use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
+use App\Pagination\PaginatedCollection;
 use App\Users\Entity\UserWatchedMovie;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\SearchService;
@@ -51,5 +54,31 @@ class WatchedMovieController extends BaseController
         }
 
         return new JsonResponse(null, 202);
+    }
+
+    /**
+     * @Route("/api/guests/{id}/watchedMovies", methods={"GET"});
+     * @param Request $request
+     * @param GuestSession $guestSession
+     * @return JsonResponse
+     */
+    public function getAll(Request $request, GuestSession $guestSession)
+    {
+        $em = $this->getDoctrine()->getManager();
+        /** @var $watchedMovieRepository WatchedMovieRepository */
+        $watchedMovieRepository = $em->getRepository(GuestWatchedMovie::class);
+
+        $offset = (int)$request->get('offset', 0);
+        $limit = $request->get('limit', null);
+
+        $watchedMovies = new PaginatedCollection(
+            $watchedMovieRepository->getAllWatchedMoviesByGuestSessionId($guestSession->getId()),
+            $offset,
+            $limit ? (int)$limit : null
+        );
+
+        return $this->response($watchedMovies, 200, [], [
+            'groups' => ['list']
+        ]);
     }
 }

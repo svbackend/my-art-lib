@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Users\Repository;
 
+use App\Users\Entity\User;
 use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
@@ -21,9 +22,11 @@ class WatchedMovieRepository extends ServiceEntityRepository
         parent::__construct($registry, UserWatchedMovie::class);
     }
 
-    public function getFindAllQuery(): Query
+    public function getAllWatchedMoviesByUserId(int $userId): Query
     {
         return $this->createQueryBuilder('wm')
+            ->where('wm.user = :userId')
+            ->setParameter('userId', $userId)
             ->addOrderBy('wm.id', 'DESC')
             ->getQuery();
     }

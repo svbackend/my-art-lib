@@ -3,6 +3,7 @@
 namespace App\Users\Controller;
 
 use App\Controller\BaseController;
+use App\Guests\Entity\GuestSession;
 use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
 use App\Pagination\PaginatedCollection;
@@ -14,6 +15,7 @@ use App\Movies\Service\SearchService;
 use App\Movies\Request\AddWatchedMovieRequest;
 use App\Movies\Service\WatchedMovieService;
 use App\Users\Repository\WatchedMovieRepository;
+use App\Users\Request\MergeWatchedMoviesRequest;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -45,8 +47,12 @@ class WatchedMovieController extends BaseController
 
         return new JsonResponse(null, 202);
     }
+
     /**
      * @Route("/api/users/{id}/watchedMovies", methods={"GET"});
+     * @param Request $request
+     * @param User $user
+     * @return JsonResponse
      */
     public function getAll(Request $request, User $user)
     {
@@ -58,7 +64,7 @@ class WatchedMovieController extends BaseController
         $limit = $request->get('limit', null);
 
         $watchedMovies = new PaginatedCollection(
-            $watchedMovieRepository->getFindAllQuery(),
+            $watchedMovieRepository->getAllWatchedMoviesByUserId($user->getId()),
             $offset,
             $limit ? (int)$limit : null
         );
@@ -66,5 +72,30 @@ class WatchedMovieController extends BaseController
         return $this->response($watchedMovies, 200, [], [
             'groups' => ['list']
         ]);
+    }
+
+    /**
+     * @Route("/api/users/mergeWatchedMovies", methods={"POST"});
+     * @param MergeWatchedMoviesRequest $mergeWatchedMoviesRequest
+     * @param WatchedMovieService $watchedMovieService
+     * @throws \Exception
+     * @return JsonResponse
+     */
+    public function postMergeWatchedMovies(MergeWatchedMoviesRequest $mergeWatchedMoviesRequest, WatchedMovieService $watchedMovieService)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $guestSessionRepository = $this->getDoctrine()->getRepository(GuestSession::class);
+        $guestSession = $guestSessionRepository->findOneBy([
+            'token' => $mergeWatchedMoviesRequest->get('token')
+        ]);
+
+        /** @var $guestSession GuestSession|null */
+        if ($guestSession === null) {
+            throw new NotFoundHttpException('Guest session not found by provided token');
+        }
+
+        $watchedMovieService->mergeWatchedMovies($guestSession, $this->getUser());
+
+        return new JsonResponse(null, 202);
     }
 }

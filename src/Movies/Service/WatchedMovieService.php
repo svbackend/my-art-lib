@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
+use App\Guests\Repository\WatchedMovieRepository;
 use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
 use App\Guests\Entity\GuestSession;
 use App\Guests\Entity\GuestWatchedMovie;
+use App\Movies\Entity\WatchedMovie;
 use App\Users\Entity\UserWatchedMovie;
 use App\Movies\EventListener\WatchedMovieProcessor;
 use App\Movies\Repository\MovieRepository;
@@ -59,8 +61,9 @@ class WatchedMovieService
         $newWatchedMovie = new UserWatchedMovie($user, $movie, $watchedMovieDTO->getVote(), $watchedMovieDTO->getWatchedAt());
 
         if ($movie->getId() === null) {
-            $watchedMovieSerialized = serialize([$newWatchedMovie]);
-            $this->producer->sendEvent(WatchedMovieProcessor::ADD_WATCHED_MOVIE_TMDB, $watchedMovieSerialized);
+            $this->saveWatchedMovies([
+                $newWatchedMovie
+            ]);
             return true;
         }
 
@@ -114,5 +117,42 @@ class WatchedMovieService
         }
 
         return true;
+    }
+
+    /**
+     * @param GuestSession $guestSession
+     * @param User $user
+     * @throws \Exception
+     */
+    public function mergeWatchedMovies(GuestSession $guestSession, User $user): void
+    {
+        /** @var $guestWatchedMoviesRepository WatchedMovieRepository */
+        $guestWatchedMoviesRepository = $this->em->getRepository(GuestWatchedMovie::class);
+        $guestWatchedMovies = $guestWatchedMoviesRepository->findBy([
+            'guestSession' => $guestSession->getId()
+        ]);
+
+        if (!reset($guestWatchedMovies)) {
+            return;
+        }
+
+        $userWatchedMovies = [];
+        foreach ($guestWatchedMovies as $guestWatchedMovie) {
+            $movie = $guestWatchedMovie->getMovie();
+            $vote = $guestWatchedMovie->getVote();
+            $watchedAt = $guestWatchedMovie->getWatchedAt();
+            $userWatchedMovies[] = new UserWatchedMovie($user, $movie, $vote, $watchedAt);
+        }
+
+        $this->saveWatchedMovies($userWatchedMovies);
+    }
+
+    /**
+     * @param array|UserWatchedMovie[]|GuestWatchedMovie[] $watchedMovies
+     */
+    private function saveWatchedMovies(array $watchedMovies): void
+    {
+        $watchedMoviesSerialized = serialize($watchedMovies);
+        $this->producer->sendEvent(WatchedMovieProcessor::ADD_WATCHED_MOVIE_TMDB, $watchedMoviesSerialized);
     }
 }
