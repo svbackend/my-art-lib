@@ -9,6 +9,7 @@ WORKDIR /srv/app
 
 RUN apt-get update
 RUN a2enmod rewrite
+RUN a2enmod headers
 
 RUN apt-get install -y libpq-dev \
     && mkdir -p /usr/src/php/ext/redis \
