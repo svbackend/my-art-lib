@@ -74,18 +74,18 @@ class Movie implements TranslatableInterface
 
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
-     * @Groups({"list", "view"})
+     * @Groups({"view"})
      */
     private $imdbId;
 
     /**
-     * @Groups({"list", "view"})
+     * @Groups({"view"})
      * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $runtime;
 
     /**
-     * @Groups({"list", "view"})
+     * @Groups({"view"})
      * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $budget;

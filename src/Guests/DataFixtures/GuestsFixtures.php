@@ -32,6 +32,6 @@ class GuestsFixtures extends Fixture
     private function createGuestSession(string $token, EntityManager $manager): void
     {
         $date = new \DateTimeImmutable('+1 week');
-        $manager->getConnection()->exec("INSERT INTO guest_sessions (id, token, expires_at) VALUES (NEXTVAL('guest_sessions_id_seq'), '{$token}', '{$date->format('d-m-Y')}');");
+        $manager->getConnection()->exec("INSERT INTO guest_sessions (id, token, expires_at) VALUES (NEXTVAL('guest_sessions_id_seq'), '{$token}', '{$date->format('m-d-Y')}');");
     }
 }

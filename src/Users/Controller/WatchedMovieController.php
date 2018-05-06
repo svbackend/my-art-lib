@@ -5,6 +5,8 @@ namespace App\Users\Controller;
 use App\Controller\BaseController;
 use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
+use App\Pagination\PaginatedCollection;
+use App\Pagination\PaginatorBuilder;
 use App\Users\Entity\User;
 use App\Users\Entity\UserWatchedMovie;
 use App\Movies\Repository\MovieRepository;
@@ -13,6 +15,7 @@ use App\Movies\Request\AddWatchedMovieRequest;
 use App\Movies\Service\WatchedMovieService;
 use App\Users\Repository\WatchedMovieRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -45,14 +48,22 @@ class WatchedMovieController extends BaseController
     /**
      * @Route("/api/users/{id}/watchedMovies", methods={"GET"});
      */
-    public function getAll(User $user)
+    public function getAll(Request $request, User $user)
     {
         $em = $this->getDoctrine()->getManager();
         /** @var $watchedMovieRepository WatchedMovieRepository */
         $watchedMovieRepository = $em->getRepository(UserWatchedMovie::class);
-        $wathcedMovies = $watchedMovieRepository->findAll();
 
-        return $this->response($wathcedMovies, 200, [], [
+        $offset = (int)$request->get('offset', 0);
+        $limit = $request->get('limit', null);
+
+        $watchedMovies = new PaginatedCollection(
+            $watchedMovieRepository->getFindAllQuery(),
+            $offset,
+            $limit ? (int)$limit : null
+        );
+
+        return $this->response($watchedMovies, 200, [], [
             'groups' => ['list']
         ]);
     }
