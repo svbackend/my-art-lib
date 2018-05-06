@@ -24,7 +24,7 @@ class MovieTMDB
     private $voteAverage;
 
     /**
-     * @Groups({"list", "view"})
+     * @Groups({"view"})
      * @ORM\Column(type="integer", nullable=true)
      */
     private $voteCount;

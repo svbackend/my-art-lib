@@ -8,12 +8,14 @@ use App\Translation\TranslatableTrait;
 use App\Translation\TranslatableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use function GuzzleHttp\Psr7\str;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Genres\Repository\GenreRepository")
+ * @UniqueEntity(fields="tmdbId", message="This TMDB ID already taken")
  * @ORM\Table(name="genres")
  * @method GenreTranslations getTranslation(string $locale, bool $useFallbackLocale = true)
  */
@@ -30,23 +32,24 @@ class Genre implements TranslatableInterface
     private $id;
 
     /**
-     * @ORM\Column(type="integer", options={"default": 0})
+     * @ORM\Column(type="integer", nullable=true)
      * @Groups({"ROLE_MODER", "ROLE_ADMIN"})
      */
-    private $tmdb_id;
+    private $tmdbId;
 
     /**
      * @var $translations GenreTranslations[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Genres\Entity\GenreTranslations", mappedBy="genre", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid(traverse=true)
      * @Groups({"list", "view"})
      */
     private $translations;
 
-    public function __construct(?int $tmdb_id = 0)
+    public function __construct(?int $tmdbId = null)
     {
         $this->translations = new ArrayCollection();
-        $this->tmdb_id = $tmdb_id ?? 0;
+        $this->tmdbId = $tmdbId ?? null;
     }
 
     public function getId()
@@ -56,6 +59,6 @@ class Genre implements TranslatableInterface
 
     public function getTmdbId()
     {
-        return $this->tmdb_id;
+        return $this->tmdbId;
     }
 }

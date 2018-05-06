@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Movies\Service;
 
 use App\Movies\Entity\Movie;
+use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Repository\MovieRepository;
 
 class SearchService
@@ -39,5 +40,25 @@ class SearchService
         $this->sync->syncMovies($movies);
 
         return $movies;
+    }
+
+    /**
+     * @param int $tmdb_id
+     * @param string $locale
+     * @return Movie|null
+     * @throws \Exception
+     */
+    public function findByTmdbId(int $tmdb_id, string $locale): ?Movie
+    {
+        try {
+            $movie = $this->tmdb->findMovieById($tmdb_id, $locale);
+        } catch (TmdbMovieNotFoundException $exception) {
+            return null;
+        }
+
+        $movies = $this->normalizer->normalizeMoviesToObjects([$movie], $locale);
+        #$this->sync->syncMovies($movies);
+
+        return reset($movies);
     }
 }

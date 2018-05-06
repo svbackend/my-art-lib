@@ -23,7 +23,7 @@ class GenreRepository extends ServiceEntityRepository
     public function findByTmdbIds(array $ids)
     {
         return $this->createQueryBuilder('g')
-            ->where('g.tmdb_id IN (:ids)')
+            ->where('g.tmdbId IN (:ids)')
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();

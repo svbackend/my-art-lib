@@ -8,3 +8,8 @@ services:
         class: App\Movies\EventListener\MovieSyncProcessor
         tags:
             - { name: enqueue.client.processor }
+
+    app.async.watched_movie_processor:
+        class: App\Movies\EventListener\WatchedMovieProcessor
+        tags:
+            - { name: enqueue.client.processor }

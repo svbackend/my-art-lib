@@ -3,13 +3,10 @@
 namespace App\Users\Controller;
 
 use App\Controller\BaseController;
-use App\Controller\ControllerInterface;
 use App\Users\Request\AuthUserRequest;
 use App\Users\Service\AuthService;
-use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
 
 class AuthController extends BaseController
 {

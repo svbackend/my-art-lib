@@ -42,7 +42,7 @@ class Movie implements TranslatableInterface
 
     /**
      * @var $genres Genre[]|ArrayCollection
-     * @ORM\ManyToMany(targetEntity="App\Genres\Entity\Genre", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="App\Genres\Entity\Genre")
      * @ORM\JoinTable(name="movies_genres",
      *      joinColumns={@ORM\JoinColumn(name="movie_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="genre_id", referencedColumnName="id")}
@@ -74,18 +74,18 @@ class Movie implements TranslatableInterface
 
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
-     * @Groups({"list", "view"})
+     * @Groups({"view"})
      */
     private $imdbId;
 
     /**
-     * @Groups({"list", "view"})
+     * @Groups({"view"})
      * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $runtime;
 
     /**
-     * @Groups({"list", "view"})
+     * @Groups({"view"})
      * @ORM\Column(type="integer", nullable=true, options={"default": 0})
      */
     private $budget;
@@ -103,10 +103,14 @@ class Movie implements TranslatableInterface
 
         $this->originalTitle = $movieDTO->getOriginalTitle();
         $this->originalPosterUrl = $movieDTO->getOriginalPosterUrl();
+        $this->setImdbId($movieDTO->getImdbId());
+        $this->setBudget($movieDTO->getBudget());
+        $this->setRuntime($movieDTO->getRuntime());
+        $this->setReleaseDate($movieDTO->getReleaseDate());
         $this->tmdb = $tmdb;
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -117,6 +121,15 @@ class Movie implements TranslatableInterface
         return $this;
     }
 
+    public function removeAllGenres()
+    {
+        $this->genres->clear();
+        return $this;
+    }
+
+    /**
+     * @return Genre[]|array
+     */
     public function getGenres()
     {
         return $this->genres->toArray();
@@ -131,7 +144,7 @@ class Movie implements TranslatableInterface
      * @param string $imdbId
      * @return Movie
      */
-    public function setImdbId(string $imdbId)
+    private function setImdbId(?string $imdbId)
     {
         $this->imdbId = $imdbId;
         return $this;
@@ -141,7 +154,7 @@ class Movie implements TranslatableInterface
      * @param int $runtime
      * @return Movie
      */
-    public function setRuntime(int $runtime)
+    private function setRuntime(int $runtime)
     {
         $this->runtime = $runtime;
         return $this;
@@ -151,7 +164,7 @@ class Movie implements TranslatableInterface
      * @param int $budget
      * @return Movie
      */
-    public function setBudget(int $budget)
+    private function setBudget(int $budget)
     {
         $this->budget = $budget;
         return $this;
@@ -161,7 +174,7 @@ class Movie implements TranslatableInterface
      * @param \DateTimeInterface $releaseDate
      * @return Movie
      */
-    public function setReleaseDate(\DateTimeInterface $releaseDate)
+    private function setReleaseDate(\DateTimeInterface $releaseDate)
     {
         $this->releaseDate = $releaseDate;
         return $this;
