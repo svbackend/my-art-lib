@@ -33,6 +33,20 @@ class MovieController extends BaseController
     }
 
     /**
+     * Get movie resource
+     *
+     * @Route("/api/movies/{id}", methods={"GET"})
+     * @param Movie $movie
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function getMovies(Movie $movie)
+    {
+        return $this->response($movie, 200, [], [
+            'groups' => ['view'],
+        ]);
+    }
+
+    /**
      * Get movies by title
      *
      * @Route("/api/movies/search", methods={"POST"})
