@@ -7,9 +7,7 @@
 ###< symfony/framework-bundle ###
 
 /.idea
-###> symfony/phpunit-bridge ###
-.phpunit
-/phpunit.xml
-###< symfony/phpunit-bridge ###
-
 testing.php
+###> phpunit/phpunit ###
+/phpunit.xml
+###< phpunit/phpunit ###
