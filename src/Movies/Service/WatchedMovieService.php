@@ -8,11 +8,9 @@ use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
 use App\Guests\Entity\GuestSession;
 use App\Guests\Entity\GuestWatchedMovie;
-use App\Movies\Entity\WatchedMovie;
 use App\Users\Entity\UserWatchedMovie;
 use App\Movies\EventListener\WatchedMovieProcessor;
 use App\Movies\Repository\MovieRepository;
-use App\Movies\Service\SearchService;
 use App\Users\Entity\User;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -102,8 +100,7 @@ class WatchedMovieService
         $newWatchedMovie = new GuestWatchedMovie($guestSession, $movie, $watchedMovieDTO->getVote(), $watchedMovieDTO->getWatchedAt());
 
         if ($movie->getId() === null) {
-            $watchedMovieSerialized = serialize([$newWatchedMovie]);
-            $this->producer->sendEvent(WatchedMovieProcessor::ADD_WATCHED_MOVIE_TMDB, $watchedMovieSerialized);
+            $this->saveWatchedMovies([$newWatchedMovie]);
             return true;
         }
 

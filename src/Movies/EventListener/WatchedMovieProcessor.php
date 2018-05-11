@@ -9,6 +9,7 @@ use App\Guests\Entity\GuestSession;
 use App\Guests\Entity\GuestWatchedMovie;
 use App\Users\Entity\UserWatchedMovie;
 use App\Users\Entity\User;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Interop\Queue\PsrMessage;
@@ -43,9 +44,9 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
 
         /** @var $watchedMovies UserWatchedMovie[]|GuestWatchedMovie[] */
         foreach ($watchedMovies as $watchedMovie) {
-            $movie = $watchedMovie->getMovie();
+            $movie = $watchedMovie->getMovie(); // Not saved movie
             $genres = $movie->getGenres();
-            $movie->removeAllGenres(); // Because doctrine doesn't know about these genres
+            $movie->removeAllGenres(); // Because doctrine doesn't know about these genres due unserialization
             foreach ($genres as $genre) {
                 /** @var $genreReference Genre */
                 $genreReference = $this->em->getReference(Genre::class, $genre->getId()); // so we need to re-add 'em
@@ -69,10 +70,18 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
 
             if (isset($newWatchedMovie)) {
                 $this->em->persist($newWatchedMovie);
+            } else {
+                $this->logger->error('Unexpected behavior: $newWatchedMovie not isset');
             }
         }
 
-        $this->em->flush();
+        try {
+            $this->em->flush();
+        } catch (UniqueConstraintViolationException $exception) {
+            $this->logger->error('UniqueConstraintViolationException when we are trying to save watched movie', [
+                'message' => $exception->getMessage(),
+            ]);
+        }
 
         return self::ACK;
     }
