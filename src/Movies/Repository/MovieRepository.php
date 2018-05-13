@@ -8,6 +8,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
+ * TODO add relations to all queries
+ *
  * @method Movie|null find($id, $lockMode = null, $lockVersion = null)
  * @method Movie|null findOneBy(array $criteria, array $orderBy = null)
  * @method Movie[]    findAll()
@@ -18,6 +20,23 @@ class MovieRepository extends ServiceEntityRepository
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Movie::class);
+    }
+
+    public function findAllWithIsWatchedFlag(int $userId)
+    {
+        $result = $this->createQueryBuilder('m')
+            ->leftJoin('m.translations', 'mt')
+            ->addSelect('mt')
+            ->leftJoin('m.genres', 'mg')
+            ->addSelect('mg')
+            ->leftJoin('mg.translations', 'mgt')
+            ->addSelect('mgt')
+            ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id') // if this relation exists then user has already watched this movie
+            ->addSelect('uwm')
+            ->setParameter('user_id', $userId)
+            ->getQuery()->getResult();
+
+        return $result;
     }
 
     public function findByTitle(string $query)

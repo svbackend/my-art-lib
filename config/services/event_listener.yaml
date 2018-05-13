@@ -21,3 +21,7 @@ services:
     App\EventListener\ExceptionListener:
             tags:
                 - { name: kernel.event_subscriber }
+
+    App\EventListener\RequestBodyListener:
+            tags:
+                - { name: kernel.event_subscriber }

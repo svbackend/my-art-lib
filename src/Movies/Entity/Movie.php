@@ -7,8 +7,10 @@ use App\Genres\Entity\Genre;
 use App\Movies\DTO\MovieDTO;
 use App\Translation\TranslatableTrait;
 use App\Translation\TranslatableInterface;
+use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -95,6 +97,19 @@ class Movie implements TranslatableInterface
      * @ORM\Column(type="date", nullable=true)
      */
     private $releaseDate;
+
+
+    /**
+     * @var $userWatchedList UserWatchedMovie
+     * @ORM\OneToOne(targetEntity="App\Users\Entity\UserWatchedMovie", mappedBy="movie")
+     * @Groups({"ROLE_USER"})
+     */
+    private $userWatchedMovie;
+
+    /**
+     * @Groups({"ROLE_USER"})
+     */
+    private $isWatched;
 
     public function __construct(MovieDTO $movieDTO, MovieTMDB $tmdb)
     {
@@ -234,5 +249,16 @@ class Movie implements TranslatableInterface
     public function getReleaseDate()
     {
         return $this->releaseDate;
+    }
+
+    public function getUserWatchedMovie()
+    {
+        return $this->userWatchedMovie;
+    }
+
+    public function isWatched()
+    {
+        $this->isWatched = $this->userWatchedMovie ? true : false;
+        return $this->isWatched;
     }
 }

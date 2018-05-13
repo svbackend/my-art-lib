@@ -155,6 +155,7 @@ todo
 If you need web interface to manage ur databases set-up new postgres server for pgAdmin:
 
 * Open in browser pg Admin (pgAdmin default host is: http://127.0.0.1:5050)
+* Default login and pass: pgadmin4@pgadmin.org + admin
 * Create new server and define server name to display
 * Switch to "Connection" tab and use this data: 
 * -Host: postgres

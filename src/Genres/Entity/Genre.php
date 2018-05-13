@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace App\Genres\Entity;
 
-use App\Genres\Entity\GenreTranslations;
 use App\Translation\TranslatableTrait;
 use App\Translation\TranslatableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use function GuzzleHttp\Psr7\str;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;

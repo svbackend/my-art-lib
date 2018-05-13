@@ -13,7 +13,7 @@ class AuthController extends BaseController
     /**
      * Endpoint action to get Access Token for authentication.
      *
-     * @Route("/api/auth/login", methods={"POST"});
+     * @Route("/api/auth/login", methods={"POST", "OPTIONS"});
      *
      * @throws \LogicException
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException

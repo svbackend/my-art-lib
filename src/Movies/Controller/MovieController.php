@@ -26,7 +26,13 @@ class MovieController extends BaseController
      */
     public function getAll()
     {
-        $movies = $this->getDoctrine()->getRepository(Movie::class)->findAll();
+        if ($this->getUser()) {
+            $userId = $this->getUser()->getId();
+            $movies = $this->getDoctrine()->getRepository(Movie::class)->findAllWithIsWatchedFlag($userId);
+        } else {
+            $movies = $this->getDoctrine()->getRepository(Movie::class)->findAll();
+        }
+
         return $this->response($movies, 200, [], [
             'groups' => ['list'],
         ]);

@@ -8,6 +8,7 @@
         "enqueue/redis": "^0.8.23",
         "fesor/request-objects": "^0.3.0",
         "guzzlehttp/guzzle": "^6.3",
+        "nelmio/cors-bundle": "^1.5",
         "nikic/php-parser": "^4.0.1",
         "php-translation/extractor": "^1.4",
         "php-translation/symfony-bundle": "^0.7.0",
