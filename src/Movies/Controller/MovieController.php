@@ -8,6 +8,7 @@ use App\Movies\Request\CreateMovieRequest;
 use App\Movies\Request\SearchRequest;
 use App\Movies\Service\MovieManageService;
 use App\Movies\Service\SearchService;
+use App\Pagination\PaginatedCollection;
 use App\Users\Entity\UserRoles;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,14 +25,19 @@ class MovieController extends BaseController
      *
      * @Route("/api/movies", methods={"GET"})
      */
-    public function getAll()
+    public function getAll(Request $request)
     {
         if ($this->getUser()) {
             $userId = $this->getUser()->getId();
             $movies = $this->getDoctrine()->getRepository(Movie::class)->findAllWithIsWatchedFlag($userId);
         } else {
-            $movies = $this->getDoctrine()->getRepository(Movie::class)->findAll();
+            $movies = $this->getDoctrine()->getRepository(Movie::class)->findAllQuery();
         }
+
+        $offset = (int)$request->get('offset', 0);
+        $limit = $request->get('limit', null);
+
+        $movies = new PaginatedCollection($movies, $offset, $limit);
 
         return $this->response($movies, 200, [], [
             'groups' => ['list'],
@@ -64,8 +70,11 @@ class MovieController extends BaseController
      */
     public function getSearch(SearchRequest $request, SearchService $searchService, Request $currentRequest)
     {
+        $offset = (int)$request->get('offset', 0);
+        $limit = $request->get('limit', null);
+
         $query = $request->get('query');
-        $movies = $searchService->findByQuery($query, $currentRequest->getLocale());
+        $movies = $searchService->findByQuery($query, $currentRequest->getLocale(), $offset, $limit);
 
         return $this->response($movies, 200, [], [
             'groups' => ['list']

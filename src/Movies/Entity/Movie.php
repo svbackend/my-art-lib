@@ -21,6 +21,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass="App\Movies\Repository\MovieRepository")
  * @ORM\Table(name="movies")
  * @method MovieTranslations getTranslation(string $locale, bool $useFallbackLocale = true)
+ * @UniqueEntity("tmdb.id")
  */
 class Movie implements TranslatableInterface
 {

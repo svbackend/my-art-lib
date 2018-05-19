@@ -31,7 +31,7 @@ class WatchedMovieControllerTest extends WebTestCase
         $client = self::$client;
 
         $client->request('GET', '/api/movies');
-        self::$movies = json_decode($client->getResponse()->getContent(), true);
+        self::$movies = json_decode($client->getResponse()->getContent(), true)['data'];
         return self::$movies;
     }
 

@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Pagination\PaginatedCollection;
-use App\Pagination\PaginatorBuilder;
+use App\Pagination\PaginatedCollectionInterface;
 use App\Translation\TranslatedResponseTrait;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -27,7 +25,7 @@ abstract class BaseController extends Controller implements ControllerInterface
      */
     protected function response($data, int $status = 200, array $headers = [], array $context = []): JsonResponse
     {
-        if ($data instanceof PaginatedCollection) {
+        if ($data instanceof PaginatedCollectionInterface) {
             $data = $this->addMetaPaginationInfo($data);
         }
 
@@ -37,7 +35,7 @@ abstract class BaseController extends Controller implements ControllerInterface
         return $this->json($translatedContent, $status, $headers, $context);
     }
 
-    private function addMetaPaginationInfo(PaginatedCollection $paginatedCollection)
+    private function addMetaPaginationInfo(PaginatedCollectionInterface $paginatedCollection)
     {
         return [
             'data' => $paginatedCollection->getItems(),

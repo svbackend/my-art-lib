@@ -9,7 +9,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Embeddable
- * @UniqueEntity("id")
  */
 class MovieTMDB
 {

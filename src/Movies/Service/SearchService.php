@@ -5,7 +5,10 @@ namespace App\Movies\Service;
 
 use App\Movies\Entity\Movie;
 use App\Movies\Exception\TmdbMovieNotFoundException;
+use App\Movies\Pagination\MovieCollection;
 use App\Movies\Repository\MovieRepository;
+use App\Pagination\PaginatedCollection;
+use App\Pagination\PaginatedCollectionInterface;
 
 class SearchService
 {
@@ -25,26 +28,42 @@ class SearchService
     /**
      * @param string $query
      * @param string $locale
-     * @return Movie[]
+     * @param int $offset
+     * @param int|null $limit
+     * @return PaginatedCollectionInterface
      * @throws \Exception
      */
-    public function findByQuery(string $query, string $locale): array
+    public function findByQuery(string $query, string $locale, int $offset = 0, ?int $limit = null): PaginatedCollectionInterface
     {
-        $movies = $this->repository->findByTitle($query);
-        if (reset($movies)) {
+        $moviesQuery = $this->repository->findByTitleQuery($query);
+        $movies = new PaginatedCollection($moviesQuery, $offset, $limit);
+        if ($movies->getTotal() > 0) {
             return $movies;
         }
 
         $movies = $this->tmdb->findMoviesByQuery($query, $locale);
+        $totalResults = (int)$movies['total_results'];
 
-        if (!reset($movies['results'])) {
-            return [];
+        if ($totalResults === 0) {
+            return new MovieCollection([], 0, $offset);
+        }
+
+        // If we have a lot of movies then save it all
+        if (isset($movies['total_pages']) && $movies['total_pages'] > 1) {
+            // $i = 2 because $movies currently already has movies from page 1
+            for ($i = 2; $i <= $movies['total_pages']; $i++) {
+                $moviesOnPage = $this->tmdb->findMoviesByQuery($query, $locale, [
+                    'page' => $i,
+                ]);
+                $moviesObjectsOnPage = $this->normalizer->normalizeMoviesToObjects($moviesOnPage['results'], $locale);
+                $this->sync->syncMovies($moviesObjectsOnPage);
+            }
         }
 
         $movies = $this->normalizer->normalizeMoviesToObjects($movies['results'], $locale);
         $this->sync->syncMovies($movies);
 
-        return $movies;
+        return new MovieCollection($movies, $totalResults, $offset);
     }
 
     /**

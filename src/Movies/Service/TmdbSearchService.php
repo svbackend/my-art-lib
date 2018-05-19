@@ -22,14 +22,16 @@ class TmdbSearchService
         $this->logger = $logger;
     }
 
-    public function findMoviesByQuery(string $query, string $locale = 'en'): array
+    public function findMoviesByQuery(string $query, string $locale = 'en', $data = []): array
     {
+        $data = array_merge([
+            'api_key' => $this->apiKey,
+            'language' => $locale,
+            'query' => $query
+        ], $data);
+
         $movies = $this->request('/search/movie', 'GET', [
-            'query' => [
-                'api_key' => $this->apiKey,
-                'language' => $locale,
-                'query' => $query
-            ],
+            'query' => $data,
         ]);
 
         return $movies;

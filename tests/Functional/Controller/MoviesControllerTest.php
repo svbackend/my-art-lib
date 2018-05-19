@@ -158,7 +158,7 @@ class MoviesControllerTest extends WebTestCase
                     ],
                 ],
                 'tmdb' => [
-                    'id' => 1,
+                    'id' => 141,
                     'voteAverage' => 7.88,
                     'voteCount' => 500,
                 ],
@@ -191,13 +191,21 @@ class MoviesControllerTest extends WebTestCase
 
         self::assertEquals(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
-        self::assertTrue(count($response) > 0);
-        $movie = reset($response);
+
+        $movies = $response['data'];
+        $paging = $response['paging'];
+
+        self::assertTrue(count($movies) > 0);
+        $movie = reset($movies);
         self::assertArrayHasKey('id', $movie);
         self::assertArrayHasKey('originalTitle', $movie);
         self::assertArrayHasKey('originalPosterUrl', $movie);
         self::assertArrayHasKey('locale', $movie);
         self::assertNotEmpty($movie['id']);
+
+        self::assertArrayHasKey('total', $paging);
+        self::assertArrayHasKey('offset', $paging);
+        self::assertArrayHasKey('limit', $paging);
     }
 
     /**
@@ -215,7 +223,7 @@ class MoviesControllerTest extends WebTestCase
         ]);
 
         self::assertEquals(200, $client->getResponse()->getStatusCode());
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $response = json_decode($client->getResponse()->getContent(), true)['data'];
         self::assertTrue(count($response) > 0);
         $movie = reset($response);
         self::assertArrayHasKey('id', $movie);

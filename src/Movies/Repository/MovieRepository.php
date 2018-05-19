@@ -34,19 +34,34 @@ class MovieRepository extends ServiceEntityRepository
             ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id') // if this relation exists then user has already watched this movie
             ->addSelect('uwm')
             ->setParameter('user_id', $userId)
-            ->getQuery()->getResult();
+            ->getQuery();
 
         return $result;
     }
 
-    public function findByTitle(string $query)
+    public function findAllQuery()
+    {
+        $result = $this->createQueryBuilder('m')
+            ->leftJoin('m.translations', 'mt')
+            ->addSelect('mt')
+            ->leftJoin('m.genres', 'mg')
+            ->addSelect('mg')
+            ->leftJoin('mg.translations', 'mgt')
+            ->addSelect('mgt')
+            ->getQuery();
+
+        return $result;
+    }
+
+    // todo optimization (attach relations)
+    public function findByTitleQuery(string $query)
     {
         $query = mb_strtolower($query);
         $result = $this->createQueryBuilder('m')
             ->leftJoin('m.translations', 't')
             ->andWhere('LOWER(m.originalTitle) LIKE :title OR LOWER(t.title) LIKE :title')
             ->setParameter('title', "%{$query}%")
-            ->getQuery()->getResult();
+            ->getQuery();
 
         return $result;
     }
