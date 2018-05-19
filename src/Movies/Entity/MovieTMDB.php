@@ -5,15 +5,17 @@ namespace App\Movies\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Embeddable
+ * @UniqueEntity("id")
  */
 class MovieTMDB
 {
     /**
      * @Groups({"list", "view"})
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", unique=true)
      */
     private $id;
 

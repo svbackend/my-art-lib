@@ -36,6 +36,11 @@ class SearchService
         }
 
         $movies = $this->tmdb->findMoviesByQuery($query, $locale);
+
+        if (!reset($movies['results'])) {
+            return [];
+        }
+
         $movies = $this->normalizer->normalizeMoviesToObjects($movies['results'], $locale);
         $this->sync->syncMovies($movies);
 
