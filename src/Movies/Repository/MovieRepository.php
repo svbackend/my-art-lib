@@ -48,6 +48,7 @@ class MovieRepository extends ServiceEntityRepository
             ->addSelect('mg')
             ->leftJoin('mg.translations', 'mgt')
             ->addSelect('mgt')
+            ->orderBy('m.id', 'DESC')
             ->getQuery();
 
         return $result;
