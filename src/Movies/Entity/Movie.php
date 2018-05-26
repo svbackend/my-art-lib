@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Movies\Entity;
 
 use App\Genres\Entity\Genre;
+use App\Guests\Entity\GuestWatchedMovie;
 use App\Movies\DTO\MovieDTO;
 use App\Translation\TranslatableTrait;
 use App\Translation\TranslatableInterface;
@@ -99,6 +100,11 @@ class Movie implements TranslatableInterface
      */
     private $releaseDate;
 
+    /**
+     * @var $guestWatchedMovie GuestWatchedMovie
+     * @ORM\OneToOne(targetEntity="App\Guests\Entity\GuestWatchedMovie", mappedBy="movie")
+     */
+    private $guestWatchedMovie;
 
     /**
      * @var $userWatchedList UserWatchedMovie
@@ -257,9 +263,14 @@ class Movie implements TranslatableInterface
         return $this->userWatchedMovie;
     }
 
+    public function getGuestWatchedMovie()
+    {
+        return $this->guestWatchedMovie;
+    }
+
     public function isWatched()
     {
-        $this->isWatched = $this->userWatchedMovie ? true : false;
+        $this->isWatched = ($this->userWatchedMovie || $this->guestWatchedMovie) ? true : false;
         return $this->isWatched;
     }
 }

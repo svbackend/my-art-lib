@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Guests\Entity\GuestSession;
+use App\Guests\Repository\GuestRepository;
 use App\Pagination\PaginatedCollectionInterface;
 use App\Translation\TranslatedResponseTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class BaseController
@@ -33,6 +36,20 @@ abstract class BaseController extends Controller implements ControllerInterface
         $translatedContent = $this->translateResponse($data, $contextWithRoles);
 
         return $this->json($translatedContent, $status, $headers, $context);
+    }
+
+    protected function getGuest(): ?GuestSession
+    {
+        /** @var $request Request */
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $guestSessionToken = (string)$request->get('guest_api_token', '');
+
+        /** @var $guestRepository GuestRepository */
+        $guestRepository = $this->getDoctrine()->getRepository(GuestSession::class);
+
+        return $guestRepository->findOneBy([
+            'token' => $guestSessionToken
+        ]);
     }
 
     private function addMetaPaginationInfo(PaginatedCollectionInterface $paginatedCollection)

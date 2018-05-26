@@ -4,11 +4,13 @@ namespace App\Movies\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Entity\Movie;
+use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\CreateMovieRequest;
 use App\Movies\Request\SearchRequest;
 use App\Movies\Service\MovieManageService;
 use App\Movies\Service\SearchService;
 use App\Pagination\PaginatedCollection;
+use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,14 +26,19 @@ class MovieController extends BaseController
      * Get all movies
      *
      * @Route("/api/movies", methods={"GET"})
+     *
+     * @param Request $request
+     * @param MovieRepository $movieRepository
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getAll(Request $request)
+    public function getAll(Request $request, MovieRepository $movieRepository)
     {
-        if ($this->getUser()) {
-            $userId = $this->getUser()->getId();
-            $movies = $this->getDoctrine()->getRepository(Movie::class)->findAllWithIsWatchedFlag($userId);
+        $user = $this->getUser();
+
+        if ($user instanceof User) {
+            $movies = $movieRepository->findAllWithIsUserWatchedFlag($user);
         } else {
-            $movies = $this->getDoctrine()->getRepository(Movie::class)->findAllQuery();
+            $movies = $movieRepository->findAllWithIsGuestWatchedFlag($this->getGuest());
         }
 
         $offset = (int)$request->get('offset', 0);
