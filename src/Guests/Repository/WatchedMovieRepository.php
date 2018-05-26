@@ -24,6 +24,14 @@ class WatchedMovieRepository extends ServiceEntityRepository
     public function getAllWatchedMoviesByGuestSessionId(int $guestSessionId): Query
     {
         return $this->createQueryBuilder('wm')
+            ->leftJoin('wm.movie', 'm')
+            ->addSelect('m')
+            ->leftJoin('m.translations', 'mt')
+            ->addSelect('mt')
+            ->leftJoin('m.genres', 'mg')
+            ->addSelect('mg')
+            ->leftJoin('mg.translations', 'mgt')
+            ->addSelect('mgt')
             ->where('wm.guestSession = :guestSessionId')
             ->setParameter('guestSessionId', $guestSessionId)
             ->addOrderBy('wm.id', 'DESC')
