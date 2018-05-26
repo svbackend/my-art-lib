@@ -103,6 +103,7 @@ class Movie implements TranslatableInterface
     /**
      * @var $guestWatchedMovie GuestWatchedMovie
      * @ORM\OneToOne(targetEntity="App\Guests\Entity\GuestWatchedMovie", mappedBy="movie")
+     * @Groups({"list", "view"})
      */
     private $guestWatchedMovie;
 
@@ -114,7 +115,7 @@ class Movie implements TranslatableInterface
     private $userWatchedMovie;
 
     /**
-     * @Groups({"ROLE_USER"})
+     * @Groups({"list", "view"})
      */
     private $isWatched;
 
