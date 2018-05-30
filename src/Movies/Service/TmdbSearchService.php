@@ -5,7 +5,6 @@ namespace App\Movies\Service;
 
 use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Exception\TmdbRequestLimitException;
-use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;

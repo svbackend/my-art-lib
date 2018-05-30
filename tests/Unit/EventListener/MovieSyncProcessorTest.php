@@ -7,6 +7,7 @@ use App\Genres\Entity\Genre;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\MovieSyncProcessor;
 use Doctrine\ORM\EntityManagerInterface;
+use Enqueue\Client\ProducerInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -26,6 +27,9 @@ class MovieSyncProcessorTest extends KernelTestCase
     /** @var MovieSyncProcessor */
     private $movieSyncProcessor;
 
+    /** @var ProducerInterface */
+    private $producer;
+
     /**
      * @throws \ReflectionException
      */
@@ -34,7 +38,8 @@ class MovieSyncProcessorTest extends KernelTestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->psrContext = $this->createMock(PsrContext::class);
         $this->psrMessage = $this->createMock(PsrMessage::class);
-        $this->movieSyncProcessor = new MovieSyncProcessor($this->em);
+        $this->producer = $this->createMock(ProducerInterface::class);
+        $this->movieSyncProcessor = new MovieSyncProcessor($this->em, $this->producer);
     }
 
     /**

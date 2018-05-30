@@ -5,6 +5,9 @@ services:
         autoconfigure: true
         public: false
 
+    GuzzleHttp\Client: ~
+    GuzzleHttp\ClientInterface: '@GuzzleHttp\Client'
+
     App\Service\LocaleService:
         $locale: '%locale%'
         $locales: '%locales%'
