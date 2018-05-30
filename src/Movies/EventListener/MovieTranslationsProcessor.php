@@ -3,9 +3,14 @@
 namespace App\Movies\EventListener;
 
 use App\Genres\Entity\Genre;
+use App\Movies\DTO\MovieTranslationDTO;
 use App\Movies\Entity\Movie;
+use App\Movies\Entity\MovieTranslations;
+use App\Movies\Exception\TmdbMovieNotFoundException;
+use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbSearchService;
+use App\Service\LocaleService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
@@ -21,20 +26,16 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     private $em;
     private $searchService;
     private $movieRepository;
+    private $locales;
 
-    public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository, TmdbSearchService $searchService)
+    public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
         $this->em = $em;
         $this->movieRepository = $movieRepository;
         $this->searchService = $searchService;
+        $this->locales = array_values($localeService->getLocales());
     }
 
-    /**
-     * @param PsrMessage $message
-     * @param PsrContext $session
-     * @return object|string
-     * @throws \Doctrine\ORM\ORMException
-     */
     public function process(PsrMessage $message, PsrContext $session)
     {
         $moviesIds = $message->getBody();
@@ -46,8 +47,33 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
         $movies = $this->movieRepository->findAllByIds($moviesIds);
 
+        $totalCounter = count($movies);
+        $successfullySavedMoviesCounter = 0;
         foreach ($movies as $movie) {
-            
+
+            try {
+                $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
+            } catch (TmdbRequestLimitException $requestLimitException) {
+                continue;
+            } catch (TmdbMovieNotFoundException $movieNotFoundException) {
+                // if movie not found let's think that it's successfully processed
+                $successfullySavedMoviesCounter++;
+                continue;
+            }
+
+            foreach ($translationsDTOs as $translationDTO) {
+                if (null !== $movie->getTranslation($translationDTO->getLocale(), false)) {
+                    // If we already have translation for this locale just go to next iteration
+                    continue;
+                }
+
+                $movieTranslation = new MovieTranslations($movie, $translationDTO);
+                $movie->addTranslation($movieTranslation);
+
+                $this->em->persist($movieTranslation);
+            }
+
+            $successfullySavedMoviesCounter++;
         }
 
         try {
@@ -58,7 +84,33 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             echo $exception->getMessage();
         }
 
-        return self::ACK;
+        if ($successfullySavedMoviesCounter === $totalCounter) {
+            return self::ACK;
+        } else {
+            return self::REQUEUE;
+        }
+    }
+
+    /**
+     * @param int $tmdbId
+     * @return array|MovieTranslationDTO[]
+     * @throws TmdbRequestLimitException
+     * @throws \App\Movies\Exception\TmdbMovieNotFoundException
+     */
+    private function loadTranslationsFromTMDB(int $tmdbId): array
+    {
+        $translationsResponse = $this->searchService->findMovieTranslationsById($tmdbId);
+        $translations = $translationsResponse['translations'];
+        $newTranslations = [];
+
+        foreach ($translations as $translation) {
+            if (in_array($translation['iso_639_1'], $this->locales) === false) { continue; }
+            $data = $translation['data'];
+
+            $newTranslations[] = new MovieTranslationDTO($translation['iso_639_1'], $data['title'], $data['overview'], null);
+        }
+
+        return $newTranslations;
     }
 
     public static function getSubscribedTopics()

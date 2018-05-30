@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Movies\Service;
 
 use App\Movies\Exception\TmdbMovieNotFoundException;
+use App\Movies\Exception\TmdbRequestLimitException;
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
 
@@ -15,13 +17,21 @@ class TmdbSearchService
     private $logger;
     private const ApiUrl = 'https://api.themoviedb.org/3';
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, ClientInterface $client)
     {
-        $this->apiKey = \getenv('MOVIE_DB_API_KEY');
-        $this->client = new Client();
+        $this->apiKey = \getenv('MOVIE_DB_API_KEY'); // is it ok to use \getenv() here?
+        $this->client = $client;
         $this->logger = $logger;
     }
 
+    /**
+     * @param string $query
+     * @param string $locale
+     * @param array $data
+     * @return array
+     * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
+     */
     public function findMoviesByQuery(string $query, string $locale = 'en', $data = []): array
     {
         $data = array_merge([
@@ -42,6 +52,7 @@ class TmdbSearchService
      * @param string $locale
      * @return array
      * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
      */
     public function findMovieById(int $tmdb_id, string $locale = 'en'): array
     {
@@ -52,9 +63,22 @@ class TmdbSearchService
             ],
         ]);
 
-        if (isset($movie['status_code']) && $movie['status_code'] == 34) {
-            throw new TmdbMovieNotFoundException();
-        }
+        return $movie;
+    }
+
+    /**
+     * @param int $tmdb_id
+     * @return array
+     * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
+     */
+    public function findMovieTranslationsById(int $tmdb_id): array
+    {
+        $movie = $this->request("/movie/{$tmdb_id}/translations", 'GET', [
+            'query' => [
+                'api_key' => $this->apiKey,
+            ],
+        ]);
 
         return $movie;
     }
@@ -84,9 +108,11 @@ class TmdbSearchService
             $response = [];
 
             if ($exception->getCode() == 404) {
-                $response = [
-                    'status_code' => 34
-                ];
+                throw new TmdbMovieNotFoundException();
+            }
+
+            if ($exception->getCode() == 429) {
+                throw new TmdbRequestLimitException();
             }
         }
 
