@@ -28,33 +28,12 @@ class TmdbSyncService
             throw new \InvalidArgumentException('Unsupported array of movies provided');
         }
 
-        $moviesToSave = $this->getMoviesToSave($movies);
-        $this->addMovies($moviesToSave);
+        $this->addMovies($movies);
     }
 
     private function addMovies(array $movies): void
     {
         $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, serialize($movies));
-    }
-
-    /**
-     * This method give you array of movies which is not yet loaded to our database
-     * @param array $movies
-     * @return array
-     */
-    private function getMoviesToSave(array $movies): array
-    {
-        $ids = array_map(function (Movie $movie) { return $movie->getTmdb()->getId(); }, $movies);
-        $alreadySavedIds = $this->getAlreadySavedMoviesIdsByTmdbIds($ids);
-
-        return array_filter($movies, function (Movie $movie) use ($alreadySavedIds) {
-            return in_array($movie->getTmdb()->getId(), $alreadySavedIds) === false;
-        });
-    }
-
-    private function getAlreadySavedMoviesIdsByTmdbIds(array $tmdb_ids)
-    {
-         return $this->repository->getExistedTmdbIds($tmdb_ids);
     }
 
     private function isSupport($movie)
