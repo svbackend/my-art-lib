@@ -16,6 +16,7 @@ class SearchService
     private $tmdb;
     private $sync;
     private $normalizer;
+    private $locales;
 
     public function __construct(MovieRepository $repository, TmdbSearchService $tmdb, TmdbSyncService $sync, TmdbNormalizerService $normalizer)
     {

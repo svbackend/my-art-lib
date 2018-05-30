@@ -6,6 +6,7 @@ use App\Genres\Entity\Genre;
 use App\Movies\Entity\Movie;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Enqueue\Client\ProducerInterface;
 use Interop\Queue\PsrMessage;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrProcessor;
@@ -14,14 +15,14 @@ use Enqueue\Client\TopicSubscriberInterface;
 class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 {
     const ADD_MOVIES_TMDB = 'addMoviesTMDB';
-    const UPDATE_MOVIES_TMDB = 'updateMoviesTMDB';
 
     private $em;
-    private $logger;
+    private $producer;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer)
     {
         $this->em = $em;
+        $this->producer = $producer;
     }
 
     /**
@@ -34,6 +35,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     {
         $movies = $message->getBody();
         $movies = unserialize($movies);
+        $moviesIdsToLoadTranslations = [];
         $moviesCount = 0;
 
         if ($this->em->isOpen() === false) {
@@ -43,6 +45,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         foreach ($movies as $movie) {
             $movie = $this->refreshGenresAssociations($movie);
             $this->em->persist($movie);
+            $moviesIdsToLoadTranslations[] = $movie->getId();
             $moviesCount++;
         }
 
@@ -53,6 +56,8 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         } catch (\Exception $exception) {
             echo $exception->getMessage();
         }
+
+        $this->loadTranslations($moviesIdsToLoadTranslations);
 
         return self::ACK;
     }
@@ -91,8 +96,13 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         return $this->em->getReference(Genre::class, $id);
     }
 
+    private function loadTranslations(array $moviesIds)
+    {
+        $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, serialize($moviesIds));
+    }
+
     public static function getSubscribedTopics()
     {
-        return [self::ADD_MOVIES_TMDB, self::UPDATE_MOVIES_TMDB];
+        return [self::ADD_MOVIES_TMDB];
     }
 }

@@ -1,0 +1,9 @@
+# config/services/services.yaml
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    App\Movies\Service\SearchService:
+        $locales: '%locales%'

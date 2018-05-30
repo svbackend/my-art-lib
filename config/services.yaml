@@ -2,6 +2,7 @@
 parameters:
     appName: 'MyArtLib'
     locale: 'en'
+    locales: ["en", "ru", "uk", "pl"]
     router.request_context.host: 127.0.0.1/
     router.request_context.scheme: https
     router.request_context.base_url: '/'

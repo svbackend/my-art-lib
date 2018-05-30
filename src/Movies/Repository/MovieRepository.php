@@ -60,6 +60,21 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
+    /**
+     * @param array $ids
+     * @return array|Movie[]
+     */
+    public function findAllByIds(array $ids)
+    {
+        $result = $this->getBaseQuery()
+            ->where('m.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+
+        return $result;
+    }
+
     public function findAllQuery()
     {
         $result = $this->getBaseQuery()
@@ -76,23 +91,6 @@ class MovieRepository extends ServiceEntityRepository
             ->andWhere('LOWER(m.originalTitle) LIKE :title OR LOWER(mt.title) LIKE :title')
             ->setParameter('title', "%{$query}%")
             ->getQuery();
-
-        return $result;
-    }
-
-    /**
-     * This method will return array of already existed tmdb ids in our database
-     *
-     * @param array $tmdb_ids
-     * @return array
-     */
-    public function getExistedTmdbIds(array $tmdb_ids)
-    {
-        $result = $this->createQueryBuilder('m')
-            ->select('m.tmdb.id')
-            ->where('m.tmdb.id IN (:ids)')
-            ->setParameter('ids', $tmdb_ids)
-            ->getQuery()->getArrayResult();
 
         return $result;
     }

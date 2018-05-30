@@ -38,6 +38,11 @@ abstract class BaseController extends Controller implements ControllerInterface
         return $this->json($translatedContent, $status, $headers, $context);
     }
 
+    protected function getLocales()
+    {
+        return $this->getParameter('locales');
+    }
+
     protected function getGuest(): ?GuestSession
     {
         /** @var $request Request */
