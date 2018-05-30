@@ -2,9 +2,7 @@
 
 namespace App\Movies\EventListener;
 
-use App\Genres\Entity\Genre;
 use App\Movies\DTO\MovieTranslationDTO;
-use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTranslations;
 use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Exception\TmdbRequestLimitException;
@@ -13,7 +11,6 @@ use App\Movies\Service\TmdbSearchService;
 use App\Service\LocaleService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
-use Enqueue\Client\ProducerInterface;
 use Interop\Queue\PsrMessage;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrProcessor;

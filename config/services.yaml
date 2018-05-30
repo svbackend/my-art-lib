@@ -17,6 +17,11 @@ services:
         resource: '../src/*'
         exclude: '../src/**/{EventListener,Entity,DTO,Migrations,Tests,Kernel.php}'
 
+    App\Service\LocaleService:
+        arguments:
+            $defaultLocale: "%locale%"
+            $locales: "%locales%"
+
     _instanceof:
         App\Controller\ControllerInterface:
             tags: ['controller.service_arguments']

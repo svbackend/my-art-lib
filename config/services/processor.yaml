@@ -4,12 +4,14 @@ services:
         autoconfigure: true
         public: true
 
-    app.async.movie_sync_processor:
-        class: App\Movies\EventListener\MovieSyncProcessor
+    App\Movies\EventListener\MovieSyncProcessor:
         tags:
             - { name: enqueue.client.processor }
 
-    app.async.watched_movie_processor:
-        class: App\Movies\EventListener\WatchedMovieProcessor
+    App\Movies\EventListener\WatchedMovieProcessor:
+        tags:
+            - { name: enqueue.client.processor }
+
+    App\Movies\EventListener\MovieTranslationsProcessor:
         tags:
             - { name: enqueue.client.processor }
