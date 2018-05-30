@@ -27,13 +27,15 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     private $searchService;
     private $movieRepository;
     private $locales;
+    private $localesCount;
 
     public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
         $this->em = $em;
         $this->movieRepository = $movieRepository;
         $this->searchService = $searchService;
-        $this->locales = array_values($localeService->getLocales());
+        $this->locales = $localeService->getLocales();
+        $this->localesCount = count($this->locales);
     }
 
     public function process(PsrMessage $message, PsrContext $session)
@@ -50,6 +52,19 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $totalCounter = count($movies);
         $successfullySavedMoviesCounter = 0;
         foreach ($movies as $movie) {
+            // {begin} If all translations already saved
+            $existingTranslations = [];
+            foreach ($this->locales as $locale) {
+                if (null !== $movie->getTranslation($locale, false)) {
+                    $existingTranslations[] = $locale;
+                }
+            }
+
+            if (!count(array_diff($this->locales, $existingTranslations))) {
+                $successfullySavedMoviesCounter++;
+                continue;
+            }
+            // {end} If all translations already saved
 
             try {
                 $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());

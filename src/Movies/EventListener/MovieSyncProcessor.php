@@ -98,7 +98,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     private function loadTranslations(array $moviesIds)
     {
-        $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, serialize($moviesIds));
+        $this->producer->sendEvent(MovieTranslationsProcessor::LOAD_TRANSLATIONS, serialize($moviesIds));
     }
 
     public static function getSubscribedTopics()
