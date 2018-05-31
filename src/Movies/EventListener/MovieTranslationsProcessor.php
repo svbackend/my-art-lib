@@ -3,6 +3,7 @@
 namespace App\Movies\EventListener;
 
 use App\Movies\DTO\MovieTranslationDTO;
+use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTranslations;
 use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Exception\TmdbRequestLimitException;
@@ -10,6 +11,7 @@ use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbSearchService;
 use App\Service\LocaleService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Interop\Queue\PsrMessage;
 use Interop\Queue\PsrContext;
@@ -20,6 +22,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 {
     const LOAD_TRANSLATIONS = 'LoadMoviesTranslationsFromTMDB';
 
+    /** @var EntityManager */
     private $em;
     private $searchService;
     private $movieRepository;
@@ -28,6 +31,16 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
+        if ($em instanceof EntityManager === false) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'MovieTranslationsProcessor expects %s as %s realization',
+                    EntityManager::class,
+                    EntityManagerInterface::class
+                )
+            );
+        }
+
         $this->em = $em;
         $this->movieRepository = $movieRepository;
         $this->searchService = $searchService;
@@ -35,6 +48,13 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $this->localesCount = count($this->locales);
     }
 
+    /**
+     * @param PsrMessage $message
+     * @param PsrContext $session
+     * @return string
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \ErrorException
+     */
     public function process(PsrMessage $message, PsrContext $session)
     {
         $moviesIds = $message->getBody();
@@ -49,19 +69,10 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $totalCounter = count($movies);
         $successfullySavedMoviesCounter = 0;
         foreach ($movies as $movie) {
-            // {begin} If all translations already saved
-            $existingTranslations = [];
-            foreach ($this->locales as $locale) {
-                if (null !== $movie->getTranslation($locale, false)) {
-                    $existingTranslations[] = $locale;
-                }
-            }
-
-            if (!count(array_diff($this->locales, $existingTranslations))) {
+            if ($this->isAllTranslationsSaved($movie) === true) {
                 $successfullySavedMoviesCounter++;
                 continue;
             }
-            // {end} If all translations already saved
 
             try {
                 $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
@@ -73,18 +84,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
                 continue;
             }
 
-            foreach ($translationsDTOs as $translationDTO) {
-                if (null !== $movie->getTranslation($translationDTO->getLocale(), false)) {
-                    // If we already have translation for this locale just go to next iteration
-                    continue;
-                }
-
-                $movieTranslation = new MovieTranslations($movie, $translationDTO);
-                $movie->addTranslation($movieTranslation);
-
-                $this->em->persist($movieTranslation);
-            }
-
+            $this->addTranslations($translationsDTOs, $movie);
             $successfullySavedMoviesCounter++;
         }
 
@@ -123,6 +123,44 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         }
 
         return $newTranslations;
+    }
+
+    /**
+     * @param array $moviesTranslationsDTOs
+     * @param Movie $movie
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \ErrorException
+     */
+    private function addTranslations(array $moviesTranslationsDTOs, Movie $movie): void
+    {
+        foreach ($moviesTranslationsDTOs as $translationDTO) {
+            if (null !== $movie->getTranslation($translationDTO->getLocale(), false)) {
+                // If we already have translation for this locale just go to next iteration
+                continue;
+            }
+
+            $movieTranslation = new MovieTranslations($movie, $translationDTO);
+            $movie->addTranslation($movieTranslation);
+
+            $this->em->persist($movieTranslation);
+        }
+    }
+
+    /**
+     * @param Movie $movie
+     * @return bool
+     * @throws \ErrorException
+     */
+    private function isAllTranslationsSaved(Movie $movie): bool
+    {
+        $existingTranslations = [];
+        foreach ($this->locales as $locale) {
+            if (null !== $movie->getTranslation($locale, false)) {
+                $existingTranslations[] = $locale;
+            }
+        }
+
+        return !count(array_diff($this->locales, $existingTranslations));
     }
 
     public static function getSubscribedTopics()
