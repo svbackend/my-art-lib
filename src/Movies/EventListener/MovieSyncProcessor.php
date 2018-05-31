@@ -5,6 +5,7 @@ namespace App\Movies\EventListener;
 use App\Genres\Entity\Genre;
 use App\Movies\Entity\Movie;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Interop\Queue\PsrMessage;
@@ -21,6 +22,16 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     public function __construct(EntityManagerInterface $em, ProducerInterface $producer)
     {
+        if ($em instanceof EntityManager === false) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'MovieSyncProcessor expects %s as %s realization',
+                    EntityManager::class,
+                    EntityManagerInterface::class
+                )
+            );
+        }
+
         $this->em = $em;
         $this->producer = $producer;
     }
@@ -88,10 +99,10 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     /**
      * @param int $id
-     * @return null|object
+     * @return null|Genre
      * @throws \Doctrine\ORM\ORMException
      */
-    private function getGenreReference(int $id)
+    private function getGenreReference(int $id): ?object
     {
         return $this->em->getReference(Genre::class, $id);
     }

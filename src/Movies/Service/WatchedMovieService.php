@@ -59,9 +59,7 @@ class WatchedMovieService
         $newWatchedMovie = new UserWatchedMovie($user, $movie, $watchedMovieDTO->getVote(), $watchedMovieDTO->getWatchedAt());
 
         if ($movie->getId() === null) {
-            $this->saveWatchedMovies([
-                $newWatchedMovie
-            ]);
+            $this->saveWatchedMovies([$newWatchedMovie]);
             return true;
         }
 
