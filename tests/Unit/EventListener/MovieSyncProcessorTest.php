@@ -6,7 +6,7 @@ namespace App\Tests\Unit\EventListener;
 use App\Genres\Entity\Genre;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\MovieSyncProcessor;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManager;
 use Enqueue\Client\ProducerInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class MovieSyncProcessorTest extends KernelTestCase
 {
-    /** @var EntityManagerInterface|MockObject */
+    /** @var EntityManager|MockObject */
     private $em;
 
     /** @var PsrContext */
@@ -35,7 +35,7 @@ class MovieSyncProcessorTest extends KernelTestCase
      */
     public function setUp()
     {
-        $this->em = $this->createMock(EntityManagerInterface::class);
+        $this->em = $this->createMock(EntityManager::class);
         $this->psrContext = $this->createMock(PsrContext::class);
         $this->psrMessage = $this->createMock(PsrMessage::class);
         $this->producer = $this->createMock(ProducerInterface::class);
