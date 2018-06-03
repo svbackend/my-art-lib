@@ -14,8 +14,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass="App\Users\Repository\UserRepository")
  * @ORM\Table(name="users")
- * @UniqueEntity(fields="email", repositoryMethod="isUserExists", message="Email already taken")
- * @UniqueEntity(fields="username", repositoryMethod="isUserExists", message="Username already taken")
+ * @UniqueEntity(fields="email", repositoryMethod="getUsersByCriteria", message="Email already taken")
+ * @UniqueEntity(fields="username", repositoryMethod="getUsersByCriteria", message="Username already taken")
  */
 class User implements UserInterface
 {

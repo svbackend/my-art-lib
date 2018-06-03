@@ -5,6 +5,7 @@ namespace App\Users\Repository;
 
 use App\Users\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -42,7 +43,7 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
      * @param array $criteria
      * @return mixed
      */
-    public function isUserExists(array $criteria)
+    public function getUsersByCriteria(array $criteria)
     {
         $field = key($criteria);
         $value = mb_strtolower(reset($criteria));
@@ -52,5 +53,27 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
             ->setParameter('value', $value)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param array $criteria
+     * @return bool
+     */
+    public function isUserExists(array $criteria): bool
+    {
+        $field = key($criteria);
+        $value = mb_strtolower($criteria[$field]);
+
+        try {
+            $user = $this->createQueryBuilder('u')
+                ->where("LOWER(u.{$field}) = :value")
+                ->setParameter('value', $value)
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (NonUniqueResultException $e) {
+            return true;
+        }
+
+        return $user !== null;
     }
 }
