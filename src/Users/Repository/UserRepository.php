@@ -6,6 +6,7 @@ namespace App\Users\Repository;
 use App\Users\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -56,6 +57,8 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     }
 
     /**
+     * I do not understand why getSingleScalarResult throws NoResultException but it does
+     *
      * @param array $criteria
      * @return bool
      */
@@ -70,8 +73,10 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
                 ->setParameter('value', $value)
                 ->getQuery()
                 ->getSingleScalarResult();
-        } catch (NonUniqueResultException $e) {
+        } catch (NonUniqueResultException $nonUniqueResultException) {
             return true;
+        } catch (NoResultException $noResultException) {
+            return false;
         }
 
         return $user !== null;

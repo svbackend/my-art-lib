@@ -27,7 +27,7 @@ class UserCheckController extends BaseController
             return new JsonResponse();
         }
 
-        return new JsonResponse(null, 404);
+        return new JsonResponse([], 404);
     }
 
     /**
@@ -48,6 +48,6 @@ class UserCheckController extends BaseController
             return new JsonResponse();
         }
 
-        return new JsonResponse(null, 404);
+        return new JsonResponse([], 404);
     }
 }
