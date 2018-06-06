@@ -57,11 +57,11 @@ class ConfirmationToken
      */
     public function __construct(User $user, $type, \DateTimeInterface $expires_at = null)
     {
-        if (false === in_array($type, $this->getValidTypes(), true)) {
+        if (in_array($type, $this->getValidTypes(), true) === false) {
             throw new \InvalidArgumentException(sprintf('$type should be valid type! Instead %s given', $type));
         }
 
-        if (null !== $expires_at) {
+        if ($expires_at !== null) {
             $now = new \DateTimeImmutable();
             if ($expires_at <= $now) {
                 throw new \InvalidArgumentException(sprintf('You can not create already expired token'));

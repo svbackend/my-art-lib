@@ -99,7 +99,7 @@ class MovieRepository extends ServiceEntityRepository
 
     public function findOneByIdOrTmdbId(?int $id = null, ?int $tmdb_id = null)
     {
-        if (null === $id && null === $tmdb_id) {
+        if ($id === null && $tmdb_id === null) {
             throw new \InvalidArgumentException('Movie ID or TMDB ID should be provided');
         }
 

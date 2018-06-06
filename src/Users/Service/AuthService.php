@@ -76,7 +76,7 @@ class AuthService
     {
         $user = $this->userRepository->loadUserByUsername($username);
 
-        if (null === $user) {
+        if ($user === null) {
             throw new BadCredentialsException(
                 $this->translator->trans('user_with_this_username_not_exist', [
                     'username' => $username,
@@ -84,7 +84,7 @@ class AuthService
             );
         }
 
-        if (false === $this->passwordEncoder->isPasswordValid($user, $password)) {
+        if ($this->passwordEncoder->isPasswordValid($user, $password) === false) {
             throw new BadCredentialsException(
                 $this->translator->trans('wrong_password', [], 'users')
             );

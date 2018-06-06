@@ -17,7 +17,7 @@ class GuestsFixtures extends Fixture
      */
     public function load(ObjectManager $manager): void
     {
-        if (false === $manager instanceof EntityManager) {
+        if ($manager instanceof EntityManager === false) {
             throw new \InvalidArgumentException('UsersFixtures $manager should be instance of EntityManager');
         }
 

@@ -39,7 +39,7 @@ class UserController extends BaseController
         $registeredUser = $registerService->registerByRequest($request);
         $errors = $validator->validate($registeredUser);
 
-        if ($errors && 0 !== $errors->count()) {
+        if ($errors && $errors->count() !== 0) {
             return $request->getErrorResponse($errors);
         }
 
@@ -105,7 +105,7 @@ class UserController extends BaseController
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         $user = $userRepository->find($id);
 
-        if (null === $user) {
+        if ($user === null) {
             throw new NotFoundHttpException($translator->trans('not_found_by_id', [
                 'user_id' => $id,
             ], 'users'));

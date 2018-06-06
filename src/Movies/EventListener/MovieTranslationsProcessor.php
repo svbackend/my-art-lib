@@ -31,7 +31,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
-        if (false === $em instanceof EntityManager) {
+        if ($em instanceof EntityManager === false) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'MovieTranslationsProcessor expects %s as %s realization',
@@ -62,7 +62,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $moviesIds = $message->getBody();
         $moviesIds = unserialize($moviesIds);
 
-        if (false === $this->em->isOpen()) {
+        if ($this->em->isOpen() === false) {
             $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
         }
 
@@ -71,7 +71,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $totalCounter = count($movies);
         $successfullySavedMoviesCounter = 0;
         foreach ($movies as $movie) {
-            if (true === $this->isAllTranslationsSaved($movie)) {
+            if ($this->isAllTranslationsSaved($movie) === true) {
                 ++$successfullySavedMoviesCounter;
                 continue;
             }
@@ -120,7 +120,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $newTranslations = [];
 
         foreach ($translations as $translation) {
-            if (false === in_array($translation['iso_639_1'], $this->locales, true)) {
+            if (in_array($translation['iso_639_1'], $this->locales, true) === false) {
                 continue;
             }
             $data = $translation['data'];
@@ -141,7 +141,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     private function addTranslations(array $moviesTranslationsDTOs, Movie $movie): void
     {
         foreach ($moviesTranslationsDTOs as $translationDTO) {
-            if (null !== $movie->getTranslation($translationDTO->getLocale(), false)) {
+            if ($movie->getTranslation($translationDTO->getLocale(), false) !== null) {
                 // If we already have translation for this locale just go to next iteration
                 continue;
             }
@@ -164,7 +164,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     {
         $existingTranslations = [];
         foreach ($this->locales as $locale) {
-            if (null !== $movie->getTranslation($locale, false)) {
+            if ($movie->getTranslation($locale, false) !== null) {
                 $existingTranslations[] = $locale;
             }
         }

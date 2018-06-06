@@ -72,11 +72,11 @@ abstract class BaseController extends Controller implements ControllerInterface
 
     private function appendRolesToContextGroups(?array $context): array
     {
-        if (null === $this->getUser()) {
+        if ($this->getUser() === null) {
             return $context;
         }
 
-        if (null === $context) {
+        if ($context === null) {
             return [
                 'groups' => $this->getUser()->getRoles(),
             ];

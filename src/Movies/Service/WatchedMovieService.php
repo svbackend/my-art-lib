@@ -50,18 +50,18 @@ class WatchedMovieService
     {
         $movie = $this->repository->findOneByIdOrTmdbId($watchedMovieDTO->getMovieId(), $watchedMovieDTO->getTmdbId());
 
-        if (null === $movie) {
+        if ($movie === null) {
             // Lets try to find it in TMDB library
             $movie = $this->searchService->findByTmdbId($watchedMovieDTO->getTmdbId(), $locale);
         }
 
-        if (null === $movie) {
+        if ($movie === null) {
             return false;
         }
 
         $newWatchedMovie = new UserWatchedMovie($user, $movie, $watchedMovieDTO->getVote(), $watchedMovieDTO->getWatchedAt());
 
-        if (null === $movie->getId()) {
+        if ($movie->getId() === null) {
             $this->saveWatchedMovies([$newWatchedMovie]);
 
             return true;
@@ -92,18 +92,18 @@ class WatchedMovieService
     {
         $movie = $this->repository->findOneByIdOrTmdbId($watchedMovieDTO->getMovieId(), $watchedMovieDTO->getTmdbId());
 
-        if (null === $movie) {
+        if ($movie === null) {
             // Lets try to find it in TMDB library
             $movie = $this->searchService->findByTmdbId($watchedMovieDTO->getTmdbId(), $locale);
         }
 
-        if (null === $movie) {
+        if ($movie === null) {
             return false;
         }
 
         $newWatchedMovie = new GuestWatchedMovie($guestSession, $movie, $watchedMovieDTO->getVote(), $watchedMovieDTO->getWatchedAt());
 
-        if (null === $movie->getId()) {
+        if ($movie->getId() === null) {
             $this->saveWatchedMovies([$newWatchedMovie]);
 
             return true;

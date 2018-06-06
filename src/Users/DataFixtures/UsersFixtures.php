@@ -36,7 +36,7 @@ class UsersFixtures extends Fixture
         $manager->persist($admin);
         $manager->flush();
 
-        if (false === $manager instanceof EntityManager) {
+        if ($manager instanceof EntityManager === false) {
             throw new \InvalidArgumentException('UsersFixtures $manager should be instance of EntityManager');
         }
 

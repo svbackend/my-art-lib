@@ -17,7 +17,7 @@ class PaginatedCollection implements PaginatedCollectionInterface
     {
         $this->offset = abs($offset);
 
-        if (null !== $limit) {
+        if ($limit !== null) {
             $this->limit = abs($limit);
         }
 

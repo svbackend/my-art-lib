@@ -30,7 +30,7 @@ trait TranslatableTrait
                 continue;
             }
 
-            if (null === $update) {
+            if ($update === null) {
                 // This will called only when there's update action and $update function not defined
                 // But you still can keep it as null if you creating entity
                 throw new \InvalidArgumentException('Unexpected behavior: founded old translation but $update function not defined');
@@ -52,7 +52,7 @@ trait TranslatableTrait
      */
     public function getTranslations(): array
     {
-        if (true === $this->isTranslationsMappedByLocale) {
+        if ($this->isTranslationsMappedByLocale === true) {
             return $this->translations->toArray();
         }
 
@@ -71,13 +71,13 @@ trait TranslatableTrait
      */
     public function getTranslation(string $locale, bool $useFallbackLocale = true): ?EntityTranslationInterface
     {
-        if (false === $this->isTranslationsMappedByLocale) {
+        if ($this->isTranslationsMappedByLocale === false) {
             $this->mapTranslationsByLocale();
         }
 
         $translation = $this->translations->get($locale);
 
-        if (null === $translation && true === $useFallbackLocale) {
+        if ($translation === null && $useFallbackLocale === true) {
             return $this->getFallbackTranslation();
         }
 

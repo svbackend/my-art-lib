@@ -31,10 +31,10 @@ trait TranslatedResponseTrait
         $translatedData = [];
 
         foreach ($data as $key => $value) {
-            if ('translations' === $key) {
+            if ($key === 'translations') {
                 $translatedData = array_merge($translatedData, $this->getEntityTranslation($value));
 
-                if (true === $recursive) {
+                if ($recursive === true) {
                     continue;
                 }
                 break;
@@ -77,7 +77,7 @@ trait TranslatedResponseTrait
         $preferredLocale = $request->getPreferredLanguage($locales);
 
         $locale = $request->getLocale(); // can be set by query param (?language=ru) or by symfony
-        if ($locale !== $request->getDefaultLocale() && true === in_array($locale, $locales, true)) {
+        if ($locale !== $request->getDefaultLocale() && in_array($locale, $locales, true) === true) {
             $preferredLocale = $locale;
         }
 

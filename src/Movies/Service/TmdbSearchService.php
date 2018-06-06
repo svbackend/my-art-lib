@@ -96,7 +96,7 @@ class TmdbSearchService
         try {
             $response = $this->client->request($method, $url, $params);
             $response = json_decode($response->getBody()->getContents(), true);
-            'dev' === getenv('APP_ENV') && $this->logger->debug('Guzzle request:', [
+            getenv('APP_ENV') === 'dev' && $this->logger->debug('Guzzle request:', [
                 'url' => $url,
                 'method' => $method,
                 'params' => $params,
@@ -113,11 +113,11 @@ class TmdbSearchService
 
             $response = [];
 
-            if (404 === $exception->getCode()) {
+            if ($exception->getCode() === 404) {
                 throw new TmdbMovieNotFoundException();
             }
 
-            if (429 === $exception->getCode()) {
+            if ($exception->getCode() === 429) {
                 throw new TmdbRequestLimitException();
             }
         }

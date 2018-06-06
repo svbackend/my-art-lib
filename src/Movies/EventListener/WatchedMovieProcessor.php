@@ -50,7 +50,7 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
 
         /** @var $watchedMovies UserWatchedMovie[]|GuestWatchedMovie[] */
         foreach ($watchedMovies as $watchedMovie) {
-            if (false === in_array(get_class($watchedMovie), $validClasses, true)) {
+            if (in_array(get_class($watchedMovie), $validClasses, true) === false) {
                 $this->logger->error('Unexpected behavior: $watchedMovie not in range of valid classes', [
                     'actualClass' => get_class($watchedMovie),
                 ]);

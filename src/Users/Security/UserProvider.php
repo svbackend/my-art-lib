@@ -65,7 +65,7 @@ class UserProvider implements UserProviderInterface
     {
         $apiToken = $this->apiTokenRepository->findByToken($token);
 
-        if (!$apiToken) {
+        if ($apiToken === null) {
             throw new UsernameNotFoundException($this->translator->trans('not_found_by_api_token', [
                 'token' => $token,
             ], 'users'));
@@ -86,9 +86,7 @@ class UserProvider implements UserProviderInterface
             ], 'exceptions'));
         }
 
-        /**
-         * @var User
-         */
+        /** @var $user User */
         if (null === $reloadedUser = $this->userRepository->find($user->getId())) {
             throw new UsernameNotFoundException($this->translator->trans('user_provider.reload.error', [
                 'user_id' => $user->getId(),

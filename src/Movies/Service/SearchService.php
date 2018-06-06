@@ -47,7 +47,7 @@ class SearchService
         $movies = $this->tmdb->findMoviesByQuery($query, $locale);
         $totalResults = (int) $movies['total_results'];
 
-        if (0 === $totalResults) {
+        if ($totalResults === 0) {
             return new MovieCollection([], 0, $offset);
         }
 

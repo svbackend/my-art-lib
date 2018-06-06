@@ -13,12 +13,12 @@ class RequestBodyListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        if ('json' !== $request->getContentType() || !$request->getContent()) {
+        if ($request->getContentType() !== 'json' || !$request->getContent()) {
             return;
         }
 
         $data = json_decode($request->getContent(), true);
-        if (JSON_ERROR_NONE !== json_last_error()) {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new BadRequestHttpException('Invalid json body: '.json_last_error_msg());
         }
 

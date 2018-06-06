@@ -84,6 +84,6 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
             return false;
         }
 
-        return null !== $user;
+        return $user !== null;
     }
 }

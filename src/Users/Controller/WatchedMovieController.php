@@ -36,7 +36,7 @@ class WatchedMovieController extends BaseController
         $watchedMovieDTO = $addWatchedMovieRequest->getWatchedMovieDTO();
         $isMovieAdded = $watchedMovieService->addUserWatchedMovie($this->getUser(), $watchedMovieDTO, $request->getLocale());
 
-        if (false === $isMovieAdded) {
+        if ($isMovieAdded === false) {
             throw new NotFoundHttpException('Movie not found by provided ID / TMDB ID');
         }
 
@@ -90,7 +90,7 @@ class WatchedMovieController extends BaseController
         ]);
 
         /** @var $guestSession GuestSession|null */
-        if (null === $guestSession) {
+        if ($guestSession === null) {
             throw new NotFoundHttpException('Guest session not found by provided token');
         }
 

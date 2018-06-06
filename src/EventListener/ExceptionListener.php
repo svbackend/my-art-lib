@@ -14,7 +14,7 @@ class ExceptionListener implements EventSubscriberInterface
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        if ('dev' === \getenv('APP_ENV')) {
+        if (\getenv('APP_ENV') === 'dev') {
             // for dev env we need to show all exception data
             return;
         }

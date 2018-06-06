@@ -25,7 +25,7 @@ class UserCheckController extends BaseController
             'username' => $username,
         ]);
 
-        if (true === $isUserExists) {
+        if ($isUserExists === true) {
             return new JsonResponse();
         }
 
@@ -48,7 +48,7 @@ class UserCheckController extends BaseController
             'email' => $email,
         ]);
 
-        if (true === $isUserExists) {
+        if ($isUserExists === true) {
             return new JsonResponse();
         }
 

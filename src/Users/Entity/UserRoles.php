@@ -27,11 +27,11 @@ class UserRoles
 
     public function addRole(string $role): self
     {
-        if (false === in_array($role, $this->getValidRoles(), true)) {
+        if (in_array($role, $this->getValidRoles(), true) === false) {
             throw new \InvalidArgumentException(sprintf('Invalid role: %s', $role));
         }
 
-        if (false === array_search($role, $this->getRoles(), true)) {
+        if (array_search($role, $this->getRoles(), true) === false) {
             return $this->setRoles(
                 array_merge($this->getRoles(), [$role])
             );
@@ -45,7 +45,7 @@ class UserRoles
         $roles = $this->getRoles();
         $foundedRoleKey = array_search($role, $roles, true);
 
-        if (false !== $foundedRoleKey) {
+        if ($foundedRoleKey !== false) {
             unset($roles[$foundedRoleKey]);
 
             return $this->setRoles($roles);

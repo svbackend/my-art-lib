@@ -22,7 +22,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     public function __construct(EntityManagerInterface $em, ProducerInterface $producer)
     {
-        if (false === $em instanceof EntityManager) {
+        if ($em instanceof EntityManager === false) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'MovieSyncProcessor expects %s as %s realization',
@@ -51,7 +51,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         $moviesIdsToLoadTranslations = [];
         $moviesCount = 0;
 
-        if (false === $this->em->isOpen()) {
+        if ($this->em->isOpen() === false) {
             $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
         }
 

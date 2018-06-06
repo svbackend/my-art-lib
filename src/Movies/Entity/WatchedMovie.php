@@ -50,7 +50,7 @@ class WatchedMovie
         $this->addedAt = new \DateTimeImmutable();
         $this->watchedAt = $watchedAt;
 
-        if (null !== $vote) {
+        if ($vote !== null) {
             $this->vote = $vote > 0.0 ? (float) $vote : null;
         }
     }

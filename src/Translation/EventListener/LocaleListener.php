@@ -12,7 +12,7 @@ class LocaleListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        if (false === $request->query->has('language')) {
+        if ($request->query->has('language') === false) {
             return;
         }
 

@@ -25,7 +25,7 @@ class TmdbSyncService
      */
     public function syncMovies(array $movies): void
     {
-        if (false === $this->isSupport(reset($movies))) {
+        if ($this->isSupport(reset($movies)) === false) {
             throw new \InvalidArgumentException('Unsupported array of movies provided');
         }
 
