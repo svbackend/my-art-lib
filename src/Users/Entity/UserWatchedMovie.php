@@ -1,14 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Entity;
 
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\WatchedMovie;
-use App\Users\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -36,10 +34,12 @@ class UserWatchedMovie extends WatchedMovie
 
     /**
      * UserWatchedMovies constructor.
-     * @param User $user
-     * @param Movie $movie
-     * @param float|null $vote
+     *
+     * @param User                    $user
+     * @param Movie                   $movie
+     * @param float|null              $vote
      * @param \DateTimeInterface|null $watchedAt
+     *
      * @throws \Exception
      */
     public function __construct(User $user, Movie $movie, ?float $vote, ?\DateTimeInterface $watchedAt)

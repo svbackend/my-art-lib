@@ -21,13 +21,15 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class UserController extends BaseController
 {
     /**
-     * Registration
+     * Registration.
      *
      * @Route("/api/users", methods={"POST"})
-     * @param RegisterUserRequest $request
-     * @param RegisterService $registerService
+     *
+     * @param RegisterUserRequest      $request
+     * @param RegisterService          $registerService
      * @param EventDispatcherInterface $dispatcher
-     * @param ValidatorInterface $validator
+     * @param ValidatorInterface       $validator
+     *
      * @return JsonResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function postUsers(RegisterUserRequest $request, RegisterService $registerService, EventDispatcherInterface $dispatcher, ValidatorInterface $validator)
@@ -54,12 +56,14 @@ class UserController extends BaseController
     }
 
     /**
-     * Confirm email
+     * Confirm email.
      *
      * @Route("/api/confirmEmail", methods={"POST"})
-     * @param ConfirmEmailRequest $request
+     *
+     * @param ConfirmEmailRequest         $request
      * @param ConfirmationTokenRepository $confirmationTokenRepository
-     * @param TranslatorInterface $translator
+     * @param TranslatorInterface         $translator
+     *
      * @return JsonResponse
      */
     public function postConfirmEmail(ConfirmEmailRequest $request, ConfirmationTokenRepository $confirmationTokenRepository, TranslatorInterface $translator)
@@ -84,11 +88,13 @@ class UserController extends BaseController
     }
 
     /**
-     * Get single user
+     * Get single user.
      *
      * @Route("/api/users/{id}", methods={"GET"})
+     *
      * @param $id
      * @param TranslatorInterface $translator
+     *
      * @return JsonResponse
      */
     public function getUsers($id, TranslatorInterface $translator)
@@ -99,7 +105,7 @@ class UserController extends BaseController
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         $user = $userRepository->find($id);
 
-        if ($user === null) {
+        if (null === $user) {
             throw new NotFoundHttpException($translator->trans('not_found_by_id', [
                 'user_id' => $id,
             ], 'users'));
@@ -111,7 +117,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Get all users
+     * Get all users.
      *
      * @Route("/api/users", methods={"GET"})
      */
@@ -120,7 +126,7 @@ class UserController extends BaseController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         /**
-         * @var $userRepository UserRepository
+         * @var UserRepository
          */
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         $users = $userRepository->findAll();

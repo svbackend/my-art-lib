@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Entity;
@@ -26,11 +27,11 @@ class UserRoles
 
     public function addRole(string $role): self
     {
-        if (in_array($role, $this->getValidRoles()) === false) {
+        if (false === in_array($role, $this->getValidRoles(), true)) {
             throw new \InvalidArgumentException(sprintf('Invalid role: %s', $role));
         }
 
-        if (array_search($role, $this->getRoles()) === false) {
+        if (false === array_search($role, $this->getRoles(), true)) {
             return $this->setRoles(
                 array_merge($this->getRoles(), [$role])
             );
@@ -42,10 +43,11 @@ class UserRoles
     public function removeRole(string $role): self
     {
         $roles = $this->getRoles();
-        $foundedRoleKey = array_search($role, $roles);
+        $foundedRoleKey = array_search($role, $roles, true);
 
-        if ($foundedRoleKey !== false) {
+        if (false !== $foundedRoleKey) {
             unset($roles[$foundedRoleKey]);
+
             return $this->setRoles($roles);
         }
 
@@ -56,16 +58,18 @@ class UserRoles
     {
         if (!count($roles)) {
             $this->roles = null;
+
             return $this;
         }
 
         $roles = json_encode($roles);
 
-        if (strlen($roles) > 255) {
+        if (mb_strlen($roles) > 255) {
             throw new \InvalidArgumentException(sprintf('UserRoles $roles is too long. Max 255 characters.'));
         }
 
         $this->roles = $roles;
+
         return $this;
     }
 
@@ -75,7 +79,7 @@ class UserRoles
             return $this->getDefaultRoles();
         }
 
-        $roles = (array)json_decode($this->roles);
+        $roles = (array) json_decode($this->roles);
 
         if (!count($roles)) {
             return $this->getDefaultRoles();

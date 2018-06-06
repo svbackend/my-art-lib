@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Service;
@@ -26,12 +27,14 @@ class SearchService
     }
 
     /**
-     * @param string $query
-     * @param string $locale
-     * @param int $offset
+     * @param string   $query
+     * @param string   $locale
+     * @param int      $offset
      * @param int|null $limit
-     * @return PaginatedCollectionInterface
+     *
      * @throws \Exception
+     *
+     * @return PaginatedCollectionInterface
      */
     public function findByQuery(string $query, string $locale, int $offset = 0, ?int $limit = null): PaginatedCollectionInterface
     {
@@ -42,16 +45,16 @@ class SearchService
         }
 
         $movies = $this->tmdb->findMoviesByQuery($query, $locale);
-        $totalResults = (int)$movies['total_results'];
+        $totalResults = (int) $movies['total_results'];
 
-        if ($totalResults === 0) {
+        if (0 === $totalResults) {
             return new MovieCollection([], 0, $offset);
         }
 
         // If we have a lot of movies then save it all
         if (isset($movies['total_pages']) && $movies['total_pages'] > 1) {
             // $i = 2 because $movies currently already has movies from page 1
-            for ($i = 2; $i <= $movies['total_pages']; $i++) {
+            for ($i = 2; $i <= $movies['total_pages']; ++$i) {
                 $moviesOnPage = $this->tmdb->findMoviesByQuery($query, $locale, [
                     'page' => $i,
                 ]);
@@ -67,10 +70,12 @@ class SearchService
     }
 
     /**
-     * @param int $tmdb_id
+     * @param int    $tmdb_id
      * @param string $locale
-     * @return Movie|null
+     *
      * @throws \Exception
+     *
+     * @return Movie|null
      */
     public function findByTmdbId(int $tmdb_id, string $locale): ?Movie
     {

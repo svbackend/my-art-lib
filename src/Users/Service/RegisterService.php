@@ -10,6 +10,7 @@ class RegisterService
     public function registerByRequest(RegisterUserRequest $request): User
     {
         $data = $request->get('registration');
+
         return $this->register($data);
     }
 
@@ -22,6 +23,7 @@ class RegisterService
      * @param $email
      * @param $username
      * @param $password
+     *
      * @return User
      */
     private function createUserInstance($email, $username, $password): User

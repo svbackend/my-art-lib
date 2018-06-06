@@ -5,7 +5,6 @@ namespace App\Movies\Request;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTMDB;
 use App\Movies\Entity\MovieTranslations;
-use App\Movies\Validation\MovieTranslationRules;
 use App\Request\BaseRequest;
 use Symfony\Component\Validator\Constraints as Assert;
 

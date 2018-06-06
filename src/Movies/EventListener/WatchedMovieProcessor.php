@@ -3,19 +3,18 @@
 namespace App\Movies\EventListener;
 
 use App\Genres\Entity\Genre;
-use App\Movies\Entity\Movie;
-use App\Movies\Entity\WatchedMovie;
 use App\Guests\Entity\GuestSession;
 use App\Guests\Entity\GuestWatchedMovie;
-use App\Users\Entity\UserWatchedMovie;
+use App\Movies\Entity\Movie;
+use App\Movies\Entity\WatchedMovie;
 use App\Users\Entity\User;
+use App\Users\Entity\UserWatchedMovie;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrProcessor;
 use Enqueue\Client\TopicSubscriberInterface;
+use Interop\Queue\PsrContext;
+use Interop\Queue\PsrMessage;
+use Interop\Queue\PsrProcessor;
 use Psr\Log\LoggerInterface;
 
 // Looks like here some logic problem
@@ -34,12 +33,14 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
     }
 
     /**
-     * This method called when user or guest trying to add movie to own list of watched movies but we've not
+     * This method called when user or guest trying to add movie to own list of watched movies but we've not.
      *
      * @param PsrMessage $message
      * @param PsrContext $session
-     * @return object|string
+     *
      * @throws \Doctrine\ORM\ORMException|\Exception
+     *
+     * @return object|string
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
@@ -49,9 +50,9 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
 
         /** @var $watchedMovies UserWatchedMovie[]|GuestWatchedMovie[] */
         foreach ($watchedMovies as $watchedMovie) {
-            if (in_array(get_class($watchedMovie), $validClasses) === false) {
+            if (false === in_array(get_class($watchedMovie), $validClasses, true)) {
                 $this->logger->error('Unexpected behavior: $watchedMovie not in range of valid classes', [
-                    'actualClass' => get_class($watchedMovie)
+                    'actualClass' => get_class($watchedMovie),
                 ]);
                 continue;
             }
@@ -77,9 +78,11 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
 
     /**
      * @param WatchedMovie $watchedMovie
-     * @param Movie $movie
-     * @return WatchedMovie
+     * @param Movie        $movie
+     *
      * @throws \Doctrine\ORM\ORMException
+     *
+     * @return WatchedMovie
      */
     private function recreateWatchedMovie(WatchedMovie $watchedMovie, Movie $movie): WatchedMovie
     {
@@ -98,37 +101,45 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
 
         return $newWatchedMovie;
     }
-    
+
     /**
      * @param UserWatchedMovie $userWatchedMovie
-     * @param Movie $movie
-     * @return UserWatchedMovie
+     * @param Movie            $movie
+     *
      * @throws \Doctrine\ORM\ORMException|\Exception
+     *
+     * @return UserWatchedMovie
      */
     private function recreateUserWatchedMovie(UserWatchedMovie $userWatchedMovie, Movie $movie): UserWatchedMovie
     {
         /** @var $userReference User */
         $userReference = $this->em->getReference(User::class, $userWatchedMovie->getUser()->getId());
+
         return new UserWatchedMovie($userReference, $movie, $userWatchedMovie->getVote(), $userWatchedMovie->getWatchedAt());
     }
 
     /**
      * @param GuestWatchedMovie $guestWatchedMovie
-     * @param Movie $movie
-     * @return GuestWatchedMovie
+     * @param Movie             $movie
+     *
      * @throws \Doctrine\ORM\ORMException|\Exception
+     *
+     * @return GuestWatchedMovie
      */
     private function recreateGuestWatchedMovie(GuestWatchedMovie $guestWatchedMovie, Movie $movie): GuestWatchedMovie
     {
         /** @var $guestSessionReference GuestSession */
         $guestSessionReference = $this->em->getReference(GuestSession::class, $guestWatchedMovie->getGuestSession()->getId());
+
         return new GuestWatchedMovie($guestSessionReference, $movie, $guestWatchedMovie->getVote(), $guestWatchedMovie->getWatchedAt());
     }
-    
+
     /**
      * @param Movie $movie
-     * @return Movie
+     *
      * @throws \Doctrine\ORM\ORMException
+     *
+     * @return Movie
      */
     private function refreshGenresAssociations(Movie $movie): Movie
     {

@@ -2,8 +2,8 @@
 
 namespace App\Users\Request;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use App\Request\BaseRequest;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class MergeWatchedMoviesRequest extends BaseRequest
 {

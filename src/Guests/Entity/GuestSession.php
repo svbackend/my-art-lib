@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Guests\Entity;
 
-use App\Users\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -34,6 +34,7 @@ class GuestSession
 
     /**
      * GuestSession constructor.
+     *
      * @throws \Exception
      */
     public function __construct()

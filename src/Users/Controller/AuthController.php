@@ -15,10 +15,12 @@ class AuthController extends BaseController
      *
      * @Route("/api/auth/login", methods={"POST", "OPTIONS"});
      *
-     * @throws \LogicException
-     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
      * @param $authUserRequest AuthUserRequest
      * @param $authService AuthService
+     *
+     * @throws \LogicException
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     *
      * @return JsonResponse
      */
     public function login(AuthUserRequest $authUserRequest, AuthService $authService)

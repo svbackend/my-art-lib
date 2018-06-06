@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Service;
@@ -26,17 +27,19 @@ class TmdbSearchService
     /**
      * @param string $query
      * @param string $locale
-     * @param array $data
-     * @return array
+     * @param array  $data
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     *
+     * @return array
      */
     public function findMoviesByQuery(string $query, string $locale = 'en', $data = []): array
     {
         $data = array_merge([
             'api_key' => $this->apiKey,
             'language' => $locale,
-            'query' => $query
+            'query' => $query,
         ], $data);
 
         $movies = $this->request('/search/movie', 'GET', [
@@ -47,11 +50,13 @@ class TmdbSearchService
     }
 
     /**
-     * @param int $tmdb_id
+     * @param int    $tmdb_id
      * @param string $locale
-     * @return array
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     *
+     * @return array
      */
     public function findMovieById(int $tmdb_id, string $locale = 'en'): array
     {
@@ -67,9 +72,11 @@ class TmdbSearchService
 
     /**
      * @param int $tmdb_id
-     * @return array
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     *
+     * @return array
      */
     public function findMovieTranslationsById(int $tmdb_id): array
     {
@@ -84,12 +91,12 @@ class TmdbSearchService
 
     private function request(string $url, string $method = 'GET', array $params = []): array
     {
-        $url = self::ApiUrl . $url;
+        $url = self::ApiUrl.$url;
 
         try {
             $response = $this->client->request($method, $url, $params);
             $response = json_decode($response->getBody()->getContents(), true);
-            getenv('APP_ENV') === 'dev' && $this->logger->debug('Guzzle request:', [
+            'dev' === getenv('APP_ENV') && $this->logger->debug('Guzzle request:', [
                 'url' => $url,
                 'method' => $method,
                 'params' => $params,
@@ -106,11 +113,11 @@ class TmdbSearchService
 
             $response = [];
 
-            if ($exception->getCode() == 404) {
+            if (404 === $exception->getCode()) {
                 throw new TmdbMovieNotFoundException();
             }
 
-            if ($exception->getCode() == 429) {
+            if (429 === $exception->getCode()) {
                 throw new TmdbRequestLimitException();
             }
         }

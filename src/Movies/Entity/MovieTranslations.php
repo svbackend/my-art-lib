@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Entity;
@@ -6,7 +7,6 @@ namespace App\Movies\Entity;
 use App\Movies\DTO\MovieTranslationDTO;
 use App\Translation\EntityTranslationInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**

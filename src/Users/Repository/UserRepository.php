@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Repository;
@@ -9,7 +10,6 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -26,12 +26,15 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
 
     /**
      * @param string $username
-     * @return User|null
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return User|null
      */
     public function loadUserByUsername($username): ?User
     {
         $username = mb_strtolower($username);
+
         return $this->createQueryBuilder('u')
             ->where('LOWER(u.username) = :username OR LOWER(u.email) = :email')
             ->setParameter('username', $username)
@@ -42,6 +45,7 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
 
     /**
      * @param array $criteria
+     *
      * @return mixed
      */
     public function getUsersByCriteria(array $criteria)
@@ -57,9 +61,10 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     }
 
     /**
-     * I do not understand why getSingleScalarResult throws NoResultException but it does
+     * I do not understand why getSingleScalarResult throws NoResultException but it does.
      *
      * @param array $criteria
+     *
      * @return bool
      */
     public function isUserExists(array $criteria): bool
@@ -79,6 +84,6 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
             return false;
         }
 
-        return $user !== null;
+        return null !== $user;
     }
 }

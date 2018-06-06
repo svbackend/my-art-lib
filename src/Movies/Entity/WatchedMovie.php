@@ -1,15 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Entity;
 
-use App\Movies\Entity\Movie;
-use App\Users\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping\MappedSuperclass;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /** @MappedSuperclass */
 class WatchedMovie
@@ -40,9 +37,11 @@ class WatchedMovie
 
     /**
      * WatchedMovie constructor.
-     * @param Movie $movie
-     * @param float|null $vote
+     *
+     * @param Movie                   $movie
+     * @param float|null              $vote
      * @param \DateTimeInterface|null $watchedAt
+     *
      * @throws \Exception
      */
     public function __construct(Movie $movie, ?float $vote, ?\DateTimeInterface $watchedAt)
@@ -51,8 +50,8 @@ class WatchedMovie
         $this->addedAt = new \DateTimeImmutable();
         $this->watchedAt = $watchedAt;
 
-        if ($vote !== null) {
-            $this->vote = $vote > 0.0 ? (float)$vote : null;
+        if (null !== $vote) {
+            $this->vote = $vote > 0.0 ? (float) $vote : null;
         }
     }
 
@@ -68,7 +67,7 @@ class WatchedMovie
 
     public function getVote(): ?float
     {
-        return (float)$this->vote;
+        return (float) $this->vote;
     }
 
     public function getAddedAt(): ?\DateTimeInterface

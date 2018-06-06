@@ -24,6 +24,7 @@ class UsersFixtures extends Fixture
 
     /**
      * @param ObjectManager $manager
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     public function load(ObjectManager $manager): void
@@ -35,11 +36,11 @@ class UsersFixtures extends Fixture
         $manager->persist($admin);
         $manager->flush();
 
-        if ($manager instanceof EntityManager === false) {
+        if (false === $manager instanceof EntityManager) {
             throw new \InvalidArgumentException('UsersFixtures $manager should be instance of EntityManager');
         }
 
-        /** @var $manager EntityManager */
+        /* @var $manager EntityManager */
         // Tester
         $this->createTestApiToken($user, self::TESTER_API_TOKEN, $manager);
         $this->createEmailConfirmationToken($user, self::TESTER_EMAIL_CONFIRMATION_TOKEN, $manager);
@@ -53,7 +54,7 @@ class UsersFixtures extends Fixture
         $profile = $user->getProfile();
         $profile->setFirstName('First')->setLastName('Last');
 
-        for ($i = 3; $i--> 0;) {
+        for ($i = 3; $i-- > 0;) {
             $profile->addContacts("TestProvider #{$i}", "https://test.com/{$i}/info");
         }
 
@@ -68,7 +69,7 @@ class UsersFixtures extends Fixture
         $profile = $user->getProfile();
         $profile->setFirstName('Admin')->setLastName('Admin');
 
-        for ($i = 3; $i--> 0;) {
+        for ($i = 3; $i-- > 0;) {
             $profile->addContacts("TestProvider #{$i}", "https://test.com/{$i}/info");
         }
 
@@ -76,9 +77,10 @@ class UsersFixtures extends Fixture
     }
 
     /**
-     * @param User $user
-     * @param string $token
+     * @param User          $user
+     * @param string        $token
      * @param EntityManager $manager
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     private function createTestApiToken(User $user, string $token, EntityManager $manager): void
@@ -87,9 +89,10 @@ class UsersFixtures extends Fixture
     }
 
     /**
-     * @param User $user
-     * @param string $token
+     * @param User          $user
+     * @param string        $token
      * @param EntityManager $manager
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     private function createEmailConfirmationToken(User $user, string $token, EntityManager $manager): void

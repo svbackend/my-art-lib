@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Translation;
@@ -8,8 +9,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Serializer\Serializer;
 
 /**
- * Trait TranslatedResponseTrait
- * @package App\Translation
+ * Trait TranslatedResponseTrait.
+ *
  * @method get($id)
  * @method has($id):bool
  */
@@ -30,14 +31,13 @@ trait TranslatedResponseTrait
         $translatedData = [];
 
         foreach ($data as $key => $value) {
-            if ($key === 'translations') {
+            if ('translations' === $key) {
                 $translatedData = array_merge($translatedData, $this->getEntityTranslation($value));
 
-                if ($recursive === true) {
+                if (true === $recursive) {
                     continue;
-                } else {
-                    break;
                 }
+                break;
             }
 
             if (is_array($value)) {
@@ -54,11 +54,13 @@ trait TranslatedResponseTrait
     private function getEntityTranslation(array $translations)
     {
         $userLocale = $this->getUserPreferredLocale(array_keys($translations));
+
         return $translations[$userLocale];
     }
 
     /**
      * @param array $locales
+     *
      * @return null|string
      */
     private function getUserPreferredLocale(array $locales = [])
@@ -75,7 +77,7 @@ trait TranslatedResponseTrait
         $preferredLocale = $request->getPreferredLanguage($locales);
 
         $locale = $request->getLocale(); // can be set by query param (?language=ru) or by symfony
-        if ($locale !== $request->getDefaultLocale() && in_array($locale, $locales) === true) {
+        if ($locale !== $request->getDefaultLocale() && true === in_array($locale, $locales, true)) {
             $preferredLocale = $locale;
         }
 

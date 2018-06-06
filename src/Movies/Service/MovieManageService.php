@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Service;
@@ -23,8 +24,10 @@ class MovieManageService
 
     /**
      * @param CreateMovieRequest $request
-     * @return Movie
+     *
      * @throws \Exception
+     *
+     * @return Movie
      */
     public function createMovieByRequest(CreateMovieRequest $request): Movie
     {
@@ -61,11 +64,13 @@ class MovieManageService
     }
 
     /**
-     * @param MovieDTO $movieDTO
-     * @param MovieTMDB $movieTMDB
-     * @param Genre[] $genres
+     * @param MovieDTO              $movieDTO
+     * @param MovieTMDB             $movieTMDB
+     * @param Genre[]               $genres
      * @param MovieTranslationDTO[] $translations
+     *
      * @throws \ErrorException
+     *
      * @return Movie
      */
     public function createMovieByDTO(MovieDTO $movieDTO, MovieTMDB $movieTMDB, array $genres, array $translations): Movie
@@ -89,6 +94,7 @@ class MovieManageService
 
     /**
      * @param array $ids
+     *
      * @return Genre[]
      */
     private function getGenresByIds(array $ids)

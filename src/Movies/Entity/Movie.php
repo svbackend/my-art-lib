@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Entity;
@@ -6,21 +7,21 @@ namespace App\Movies\Entity;
 use App\Genres\Entity\Genre;
 use App\Guests\Entity\GuestWatchedMovie;
 use App\Movies\DTO\MovieDTO;
-use App\Translation\TranslatableTrait;
 use App\Translation\TranslatableInterface;
+use App\Translation\TranslatableTrait;
 use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\PersistentCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 //todo production_countries, production_companies, actors
 
 /**
  * @ORM\Entity(repositoryClass="App\Movies\Repository\MovieRepository")
  * @ORM\Table(name="movies")
+ *
  * @method MovieTranslations getTranslation(string $locale, bool $useFallbackLocale = true)
  * @UniqueEntity("tmdb.id")
  */
@@ -37,7 +38,7 @@ class Movie implements TranslatableInterface
     private $id;
 
     /**
-     * @var $translations MovieTranslations[]|ArrayCollection
+     * @var MovieTranslations[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Movies\Entity\MovieTranslations", mappedBy="movie", cascade={"persist", "remove"})
      * @Assert\Valid(traverse=true)
      * @Groups({"list", "view"})
@@ -45,7 +46,7 @@ class Movie implements TranslatableInterface
     private $translations;
 
     /**
-     * @var $genres Genre[]|ArrayCollection
+     * @var Genre[]|ArrayCollection
      * @ORM\ManyToMany(targetEntity="App\Genres\Entity\Genre")
      * @ORM\JoinTable(name="movies_genres",
      *      joinColumns={@ORM\JoinColumn(name="movie_id", referencedColumnName="id")},
@@ -101,14 +102,14 @@ class Movie implements TranslatableInterface
     private $releaseDate;
 
     /**
-     * @var $guestWatchedMovie GuestWatchedMovie
+     * @var GuestWatchedMovie
      * @ORM\OneToOne(targetEntity="App\Guests\Entity\GuestWatchedMovie", mappedBy="movie")
      * @Groups({"list", "view"})
      */
     private $guestWatchedMovie;
 
     /**
-     * @var $userWatchedList UserWatchedMovie
+     * @var UserWatchedMovie
      * @ORM\OneToOne(targetEntity="App\Users\Entity\UserWatchedMovie", mappedBy="movie")
      * @Groups({"ROLE_USER"})
      */
@@ -141,12 +142,14 @@ class Movie implements TranslatableInterface
     public function addGenre(Genre $genre)
     {
         $this->genres->add($genre);
+
         return $this;
     }
 
     public function removeAllGenres()
     {
         $this->genres->clear();
+
         return $this;
     }
 
@@ -165,41 +168,49 @@ class Movie implements TranslatableInterface
 
     /**
      * @param string $imdbId
+     *
      * @return Movie
      */
     private function setImdbId(?string $imdbId)
     {
         $this->imdbId = $imdbId;
+
         return $this;
     }
 
     /**
      * @param int $runtime
+     *
      * @return Movie
      */
     private function setRuntime(int $runtime)
     {
         $this->runtime = $runtime;
+
         return $this;
     }
 
     /**
      * @param int $budget
+     *
      * @return Movie
      */
     private function setBudget(int $budget)
     {
         $this->budget = $budget;
+
         return $this;
     }
 
     /**
      * @param \DateTimeInterface $releaseDate
+     *
      * @return Movie
      */
     private function setReleaseDate(\DateTimeInterface $releaseDate)
     {
         $this->releaseDate = $releaseDate;
+
         return $this;
     }
 
@@ -272,6 +283,7 @@ class Movie implements TranslatableInterface
     public function isWatched()
     {
         $this->isWatched = ($this->userWatchedMovie || $this->guestWatchedMovie) ? true : false;
+
         return $this->isWatched;
     }
 }

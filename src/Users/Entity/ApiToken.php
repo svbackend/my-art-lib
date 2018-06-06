@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Entity;
 
-use App\Users\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -22,7 +22,7 @@ class ApiToken
     private $id;
 
     /**
-     * @var $user User
+     * @var User
      * @ORM\ManyToOne(targetEntity="App\Users\Entity\User")
      */
     private $user;

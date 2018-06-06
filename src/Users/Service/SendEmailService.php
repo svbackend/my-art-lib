@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Service;
 
 use App\Users\Entity\User;
-use App\Users\Service\ConfirmationTokenService;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class SendEmailService

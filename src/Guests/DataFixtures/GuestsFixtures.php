@@ -12,21 +12,23 @@ class GuestsFixtures extends Fixture
 
     /**
      * @param ObjectManager $manager
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     public function load(ObjectManager $manager): void
     {
-        if ($manager instanceof EntityManager === false) {
+        if (false === $manager instanceof EntityManager) {
             throw new \InvalidArgumentException('UsersFixtures $manager should be instance of EntityManager');
         }
 
-        /** @var $manager EntityManager */
+        /* @var $manager EntityManager */
         $this->createGuestSession(self::GUEST_SESSION_TOKEN, $manager);
     }
 
     /**
-     * @param string $token
+     * @param string        $token
      * @param EntityManager $manager
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     private function createGuestSession(string $token, EntityManager $manager): void

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Service;
@@ -10,7 +11,6 @@ use App\Users\Request\AuthUserRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class AuthService
@@ -40,8 +40,7 @@ class AuthService
         UserRepository $userRepository,
         TranslatorInterface $translator,
         UserPasswordEncoderInterface $passwordEncoder
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
         $this->translator = $translator;
@@ -77,7 +76,7 @@ class AuthService
     {
         $user = $this->userRepository->loadUserByUsername($username);
 
-        if ($user === null) {
+        if (null === $user) {
             throw new BadCredentialsException(
                 $this->translator->trans('user_with_this_username_not_exist', [
                     'username' => $username,
@@ -85,7 +84,7 @@ class AuthService
             );
         }
 
-        if ($this->passwordEncoder->isPasswordValid($user, $password) === false) {
+        if (false === $this->passwordEncoder->isPasswordValid($user, $password)) {
             throw new BadCredentialsException(
                 $this->translator->trans('wrong_password', [], 'users')
             );

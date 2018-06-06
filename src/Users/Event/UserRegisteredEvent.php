@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Event;
 
-use Symfony\Component\EventDispatcher\Event;
 use App\Users\Entity\User;
+use Symfony\Component\EventDispatcher\Event;
 
 class UserRegisteredEvent extends Event
 {

@@ -17,18 +17,18 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class MovieController
- * @package App\Movies\Controller
+ * Class MovieController.
  */
 class MovieController extends BaseController
 {
     /**
-     * Get all movies
+     * Get all movies.
      *
      * @Route("/api/movies", methods={"GET"})
      *
-     * @param Request $request
+     * @param Request         $request
      * @param MovieRepository $movieRepository
+     *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function getAll(Request $request, MovieRepository $movieRepository)
@@ -41,7 +41,7 @@ class MovieController extends BaseController
             $movies = $movieRepository->findAllWithIsGuestWatchedFlag($this->getGuest());
         }
 
-        $offset = (int)$request->get('offset', 0);
+        $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
         $movies = new PaginatedCollection($movies, $offset, $limit);
@@ -52,10 +52,12 @@ class MovieController extends BaseController
     }
 
     /**
-     * Get movie resource
+     * Get movie resource.
      *
      * @Route("/api/movies/{id}", methods={"GET"})
+     *
      * @param Movie $movie
+     *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function getMovies(Movie $movie)
@@ -66,37 +68,42 @@ class MovieController extends BaseController
     }
 
     /**
-     * Get movies by title
+     * Get movies by title.
      *
      * @Route("/api/movies/search", methods={"POST"})
+     *
      * @param SearchRequest $request
      * @param SearchService $searchService
-     * @param Request $currentRequest
+     * @param Request       $currentRequest
+     *
      * @throws \Exception
+     *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function getSearch(SearchRequest $request, SearchService $searchService, Request $currentRequest)
     {
-        $offset = (int)$request->get('offset', 0);
+        $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
         $query = $request->get('query');
         $movies = $searchService->findByQuery($query, $currentRequest->getLocale(), $offset, $limit);
 
         return $this->response($movies, 200, [], [
-            'groups' => ['list']
+            'groups' => ['list'],
         ]);
     }
 
     /**
-     * Create new movie
+     * Create new movie.
      *
      * @Route("/api/movies", methods={"POST"})
      *
      * @param CreateMovieRequest $request
      * @param MovieManageService $service
      * @param ValidatorInterface $validator
+     *
      * @throws \Exception
+     *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function postMovies(CreateMovieRequest $request, MovieManageService $service, ValidatorInterface $validator)

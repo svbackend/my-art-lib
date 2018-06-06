@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Genres\Entity;
 
 use App\Translation\EntityTranslationInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -64,7 +64,7 @@ class GenreTranslations implements EntityTranslationInterface
         return $this->name;
     }
 
-    public function getLocale():string
+    public function getLocale(): string
     {
         return $this->locale;
     }

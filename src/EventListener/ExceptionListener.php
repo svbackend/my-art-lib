@@ -14,7 +14,7 @@ class ExceptionListener implements EventSubscriberInterface
      */
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
-        if (\getenv('APP_ENV') === 'dev') {
+        if ('dev' === \getenv('APP_ENV')) {
             // for dev env we need to show all exception data
             return;
         }
@@ -25,13 +25,14 @@ class ExceptionListener implements EventSubscriberInterface
         ]);
         $event->setResponse($response);
     }
+
     /**
      * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            KernelEvents::EXCEPTION => array('onKernelException', -100),
-        );
+        return [
+            KernelEvents::EXCEPTION => ['onKernelException', -100],
+        ];
     }
 }

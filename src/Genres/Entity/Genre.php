@@ -1,20 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Genres\Entity;
 
-use App\Translation\TranslatableTrait;
 use App\Translation\TranslatableInterface;
+use App\Translation\TranslatableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Genres\Repository\GenreRepository")
  * @UniqueEntity(fields="tmdbId", message="This TMDB ID already taken")
  * @ORM\Table(name="genres")
+ *
  * @method GenreTranslations getTranslation(string $locale, bool $useFallbackLocale = true)
  */
 class Genre implements TranslatableInterface
@@ -36,7 +38,7 @@ class Genre implements TranslatableInterface
     private $tmdbId;
 
     /**
-     * @var $translations GenreTranslations[]|ArrayCollection
+     * @var GenreTranslations[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Genres\Entity\GenreTranslations", mappedBy="genre", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      * @Assert\Valid(traverse=true)

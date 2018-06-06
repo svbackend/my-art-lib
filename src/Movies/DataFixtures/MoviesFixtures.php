@@ -6,9 +6,7 @@ use App\Genres\Entity\Genre;
 use App\Genres\Entity\GenreTranslations;
 use App\Movies\DTO\MovieDTO;
 use App\Movies\DTO\MovieTranslationDTO;
-use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTMDB;
-use App\Movies\Entity\MovieTranslations;
 use App\Movies\Service\MovieManageService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -24,9 +22,10 @@ class MoviesFixtures extends Fixture
     {
         $this->movieManageService = $movieManageService;
     }
-    
+
     /**
      * @param ObjectManager $manager
+     *
      * @throws \Exception
      */
     public function load(ObjectManager $manager): void

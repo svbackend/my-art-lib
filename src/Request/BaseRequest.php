@@ -2,12 +2,12 @@
 
 namespace App\Request;
 
+use Fesor\RequestObject\ErrorResponseProvider;
 use Fesor\RequestObject\RequestObject;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Fesor\RequestObject\ErrorResponseProvider;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 //todo How to inject TranslatorInterface ?
 class BaseRequest extends RequestObject implements ErrorResponseProvider

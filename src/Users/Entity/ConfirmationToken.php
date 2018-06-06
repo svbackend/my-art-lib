@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Entity;
 
-use App\Users\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -24,7 +24,7 @@ class ConfirmationToken
     private $id;
 
     /**
-     * @var $user User
+     * @var User
      * @ORM\ManyToOne(targetEntity="App\Users\Entity\User")
      */
     private $user;
@@ -41,30 +41,32 @@ class ConfirmationToken
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     *
      * @var \DateTimeImmutable|\DateTimeInterface
      */
     private $expires_at;
 
     /**
      * ConfirmationToken constructor.
+     *
      * @param \App\Users\Entity\User $user
      * @param $type
      * @param \DateTimeInterface|null $expires_at
+     *
      * @throws \Exception
      */
     public function __construct(User $user, $type, \DateTimeInterface $expires_at = null)
     {
-        if (in_array($type, $this->getValidTypes()) === false) {
+        if (false === in_array($type, $this->getValidTypes(), true)) {
             throw new \InvalidArgumentException(sprintf('$type should be valid type! Instead %s given', $type));
         }
 
-        if ($expires_at !== null) {
+        if (null !== $expires_at) {
             $now = new \DateTimeImmutable();
             if ($expires_at <= $now) {
                 throw new \InvalidArgumentException(sprintf('You can not create already expired token'));
             }
         }
-
 
         $this->type = $type;
         $this->token = bin2hex(openssl_random_pseudo_bytes(16));
@@ -110,8 +112,9 @@ class ConfirmationToken
     }
 
     /**
-     * @return bool
      * @throws \Exception
+     *
+     * @return bool
      */
     public function isValid(): bool
     {
@@ -120,6 +123,7 @@ class ConfirmationToken
         }
 
         $now = new \DateTimeImmutable();
+
         return $this->expires_at > $now;
     }
 }

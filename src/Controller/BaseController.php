@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -12,8 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class BaseController
- * @package App\Controller
+ * Class BaseController.
  */
 abstract class BaseController extends Controller implements ControllerInterface
 {
@@ -21,9 +21,10 @@ abstract class BaseController extends Controller implements ControllerInterface
 
     /**
      * @param $data
-     * @param int $status
+     * @param int   $status
      * @param array $headers
      * @param array $context
+     *
      * @return JsonResponse
      */
     protected function response($data, int $status = 200, array $headers = [], array $context = []): JsonResponse
@@ -47,13 +48,13 @@ abstract class BaseController extends Controller implements ControllerInterface
     {
         /** @var $request Request */
         $request = $this->get('request_stack')->getCurrentRequest();
-        $guestSessionToken = (string)$request->get('guest_api_token', '');
+        $guestSessionToken = (string) $request->get('guest_api_token', '');
 
         /** @var $guestRepository GuestRepository */
         $guestRepository = $this->getDoctrine()->getRepository(GuestSession::class);
 
         return $guestRepository->findOneBy([
-            'token' => $guestSessionToken
+            'token' => $guestSessionToken,
         ]);
     }
 
@@ -65,15 +66,17 @@ abstract class BaseController extends Controller implements ControllerInterface
                 'total' => $paginatedCollection->getTotal(),
                 'offset' => $paginatedCollection->getOffset(),
                 'limit' => $paginatedCollection->getLimit(),
-            ]
+            ],
         ];
     }
 
     private function appendRolesToContextGroups(?array $context): array
     {
-        if ($this->getUser() === null) return $context;
+        if (null === $this->getUser()) {
+            return $context;
+        }
 
-        if ($context === null) {
+        if (null === $context) {
             return [
                 'groups' => $this->getUser()->getRoles(),
             ];

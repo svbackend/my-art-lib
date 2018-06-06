@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Pagination;
@@ -12,11 +13,13 @@ class PaginatedCollection implements PaginatedCollectionInterface
     private $limit = 20;
     private $paginator;
 
-    public function __construct(Query $query, int $offset = 0, ?int $limit, bool $fetchJoinCollection = true)
+    public function __construct(Query $query, int $offset, ?int $limit, bool $fetchJoinCollection = true)
     {
         $this->offset = abs($offset);
 
-        if ($limit !== null) $this->limit = abs($limit);
+        if (null !== $limit) {
+            $this->limit = abs($limit);
+        }
 
         $query = $query->setFirstResult($this->offset)->setMaxResults($this->limit);
         $this->paginator = new Paginator($query, $fetchJoinCollection);
@@ -29,7 +32,7 @@ class PaginatedCollection implements PaginatedCollectionInterface
 
     public function getTotal(): int
     {
-        return (int)$this->getItems()->count();
+        return (int) $this->getItems()->count();
     }
 
     public function getOffset(): int

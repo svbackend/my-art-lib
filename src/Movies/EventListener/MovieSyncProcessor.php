@@ -8,10 +8,10 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrProcessor;
 use Enqueue\Client\TopicSubscriberInterface;
+use Interop\Queue\PsrContext;
+use Interop\Queue\PsrMessage;
+use Interop\Queue\PsrProcessor;
 
 class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 {
@@ -22,7 +22,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     public function __construct(EntityManagerInterface $em, ProducerInterface $producer)
     {
-        if ($em instanceof EntityManager === false) {
+        if (false === $em instanceof EntityManager) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'MovieSyncProcessor expects %s as %s realization',
@@ -39,8 +39,10 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     /**
      * @param PsrMessage $message
      * @param PsrContext $session
-     * @return object|string
+     *
      * @throws \Doctrine\ORM\ORMException
+     *
+     * @return object|string
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
@@ -49,7 +51,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         $moviesIdsToLoadTranslations = [];
         $moviesCount = 0;
 
-        if ($this->em->isOpen() === false) {
+        if (false === $this->em->isOpen()) {
             $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
         }
 
@@ -57,7 +59,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
             $movie = $this->refreshGenresAssociations($movie);
             $this->em->persist($movie);
             $moviesIdsToLoadTranslations[] = $movie->getId();
-            $moviesCount++;
+            ++$moviesCount;
         }
 
         try {
@@ -75,8 +77,10 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     /**
      * @param Movie $movie
-     * @return Movie
+     *
      * @throws \Doctrine\ORM\ORMException
+     *
+     * @return Movie
      */
     private function refreshGenresAssociations(Movie $movie): Movie
     {
@@ -99,8 +103,10 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     /**
      * @param int $id
-     * @return null|Genre
+     *
      * @throws \Doctrine\ORM\ORMException
+     *
+     * @return null|Genre
      */
     private function getGenreReference(int $id): ?object
     {

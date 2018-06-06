@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-
 interface ControllerInterface
 {
     // For correct autowiring in controller's methods

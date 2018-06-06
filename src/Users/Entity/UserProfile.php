@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Entity;
@@ -21,7 +22,7 @@ class UserProfile
     private $id;
 
     /**
-     * @var $contacts UserProfileContacts[]|ArrayCollection
+     * @var UserProfileContacts[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="App\Users\Entity\UserProfileContacts", mappedBy="profile", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"view"})
@@ -73,11 +74,13 @@ class UserProfile
 
     /**
      * @param mixed $first_name
+     *
      * @return UserProfile
      */
     public function setFirstName($first_name)
     {
         $this->first_name = $first_name;
+
         return $this;
     }
 
@@ -91,11 +94,13 @@ class UserProfile
 
     /**
      * @param mixed $last_name
+     *
      * @return UserProfile
      */
     public function setLastName($last_name)
     {
         $this->last_name = $last_name;
+
         return $this;
     }
 
@@ -109,11 +114,13 @@ class UserProfile
 
     /**
      * @param mixed $about
+     *
      * @return UserProfile
      */
     public function setAbout($about)
     {
         $this->about = $about;
+
         return $this;
     }
 
@@ -127,11 +134,13 @@ class UserProfile
 
     /**
      * @param mixed $public_email
+     *
      * @return UserProfile
      */
     public function setPublicEmail($public_email)
     {
         $this->public_email = $public_email;
+
         return $this;
     }
 
@@ -153,11 +162,13 @@ class UserProfile
 
     /**
      * @param \DateTime $birth_date
+     *
      * @return UserProfile
      */
     public function setBirthDate(\DateTime $birth_date)
     {
         $this->birth_date = $birth_date;
+
         return $this;
     }
 
@@ -172,12 +183,14 @@ class UserProfile
     /**
      * @param $name
      * @param $url
+     *
      * @return $this
      */
     public function addContacts($name, $url)
     {
         $contact = new UserProfileContacts($this, $name, $url);
         $this->contacts->add($contact);
+
         return $this;
     }
 }

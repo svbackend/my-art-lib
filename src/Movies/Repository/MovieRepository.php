@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Repository;
@@ -62,6 +63,7 @@ class MovieRepository extends ServiceEntityRepository
 
     /**
      * @param array $ids
+     *
      * @return array|Movie[]
      */
     public function findAllByIds(array $ids)
@@ -97,7 +99,7 @@ class MovieRepository extends ServiceEntityRepository
 
     public function findOneByIdOrTmdbId(?int $id = null, ?int $tmdb_id = null)
     {
-        if ($id === null && $tmdb_id === null) {
+        if (null === $id && null === $tmdb_id) {
             throw new \InvalidArgumentException('Movie ID or TMDB ID should be provided');
         }
 

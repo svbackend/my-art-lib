@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Service;
@@ -22,9 +23,11 @@ class TmdbNormalizerService
     }
 
     /**
-     * @param array $movies
+     * @param array  $movies
      * @param string $locale
+     *
      * @throws \Exception
+     *
      * @return Movie[]
      */
     public function normalizeMoviesToObjects(array $movies, string $locale = 'en'): array
@@ -36,7 +39,7 @@ class TmdbNormalizerService
             $locale = $this->getMovieLocale($movie, $locale);
 
             $movieObject = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [], [
-                $this->createMovieTranslationDTO($locale, $movie)
+                $this->createMovieTranslationDTO($locale, $movie),
             ]);
 
             $genresIds = $this->getGenresIds($movie);
@@ -50,17 +53,19 @@ class TmdbNormalizerService
 
     /**
      * @param array $movie
-     * @return MovieDTO
+     *
      * @throws \Exception
+     *
+     * @return MovieDTO
      */
     private function createMovieDTO(array $movie): MovieDTO
     {
         return new MovieDTO(
             $movie['original_title'],
-            self::IMAGE_HOST . $movie['poster_path'],
+            self::IMAGE_HOST.$movie['poster_path'],
             $movie['imdb_id'] ?? null,
-            isset($movie['budget']) ? (int)$movie['budget'] : null,
-            isset($movie['runtime']) ? (int)$movie['runtime'] : null,
+            isset($movie['budget']) ? (int) $movie['budget'] : null,
+            isset($movie['runtime']) ? (int) $movie['runtime'] : null,
             isset($movie['release_date']) ? $movie['release_date'] : null
         );
     }
@@ -68,9 +73,9 @@ class TmdbNormalizerService
     private function createMovieTmdbDTO(array $movie): MovieTMDB
     {
         return new MovieTMDB(
-            (int)$movie['id'],
-            isset($movie['vote_average']) ? (float)$movie['vote_average'] : null,
-            isset($movie['vote_count']) ? (int)$movie['vote_count'] : null
+            (int) $movie['id'],
+            isset($movie['vote_average']) ? (float) $movie['vote_average'] : null,
+            isset($movie['vote_count']) ? (int) $movie['vote_count'] : null
         );
     }
 
@@ -102,6 +107,6 @@ class TmdbNormalizerService
 
     private function getMovieLocale(array $movie, string $defaultLocale)
     {
-        return isset($movie['locale']) ? substr($movie['locale'], 0, 2) : $defaultLocale; // "en-US" to "en"
+        return isset($movie['locale']) ? mb_substr($movie['locale'], 0, 2) : $defaultLocale; // "en-US" to "en"
     }
 }

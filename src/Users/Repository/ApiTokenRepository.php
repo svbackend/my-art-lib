@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Repository;
@@ -23,7 +24,7 @@ class ApiTokenRepository extends ServiceEntityRepository
     public function findByToken(string $token): ?ApiToken
     {
         return $this->findOneBy([
-            'token' => $token
+            'token' => $token,
         ]);
     }
 }

@@ -1,13 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Entity;
 
-use App\Users\Entity\UserWatchedMovie;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -28,7 +27,7 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @var $profile UserProfile
+     * @var UserProfile
      * @ORM\OneToOne(targetEntity="App\Users\Entity\UserProfile", cascade={"persist", "remove"})
      * @Groups({"list", "view"})
      */
@@ -95,7 +94,7 @@ class User implements UserInterface
 
     public function isEmailConfirmed(): bool
     {
-        return (bool)$this->isEmailConfirmed;
+        return (bool) $this->isEmailConfirmed;
     }
 
     public function setPlainPassword(string $plainPassword): self
@@ -111,7 +110,7 @@ class User implements UserInterface
 
     public function getPlainPassword(): string
     {
-        return (string)$this->plainPassword;
+        return (string) $this->plainPassword;
     }
 
     public function setPassword($password, UserPasswordEncoderInterface $passwordEncoder): self
@@ -125,6 +124,7 @@ class User implements UserInterface
     /**
      * @param $password
      * @param UserPasswordEncoderInterface $passwordEncoder
+     *
      * @return bool
      */
     public function isPasswordValid($password, UserPasswordEncoderInterface $passwordEncoder): bool

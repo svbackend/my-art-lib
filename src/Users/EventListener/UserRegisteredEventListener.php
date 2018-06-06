@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\EventListener;
@@ -23,7 +24,9 @@ class UserRegisteredEventListener
     {
         $user = $event->getUser();
 
-        if (!$user instanceof User) { return; }
+        if (!$user instanceof User) {
+            return;
+        }
 
         $this->sendEmailConfirmation($user);
     }

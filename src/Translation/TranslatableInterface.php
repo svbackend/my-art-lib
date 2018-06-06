@@ -2,6 +2,7 @@
 
 namespace App\Translation;
 
-interface TranslatableInterface {
+interface TranslatableInterface
+{
     public function getTranslation(string $locale, bool $useFallbackLocale = true): ?EntityTranslationInterface;
 }

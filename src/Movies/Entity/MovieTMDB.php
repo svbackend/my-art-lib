@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Embeddable
@@ -44,11 +44,11 @@ class MovieTMDB
 
     public function getVoteAverage(): ?float
     {
-        return (float)$this->voteAverage;
+        return (float) $this->voteAverage;
     }
 
     public function getVoteCount(): ?int
     {
-        return (int)$this->voteCount;
+        return (int) $this->voteCount;
     }
 }

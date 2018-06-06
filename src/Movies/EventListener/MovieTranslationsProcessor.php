@@ -13,10 +13,10 @@ use App\Service\LocaleService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrProcessor;
 use Enqueue\Client\TopicSubscriberInterface;
+use Interop\Queue\PsrContext;
+use Interop\Queue\PsrMessage;
+use Interop\Queue\PsrProcessor;
 
 class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterface
 {
@@ -31,7 +31,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
-        if ($em instanceof EntityManager === false) {
+        if (false === $em instanceof EntityManager) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'MovieTranslationsProcessor expects %s as %s realization',
@@ -51,16 +51,18 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     /**
      * @param PsrMessage $message
      * @param PsrContext $session
-     * @return string
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
+     *
+     * @return string
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
         $moviesIds = $message->getBody();
         $moviesIds = unserialize($moviesIds);
 
-        if ($this->em->isOpen() === false) {
+        if (false === $this->em->isOpen()) {
             $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
         }
 
@@ -69,8 +71,8 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $totalCounter = count($movies);
         $successfullySavedMoviesCounter = 0;
         foreach ($movies as $movie) {
-            if ($this->isAllTranslationsSaved($movie) === true) {
-                $successfullySavedMoviesCounter++;
+            if (true === $this->isAllTranslationsSaved($movie)) {
+                ++$successfullySavedMoviesCounter;
                 continue;
             }
 
@@ -80,12 +82,12 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
                 continue;
             } catch (TmdbMovieNotFoundException $movieNotFoundException) {
                 // if movie not found let's think that it's successfully processed
-                $successfullySavedMoviesCounter++;
+                ++$successfullySavedMoviesCounter;
                 continue;
             }
 
             $this->addTranslations($translationsDTOs, $movie);
-            $successfullySavedMoviesCounter++;
+            ++$successfullySavedMoviesCounter;
         }
 
         try {
@@ -98,16 +100,18 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
         if ($successfullySavedMoviesCounter === $totalCounter) {
             return self::ACK;
-        } else {
-            return self::REQUEUE;
         }
+
+        return self::REQUEUE;
     }
 
     /**
      * @param int $tmdbId
-     * @return array|MovieTranslationDTO[]
+     *
      * @throws TmdbRequestLimitException
      * @throws \App\Movies\Exception\TmdbMovieNotFoundException
+     *
+     * @return array|MovieTranslationDTO[]
      */
     private function loadTranslationsFromTMDB(int $tmdbId): array
     {
@@ -116,7 +120,9 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $newTranslations = [];
 
         foreach ($translations as $translation) {
-            if (in_array($translation['iso_639_1'], $this->locales) === false) { continue; }
+            if (false === in_array($translation['iso_639_1'], $this->locales, true)) {
+                continue;
+            }
             $data = $translation['data'];
 
             $newTranslations[] = new MovieTranslationDTO($translation['iso_639_1'], $data['title'], $data['overview'], null);
@@ -128,6 +134,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     /**
      * @param array $moviesTranslationsDTOs
      * @param Movie $movie
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
      */
@@ -148,8 +155,10 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     /**
      * @param Movie $movie
-     * @return bool
+     *
      * @throws \ErrorException
+     *
+     * @return bool
      */
     private function isAllTranslationsSaved(Movie $movie): bool
     {

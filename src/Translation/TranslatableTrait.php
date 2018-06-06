@@ -5,19 +5,20 @@ namespace App\Translation;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Trait TranslatableTrait
- * @package App\Translation
+ * Trait TranslatableTrait.
+ *
  * @property ArrayCollection $translations
- * @property int|null $id
+ * @property int|null        $id
  */
 trait TranslatableTrait
 {
     private $isTranslationsMappedByLocale = false;
 
     /**
-     * @param array $translations
-     * @param callable $add
+     * @param array         $translations
+     * @param callable      $add
      * @param callable|null $update
+     *
      * @throws \ErrorException
      */
     public function updateTranslations(array $translations, callable $add, callable $update = null)
@@ -29,7 +30,7 @@ trait TranslatableTrait
                 continue;
             }
 
-            if ($update === null) {
+            if (null === $update) {
                 // This will called only when there's update action and $update function not defined
                 // But you still can keep it as null if you creating entity
                 throw new \InvalidArgumentException('Unexpected behavior: founded old translation but $update function not defined');
@@ -51,29 +52,32 @@ trait TranslatableTrait
      */
     public function getTranslations(): array
     {
-        if ($this->isTranslationsMappedByLocale === true) {
+        if (true === $this->isTranslationsMappedByLocale) {
             return $this->translations->toArray();
         }
 
         $this->mapTranslationsByLocale();
+
         return $this->translations->toArray();
     }
 
     /**
      * @param string $locale
-     * @param bool $useFallbackLocale
-     * @return EntityTranslationInterface|null
+     * @param bool   $useFallbackLocale
+     *
      * @throws \ErrorException
+     *
+     * @return EntityTranslationInterface|null
      */
     public function getTranslation(string $locale, bool $useFallbackLocale = true): ?EntityTranslationInterface
     {
-        if ($this->isTranslationsMappedByLocale === false) {
+        if (false === $this->isTranslationsMappedByLocale) {
             $this->mapTranslationsByLocale();
         }
 
         $translation = $this->translations->get($locale);
 
-        if ($translation === null && $useFallbackLocale === true) {
+        if (null === $translation && true === $useFallbackLocale) {
             return $this->getFallbackTranslation();
         }
 
@@ -81,8 +85,9 @@ trait TranslatableTrait
     }
 
     /**
-     * @return mixed
      * @throws \ErrorException
+     *
+     * @return mixed
      */
     private function getFallbackTranslation(): EntityTranslationInterface
     {

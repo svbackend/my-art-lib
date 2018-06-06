@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Users\Security;
 
+use App\Users\Entity\User;
 use App\Users\Repository\ApiTokenRepository;
 use App\Users\Repository\UserRepository;
-use App\Users\Entity\User;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,8 +34,7 @@ class UserProvider implements UserProviderInterface
         UserRepository $userRepository,
         ApiTokenRepository $apiTokenRepository,
         TranslatorInterface $translator
-    )
-    {
+    ) {
         $this->userRepository = $userRepository;
         $this->apiTokenRepository = $apiTokenRepository;
         $this->translator = $translator;
@@ -58,6 +58,7 @@ class UserProvider implements UserProviderInterface
 
     /**
      * @param string $token
+     *
      * @return User
      */
     public function loadUserByToken(string $token): User
@@ -86,7 +87,7 @@ class UserProvider implements UserProviderInterface
         }
 
         /**
-         * @var $user User
+         * @var User
          */
         if (null === $reloadedUser = $this->userRepository->find($user->getId())) {
             throw new UsernameNotFoundException($this->translator->trans('user_provider.reload.error', [
@@ -103,6 +104,7 @@ class UserProvider implements UserProviderInterface
     public function supportsClass($class)
     {
         $userClass = User::class;
+
         return $userClass === $class || is_subclass_of($class, $userClass);
     }
 }

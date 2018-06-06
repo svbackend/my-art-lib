@@ -10,11 +10,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserCheckController extends BaseController
 {
     /**
-     * Check is user exists by username
+     * Check is user exists by username.
      *
      * @Route("/api/users/username/{username}", methods={"GET"})
-     * @param string $username
+     *
+     * @param string         $username
      * @param UserRepository $repository
+     *
      * @return JsonResponse
      */
     public function isUserExistsByUsername(string $username, UserRepository $repository)
@@ -23,7 +25,7 @@ class UserCheckController extends BaseController
             'username' => $username,
         ]);
 
-        if ($isUserExists === true) {
+        if (true === $isUserExists) {
             return new JsonResponse();
         }
 
@@ -31,11 +33,13 @@ class UserCheckController extends BaseController
     }
 
     /**
-     * Check is user exists by email
+     * Check is user exists by email.
      *
      * @Route("/api/users/email/{email}", methods={"GET"})
-     * @param string $email
+     *
+     * @param string         $email
      * @param UserRepository $repository
+     *
      * @return JsonResponse
      */
     public function isUserExistsByEmail(string $email, UserRepository $repository)
@@ -44,7 +48,7 @@ class UserCheckController extends BaseController
             'email' => $email,
         ]);
 
-        if ($isUserExists === true) {
+        if (true === $isUserExists) {
             return new JsonResponse();
         }
 

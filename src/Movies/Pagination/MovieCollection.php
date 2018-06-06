@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Movies\Pagination;
@@ -26,7 +27,7 @@ class MovieCollection implements PaginatedCollectionInterface
 
     public function getTotal(): int
     {
-        return (int)$this->totalCount;
+        return (int) $this->totalCount;
     }
 
     public function getOffset(): int
