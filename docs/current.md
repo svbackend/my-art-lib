@@ -2,6 +2,14 @@
 
 Warning: Some examples in this documentation can be simplifier for better readability, it's not best practices and single way to do things, just use common sense.
 
+### Most used commands
+
+* `php bin/console doctrine:schema:update --force`
+* `php bin/console doctrine:fixtures:load --purge-with-truncate`
+* `bin/console enqueue:consume --setup-broker -vvv`
+* `php vendor/bin/php-cs-fixer fix src`
+* `php bin/phpunit`
+
 ### Composer
 
 Composer not included in docker container by default so to use it you should have it on your machine and run it like: 
