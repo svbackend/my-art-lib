@@ -8,6 +8,7 @@ use App\Guests\Entity\GuestSession;
 use App\Movies\Entity\Movie;
 use App\Users\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -73,6 +74,19 @@ class MovieRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
+
+        return $result;
+    }
+
+    public function getAllWatchedMoviesByUserId(int $userId): Query
+    {
+        $result = $this->getBaseQuery()
+            ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id')
+            ->addSelect('uwm')
+            ->setParameter('user_id', $userId)
+            ->andWhere('uwm.id != 0')
+            ->orderBy('uwm.id', 'DESC')
+            ->getQuery();
 
         return $result;
     }

@@ -4,6 +4,7 @@ namespace App\Users\Controller;
 
 use App\Controller\BaseController;
 use App\Guests\Entity\GuestSession;
+use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\AddWatchedMovieRequest;
 use App\Movies\Service\WatchedMovieService;
 use App\Pagination\PaginatedCollection;
@@ -51,17 +52,13 @@ class WatchedMovieController extends BaseController
      *
      * @return JsonResponse
      */
-    public function getAll(Request $request, User $user)
+    public function getAll(Request $request, User $user, MovieRepository $repository)
     {
-        $em = $this->getDoctrine()->getManager();
-        /** @var $watchedMovieRepository WatchedMovieRepository */
-        $watchedMovieRepository = $em->getRepository(UserWatchedMovie::class);
-
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
         $watchedMovies = new PaginatedCollection(
-            $watchedMovieRepository->getAllWatchedMoviesByUserId($user->getId()),
+            $repository->getAllWatchedMoviesByUserId($user->getId()),
             $offset,
             $limit ? (int) $limit : null
         );
