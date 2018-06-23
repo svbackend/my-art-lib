@@ -20,4 +20,12 @@ class WatchedMovieRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, UserWatchedMovie::class);
     }
+
+    public function findOneByMovieId(int $movieId, int $userId): ?UserWatchedMovie
+    {
+        return $this->findOneBy([
+            'movie' => $movieId,
+            'user' => $userId,
+        ]);
+    }
 }
