@@ -10,10 +10,10 @@ use App\Movies\Service\WatchedMovieService;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
 use App\Users\Entity\UserWatchedMovie;
-use App\Users\Repository\WatchedMovieRepository;
 use App\Users\Request\MergeWatchedMoviesRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -47,8 +47,9 @@ class WatchedMovieController extends BaseController
     /**
      * @Route("/api/users/{id}/watchedMovies", methods={"GET"});
      *
-     * @param Request $request
-     * @param User    $user
+     * @param Request         $request
+     * @param User            $user
+     * @param MovieRepository $repository
      *
      * @return JsonResponse
      */
@@ -66,6 +67,27 @@ class WatchedMovieController extends BaseController
         return $this->response($watchedMovies, 200, [], [
             'groups' => ['list'],
         ]);
+    }
+
+    /**
+     * @Route("/api/users/{user}/watchedMovies/{watchedMovie}", methods={"DELETE"});
+     * @param UserWatchedMovie $watchedMovie
+     * @return JsonResponse
+     */
+    public function deleteWatchedMovies(UserWatchedMovie $watchedMovie)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        /** @var $currentUser User */
+        $currentUser = $this->getUser();
+        if ($watchedMovie->getUser()->getId() !== $currentUser->getId()) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $this->getDoctrine()->getManager()->remove($watchedMovie);
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse(null, 202);
     }
 
     /**
