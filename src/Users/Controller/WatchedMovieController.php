@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class WatchedMovieController extends BaseController
 {
@@ -55,6 +56,32 @@ class WatchedMovieController extends BaseController
      * @return JsonResponse
      */
     public function getAll(Request $request, User $user, MovieRepository $repository)
+    {
+        $offset = (int) $request->get('offset', 0);
+        $limit = $request->get('limit', null);
+
+        $watchedMovies = new PaginatedCollection(
+            $repository->getAllWatchedMoviesByUserId($user->getId()),
+            $offset,
+            $limit ? (int) $limit : null
+        );
+
+        return $this->response($watchedMovies, 200, [], [
+            'groups' => ['list'],
+        ]);
+    }
+
+    /**
+     * @Route("/api/users/{username}/watchedMovies", methods={"GET"});
+     * @ParamConverter("user", options={"mapping"={"username"="username"}})
+     *
+     * @param Request         $request
+     * @param User            $user
+     * @param MovieRepository $repository
+     *
+     * @return JsonResponse
+     */
+    public function getAllByUsername(Request $request, User $user, MovieRepository $repository)
     {
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
