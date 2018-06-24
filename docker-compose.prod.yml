@@ -2,16 +2,17 @@ version: '3'
 services:
   app:
     build:
-      context: .
-      dockerfile: .docker/Dockerfile
+          context: .
+          dockerfile: .docker/Dockerfile
     image: svbackend/my-art-lib
+    #env_file: '.env'
     ports:
-      - 8080:80
+      - 80:80
+      - 443:443
     volumes:
       - .:/srv/app
     links:
       - postgres
-      - pgadmin
       - redis
     environment:
           DB_HOST: postgres
@@ -30,10 +31,6 @@ services:
         POSTGRES_USER: my_art_lib
         POSTGRES_PASSWORD: my_art_lib
         PGDATA: /tmp
-  pgadmin:
-      image: fenglc/pgadmin4
-      ports:
-        - 5050:5050
   redis:
       image: redis:4.0-alpine
       ports:
