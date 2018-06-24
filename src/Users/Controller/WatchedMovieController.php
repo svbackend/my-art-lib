@@ -47,7 +47,7 @@ class WatchedMovieController extends BaseController
     }
 
     /**
-     * @Route("/api/users/{id}/watchedMovies", methods={"GET"});
+     * @Route("/api/users/{id<\d+>}/watchedMovies", methods={"GET"});
      *
      * @param Request         $request
      * @param User            $user
