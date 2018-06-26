@@ -53,7 +53,7 @@ class WatchedMovieController extends BaseController
     }
 
     /**
-     * @Route("/api/guests/{id}/watchedMovies", methods={"GET"});
+     * @Route("/api/guests/{id<\d+>}/watchedMovies", methods={"GET"});
      *
      * @param Request      $request
      * @param GuestSession $guestSession
