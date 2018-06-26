@@ -4,7 +4,6 @@ namespace App\Users\Controller;
 
 use App\Controller\BaseController;
 use App\Guests\Entity\GuestSession;
-use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\AddWatchedMovieRequest;
 use App\Movies\Request\UpdateWatchedMovieRequest;
@@ -14,12 +13,12 @@ use App\Users\Entity\User;
 use App\Users\Entity\UserWatchedMovie;
 use App\Users\Repository\WatchedMovieRepository;
 use App\Users\Request\MergeWatchedMoviesRequest;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class WatchedMovieController extends BaseController
 {
@@ -51,11 +50,13 @@ class WatchedMovieController extends BaseController
     /**
      * @Route("/api/users/{user}/watchedMovies/{watchedMovie}", methods={"PATCH"});
      *
-     * @param UserWatchedMovie $watchedMovie
+     * @param UserWatchedMovie          $watchedMovie
      * @param UpdateWatchedMovieRequest $request
-     * @param WatchedMovieService $watchedMovieService
-     * @return JsonResponse
+     * @param WatchedMovieService       $watchedMovieService
+     *
      * @throws \Exception
+     *
+     * @return JsonResponse
      */
     public function patchWatchedMoviesById(UserWatchedMovie $watchedMovie, UpdateWatchedMovieRequest $request, WatchedMovieService $watchedMovieService)
     {
@@ -74,13 +75,15 @@ class WatchedMovieController extends BaseController
     }
 
     /**
-     * @Route("/api/users/{user}/watchedMovies/{movieId}", methods={"PATCH"});
+     * @Route("/api/users/{user}/watchedMovies/movie/{movieId}", methods={"PATCH"});
      *
-     * @param int $movieId
+     * @param int                       $movieId
      * @param UpdateWatchedMovieRequest $request
-     * @param WatchedMovieService $watchedMovieService
-     * @return JsonResponse
+     * @param WatchedMovieService       $watchedMovieService
+     *
      * @throws \Exception
+     *
+     * @return JsonResponse
      */
     public function patchWatchedMoviesByMovieId(int $movieId, UpdateWatchedMovieRequest $request, WatchedMovieService $watchedMovieService, WatchedMovieRepository $repository)
     {
@@ -154,8 +157,10 @@ class WatchedMovieController extends BaseController
 
     /**
      * @Route("/api/users/{user}/watchedMovies/{watchedMovieId}", methods={"DELETE"});
-     * @param int $watchedMovieId
+     *
+     * @param int                    $watchedMovieId
      * @param WatchedMovieRepository $repository
+     *
      * @return JsonResponse
      */
     public function deleteWatchedMovies(int $watchedMovieId, WatchedMovieRepository $repository)

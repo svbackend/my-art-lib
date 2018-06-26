@@ -112,6 +112,39 @@ class WatchedMovieControllerTest extends WebTestCase
         $this->assertContains('2010-05-01', $updatedWatchedMovie['userWatchedMovie']['watchedAt']);
     }
 
+    public function testUpdateWatchedMovieByMovieId()
+    {
+        $client = self::$client;
+        $apiToken = UsersFixtures::TESTER_API_TOKEN;
+        $username = UsersFixtures::TESTER_USERNAME;
+        $movies = self::getMovies();
+        $movie = reset($movies);
+
+        // First of all we need to add movie to our library
+        $client->request('POST', "/api/users/watchedMovies?api_token={$apiToken}", [
+            'movie' => [
+                'id' => (int)$movie['id'],
+                'tmdbId' => null,
+                'vote' => null,
+                'watchedAt' => null,
+            ]
+        ]);
+
+        $client->request('PATCH', "/api/users/{$username}/watchedMovies/movie/{$movie['id']}?api_token={$apiToken}", [
+            'movie' => [
+                'vote' => 7,
+                'watchedAt' => '2010-05-02',
+            ]
+        ]);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $watchedMoviesList = $this->getWatchedMoviesList($username, $apiToken);
+        $updatedWatchedMovie = reset($watchedMoviesList['data']);
+        $this->assertEquals(7, $updatedWatchedMovie['userWatchedMovie']['vote']);
+        $this->assertNotEquals(null, $updatedWatchedMovie['userWatchedMovie']['watchedAt']);
+        $this->assertContains('2010-05-02', $updatedWatchedMovie['userWatchedMovie']['watchedAt']);
+    }
+
     public function testAddWatchedMovieWithTmdbId()
     {
         $client = self::$client;

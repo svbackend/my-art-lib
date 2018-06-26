@@ -19,8 +19,9 @@ class UpdateWatchedMovieRequest extends BaseRequest
     }
 
     /**
-     * @return WatchedMovieDTO
      * @throws \Exception
+     *
+     * @return WatchedMovieDTO
      */
     public function getWatchedMovieDTO()
     {
