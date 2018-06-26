@@ -194,7 +194,7 @@ class UserControllerTest extends WebTestCase
         $client = self::$client;
 
         $client->request('GET', "/api/users?api_token=WRONG_API_TOKEN");
-        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('error', $response);

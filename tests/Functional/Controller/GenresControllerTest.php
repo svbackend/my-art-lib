@@ -116,7 +116,7 @@ class GenresControllerTest extends WebTestCase
             ]
         ]);
 
-        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('error', $response);
     }
