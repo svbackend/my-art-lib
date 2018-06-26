@@ -66,7 +66,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
             'error_description' => $this->translator->trans('api_token_authentication_failure_description', [], 'error'),
         ];
 
-        return new JsonResponse($data, Response::HTTP_FORBIDDEN);
+        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
 
     public function start(Request $request, AuthenticationException $authException = null)
