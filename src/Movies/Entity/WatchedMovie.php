@@ -49,15 +49,30 @@ class WatchedMovie
         $this->movie = $movie;
         $this->addedAt = new \DateTimeImmutable();
         $this->watchedAt = $watchedAt;
-
-        if ($vote !== null) {
-            $this->vote = $vote > 0.0 ? (float) $vote : null;
-        }
+        $this->changeVote($vote);
     }
 
     public function updateMovie(Movie $movie)
     {
         $this->movie = $movie;
+    }
+
+    public function changeVote(?float $vote)
+    {
+        if ($vote === null) {
+            $this->vote = $vote;
+        }
+
+        if ($vote < 0.0 || $vote > 10.0) {
+            throw new \InvalidArgumentException('Vote can\'t be less than 0 or greater than 10');
+        }
+
+        $this->vote = (float) $vote;
+    }
+
+    public function changeWatchedAt(?\DateTimeInterface $watchedAt)
+    {
+        $this->watchedAt = $watchedAt;
     }
 
     public function getMovie(): ?Movie

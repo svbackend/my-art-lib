@@ -4,8 +4,10 @@ namespace App\Users\Controller;
 
 use App\Controller\BaseController;
 use App\Guests\Entity\GuestSession;
+use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\AddWatchedMovieRequest;
+use App\Movies\Request\UpdateWatchedMovieRequest;
 use App\Movies\Service\WatchedMovieService;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
@@ -44,6 +46,30 @@ class WatchedMovieController extends BaseController
         }
 
         return new JsonResponse(null, 202);
+    }
+
+    /**
+     * @Route("/api/users/{user}/watchedMovies/{watchedMovie}", methods={"PATCH"});
+     *
+     * @param UserWatchedMovie $watchedMovie
+     * @param UpdateWatchedMovieRequest $request
+     * @param WatchedMovieService $watchedMovieService
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function patchWatchedMoviesById(UserWatchedMovie $watchedMovie, UpdateWatchedMovieRequest $request, WatchedMovieService $watchedMovieService)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        $movie = $request->get('movie');
+        $vote = $movie['vote'] ? (float) $movie['vote'] : null;
+        $watchedAt = $movie['watchedAt'] ? new \DateTimeImmutable($movie['watchedAt']) : null;
+        $watchedMovieDTO = new WatchedMovieDTO(null, null, $vote, $watchedAt);
+        $watchedMovieService->updateUserWatchedMovie($watchedMovie, $watchedMovieDTO);
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse(null, 200);
     }
 
     /**

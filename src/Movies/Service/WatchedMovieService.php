@@ -9,6 +9,7 @@ use App\Guests\Entity\GuestWatchedMovie;
 use App\Guests\Repository\WatchedMovieRepository;
 use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
+use App\Movies\Entity\WatchedMovie;
 use App\Movies\EventListener\WatchedMovieProcessor;
 use App\Movies\Repository\MovieRepository;
 use App\Users\Entity\User;
@@ -77,6 +78,12 @@ class WatchedMovieService
         }
 
         return true;
+    }
+
+    public function updateUserWatchedMovie(WatchedMovie $watchedMovie, WatchedMovieDTO $watchedMovieDTO)
+    {
+        $watchedMovie->changeVote($watchedMovieDTO->getVote());
+        $watchedMovie->changeWatchedAt($watchedMovieDTO->getWatchedAt());
     }
 
     /**
