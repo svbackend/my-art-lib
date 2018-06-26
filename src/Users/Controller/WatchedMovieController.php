@@ -61,10 +61,39 @@ class WatchedMovieController extends BaseController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $movie = $request->get('movie');
-        $vote = $movie['vote'] ? (float) $movie['vote'] : null;
-        $watchedAt = $movie['watchedAt'] ? new \DateTimeImmutable($movie['watchedAt']) : null;
-        $watchedMovieDTO = new WatchedMovieDTO(null, null, $vote, $watchedAt);
+        if ($watchedMovie->getUser()->getId() !== $this->getUser()->getId()) {
+            throw new AccessDeniedHttpException();
+        }
+
+        $watchedMovieDTO = $request->getWatchedMovieDTO();
+        $watchedMovieService->updateUserWatchedMovie($watchedMovie, $watchedMovieDTO);
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse(null, 200);
+    }
+
+    /**
+     * @Route("/api/users/{user}/watchedMovies/{movieId}", methods={"PATCH"});
+     *
+     * @param int $movieId
+     * @param UpdateWatchedMovieRequest $request
+     * @param WatchedMovieService $watchedMovieService
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function patchWatchedMoviesByMovieId(int $movieId, UpdateWatchedMovieRequest $request, WatchedMovieService $watchedMovieService, WatchedMovieRepository $repository)
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        /** @var $user User */
+        $user = $this->getUser();
+
+        if (null === $watchedMovie = $repository->findOneByMovieId($movieId, $user->getId())) {
+            throw new NotFoundHttpException();
+        }
+
+        $watchedMovieDTO = $request->getWatchedMovieDTO();
         $watchedMovieService->updateUserWatchedMovie($watchedMovie, $watchedMovieDTO);
 
         $this->getDoctrine()->getManager()->flush();
