@@ -48,7 +48,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     {
         $movies = $message->getBody();
         $movies = unserialize($movies);
-        $moviesIdsToLoadTranslations = [];
+        $savedMoviesIds = [];
         $moviesCount = 0;
 
         if ($this->em->isOpen() === false) {
@@ -58,7 +58,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         foreach ($movies as $movie) {
             $movie = $this->refreshGenresAssociations($movie);
             $this->em->persist($movie);
-            $moviesIdsToLoadTranslations[] = $movie->getId();
+            $savedMoviesIds[] = $movie->getId();
             ++$moviesCount;
         }
 
@@ -70,7 +70,8 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
             echo $exception->getMessage();
         }
 
-        $this->loadTranslations($moviesIdsToLoadTranslations);
+        $this->loadTranslations($savedMoviesIds);
+        $this->loadSimilarMovies($savedMoviesIds);
 
         return self::ACK;
     }
@@ -116,6 +117,11 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     private function loadTranslations(array $moviesIds)
     {
         $this->producer->sendEvent(MovieTranslationsProcessor::LOAD_TRANSLATIONS, serialize($moviesIds));
+    }
+
+    private function loadSimilarMovies(array $moviesIds)
+    {
+        $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, serialize($moviesIds));
     }
 
     public static function getSubscribedTopics()

@@ -89,6 +89,33 @@ class TmdbSearchService
         return $movie;
     }
 
+    /**
+     * @param int $tmdb_id
+     * @param int $page
+     * @return array
+     * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
+     */
+    public function findSimilarMoviesById(int $tmdb_id, int $page = 1): array
+    {
+        $movie = $this->request("/movie/{$tmdb_id}/similar", 'GET', [
+            'query' => [
+                'api_key' => $this->apiKey,
+                'page' => $page,
+            ],
+        ]);
+
+        return $movie;
+    }
+
+    /**
+     * @param string $url
+     * @param string $method
+     * @param array $params
+     * @return array
+     * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
+     */
     private function request(string $url, string $method = 'GET', array $params = []): array
     {
         $url = self::ApiUrl.$url;

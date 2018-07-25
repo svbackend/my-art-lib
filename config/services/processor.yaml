@@ -15,3 +15,11 @@ services:
     App\Movies\EventListener\MovieTranslationsProcessor:
         tags:
             - { name: enqueue.client.processor }
+
+    App\Movies\EventListener\SimilarMoviesProcessor:
+        tags:
+            - { name: enqueue.client.processor }
+
+    App\Movies\EventListener\AddSimilarMoviesProcessor:
+        tags:
+            - { name: enqueue.client.processor }

@@ -32,7 +32,7 @@ class MovieDTO
         $this->imdbId = $imdbId;
         $this->budget = $budget;
         $this->runtime = $runtime;
-        $this->releaseDate = new \DateTimeImmutable($releaseDate);
+        $this->releaseDate = new \DateTimeImmutable($releaseDate ?? 'now');
     }
 
     /**

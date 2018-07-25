@@ -11,6 +11,7 @@ use App\Movies\Repository\MovieRepository;
 use App\Pagination\PaginatedCollection;
 use App\Pagination\PaginatedCollectionInterface;
 
+// todo all pages option
 class SearchService
 {
     private $repository;
