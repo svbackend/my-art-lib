@@ -120,10 +120,16 @@ class Movie implements TranslatableInterface
      */
     private $isWatched;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Movies\Entity\SimilarMovie", mappedBy="originalMovie")
+     */
+    private $similarMovies;
+
     public function __construct(MovieDTO $movieDTO, MovieTMDB $tmdb)
     {
         $this->translations = new ArrayCollection();
         $this->genres = new ArrayCollection();
+        $this->similarMovies = new ArrayCollection();
 
         $this->originalTitle = $movieDTO->getOriginalTitle();
         $this->originalPosterUrl = $movieDTO->getOriginalPosterUrl();
@@ -159,6 +165,28 @@ class Movie implements TranslatableInterface
     public function getGenres()
     {
         return $this->genres->toArray();
+    }
+
+    public function addSimilarMovie(Movie $similarMovie)
+    {
+        $this->similarMovies->add($similarMovie);
+
+        return $this;
+    }
+
+    public function removeAllSimilarMovies()
+    {
+        $this->similarMovies->clear();
+
+        return $this;
+    }
+
+    /**
+     * @return Movie[]|array
+     */
+    public function getSimilarMovies()
+    {
+        return $this->similarMovies->toArray();
     }
 
     public function updateTmdb(MovieTMDB $tmdb)
