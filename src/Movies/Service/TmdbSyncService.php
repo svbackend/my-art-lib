@@ -31,6 +31,10 @@ class TmdbSyncService
             throw new \InvalidArgumentException('Unsupported array of movies provided');
         }
 
+        if (!count($movies)) {
+            return;
+        }
+
         $message = new Message(serialize($movies), [
             'load_similar' => $loadSimilar,
         ]);
