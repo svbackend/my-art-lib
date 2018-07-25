@@ -77,7 +77,7 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
             $totalSuccessfullyProcessedMovies++;
         }
 
-        $this->sync->syncMovies($allSimilarMoviesToSave);
+        $this->sync->syncMovies($allSimilarMoviesToSave, false);
         $this->producer->sendEvent(AddSimilarMoviesProcessor::ADD_SIMILAR_MOVIES, json_encode($allSimilarMoviesTable));
 
         if (count($movies) === $totalSuccessfullyProcessedMovies) {

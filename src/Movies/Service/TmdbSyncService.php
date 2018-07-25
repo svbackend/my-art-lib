@@ -7,6 +7,7 @@ namespace App\Movies\Service;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\Repository\MovieRepository;
+use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
 
 class TmdbSyncService
@@ -22,19 +23,19 @@ class TmdbSyncService
 
     /**
      * @param array|Movie[] $movies
+     * @param bool $loadSimilar
      */
-    public function syncMovies(array $movies): void
+    public function syncMovies(array $movies, bool $loadSimilar = true): void
     {
         if ($this->isSupport(reset($movies)) === false) {
             throw new \InvalidArgumentException('Unsupported array of movies provided');
         }
 
-        $this->addMovies($movies);
-    }
+        $message = new Message(serialize($movies), [
+            'load_similar' => $loadSimilar,
+        ]);
 
-    private function addMovies(array $movies): void
-    {
-        $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, serialize($movies));
+        $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
     }
 
     private function isSupport($movie)
