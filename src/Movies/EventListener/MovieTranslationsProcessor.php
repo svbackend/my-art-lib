@@ -71,6 +71,8 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $totalCounter = count($movies);
         $successfullySavedMoviesCounter = 0;
         foreach ($movies as $movie) {
+            echo "Loading translations for {$movie->getOriginalTitle()}";
+            echo "\r\n";
             if ($this->isAllTranslationsSaved($movie) === true) {
                 ++$successfullySavedMoviesCounter;
                 continue;

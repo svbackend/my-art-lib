@@ -24,8 +24,9 @@ class TmdbSyncService
     /**
      * @param array|Movie[] $movies
      * @param bool $loadSimilar
+     * @param array $similarMoviesTable
      */
-    public function syncMovies(array $movies, bool $loadSimilar = true): void
+    public function syncMovies(array $movies, bool $loadSimilar = true, array $similarMoviesTable = []): void
     {
         if (!count($movies)) {
             return;
@@ -37,8 +38,11 @@ class TmdbSyncService
 
         $message = new Message(serialize($movies), [
             'load_similar' => $loadSimilar,
+            'similar_movies_table' => $similarMoviesTable,
         ]);
 
+        echo "Event sent with similar_movies_table as: \r\n";
+        echo var_export($similarMoviesTable);
         $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
     }
 

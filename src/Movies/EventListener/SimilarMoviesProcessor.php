@@ -67,23 +67,34 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
                 continue;
             }
 
-            $allSimilarMoviesTable[] = [
-                'original_movie_id' => $movie->getId(),
-                'similar_movies_ids' => array_map(function (Movie $movie) {
-                    return $movie->getId();
-                }, $similarMovies),
-            ];
+            if (!count($similarMovies)) {
+                echo "There's no similar movies to {$movie->getOriginalTitle()}\r\n";
+                $totalSuccessfullyProcessedMovies++;
+                continue;
+            }
+
+            $allSimilarMoviesTable[$movie->getId()] = array_map(function (Movie $newSimilarMovie) {
+                    return $newSimilarMovie->getTmdb()->getId(); // bcuz $newSimilarMovie->getId() === null, currently
+                }, $similarMovies);
             $allSimilarMoviesToSave = array_merge($allSimilarMoviesToSave, $similarMovies);
             $totalSuccessfullyProcessedMovies++;
         }
 
-        $this->sync->syncMovies($allSimilarMoviesToSave, false);
+        echo "Sync movies: \r\n";
+        echo var_export($allSimilarMoviesTable);
+        echo "\r\n";
+        $this->sync->syncMovies($allSimilarMoviesToSave, false, $allSimilarMoviesTable);
         $this->producer->sendEvent(AddSimilarMoviesProcessor::ADD_SIMILAR_MOVIES, json_encode($allSimilarMoviesTable));
 
         if (count($movies) === $totalSuccessfullyProcessedMovies) {
+            echo "Saved {$totalSuccessfullyProcessedMovies} similar movies!";
+            echo "\r\n";
             return self::ACK;
         }
 
+        $total = count($movies);
+        echo "REQUEUE. Saved {$totalSuccessfullyProcessedMovies} of {$total} similar movies!";
+        echo "\r\n";
         return self::REQUEUE;
     }
 

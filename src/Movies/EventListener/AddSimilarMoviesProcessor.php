@@ -31,7 +31,7 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
         if ($em instanceof EntityManager === false) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    'MovieTranslationsProcessor expects %s as %s realization',
+                    'AddSimilarMoviesProcessor expects %s as %s realization',
                     EntityManager::class,
                     EntityManagerInterface::class
                 )
@@ -45,6 +45,7 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
 
     public function process(PsrMessage $message, PsrContext $session)
     {
+        echo "AddSimilarMoviesProcessor processing...";
         $moviesTable = $message->getBody();
         $moviesTable = json_decode($moviesTable);
 
@@ -58,6 +59,8 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
         foreach ($movies as $movie) {
             $similarMovies = $this->movieRepository->findAllByIds($moviesTable[$movie->getId()]);
             foreach ($similarMovies as $similarMovie) {
+                echo "add {$similarMovie->getOriginalTitle()} as similar movie to {$movie->getOriginalTitle()}";
+                echo "\r\n";
                 $movie->addSimilarMovie($similarMovie);
             }
 
