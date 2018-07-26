@@ -98,7 +98,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
                 ++$successfullySavedMoviesCounter;
                 continue;
             } catch (\Exception $exception) {
-                echo "tmdb error...\r\n" . $exception->getMessage() . "\r\n";
+                echo "tmdb error...\r\n".$exception->getMessage()."\r\n";
                 continue;
             }
 
@@ -121,6 +121,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         }
 
         echo "Requeue. Loaded only {$successfullySavedMoviesCounter} of {$totalCounter} movies\r\n";
+
         return self::REQUEUE;
     }
 
@@ -159,13 +160,16 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
      */
     private function addTranslations(array $moviesTranslationsDTOs, Movie $movie): void
     {
+        /** @var $movieReference Movie */
+        $movieReference = $this->em->getReference(Movie::class, $movie->getId());
+
         foreach ($moviesTranslationsDTOs as $translationDTO) {
             if ($movie->getTranslation($translationDTO->getLocale(), false) !== null) {
                 // If we already have translation for this locale just go to next iteration
                 continue;
             }
 
-            $movieTranslation = new MovieTranslations($movie, $translationDTO);
+            $movieTranslation = new MovieTranslations($movieReference, $translationDTO);
             $movie->addTranslation($movieTranslation);
 
             $this->em->persist($movieTranslation);

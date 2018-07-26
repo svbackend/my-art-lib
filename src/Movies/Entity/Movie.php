@@ -167,7 +167,7 @@ class Movie implements TranslatableInterface
         return $this->genres->toArray();
     }
 
-    public function addSimilarMovie(Movie $similarMovie)
+    public function addSimilarMovie(self $similarMovie)
     {
         $similarMovie = new SimilarMovie($this, $similarMovie);
         $this->similarMovies->add($similarMovie);
@@ -314,5 +314,10 @@ class Movie implements TranslatableInterface
         $this->isWatched = ($this->userWatchedMovie || $this->guestWatchedMovie) ? true : false;
 
         return $this->isWatched;
+    }
+
+    public function __toString()
+    {
+        return $this->getId().' | '.$this->getOriginalTitle().' | TMDB: '.$this->getTmdb()->getId();
     }
 }

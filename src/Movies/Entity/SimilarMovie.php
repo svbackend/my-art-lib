@@ -9,7 +9,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Movies\Repository\SimilarMovieRepository")
- * @ORM\Table(name="similar_movies")
+ * @ORM\Table(name="similar_movies",
+ *     uniqueConstraints={
+ *      @ORM\UniqueConstraint(name="idx_SimilarMovie_original_movie_id_similar_movie_id", columns={"original_movie_id", "similar_movie_id"})
+ *     })
  */
 class SimilarMovie
 {
@@ -28,7 +31,7 @@ class SimilarMovie
     protected $originalMovie;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Movies\Entity\Movie")
+     * @ORM\ManyToOne(targetEntity="App\Movies\Entity\Movie")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $similarMovie;

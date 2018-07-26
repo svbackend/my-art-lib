@@ -2,16 +2,11 @@
 
 namespace App\Movies\EventListener;
 
-use App\Movies\Exception\TmdbMovieNotFoundException;
-use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
-use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
-use App\Movies\Service\TmdbSyncService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
@@ -45,7 +40,7 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
 
     public function process(PsrMessage $message, PsrContext $session)
     {
-        echo "AddSimilarMoviesProcessor processing...";
+        echo 'AddSimilarMoviesProcessor processing...';
         $moviesTable = $message->getBody();
         $moviesTable = json_decode($moviesTable, true);
 
@@ -70,6 +65,7 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
         try {
             $this->em->flush();
         } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
+            echo $uniqueConstraintViolationException->getMessage();
             // do nothing, it's ok
         } catch (\Exception $exception) {
             echo $exception->getMessage();

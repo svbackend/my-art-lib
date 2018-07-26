@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace App\Movies\Repository;
 
-use App\Movies\Entity\Movie;
 use App\Movies\Entity\SimilarMovie;
-use App\Users\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**

@@ -46,7 +46,7 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
 
         foreach ($movies as $movie) {
             if (count($movie->getSimilarMovies()) > 0) {
-                $totalSuccessfullyProcessedMovies++;
+                ++$totalSuccessfullyProcessedMovies;
                 continue;
             }
 
@@ -55,7 +55,7 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
             } catch (TmdbRequestLimitException $requestLimitException) {
                 continue;
             } catch (TmdbMovieNotFoundException $movieNotFoundException) {
-                $totalSuccessfullyProcessedMovies++;
+                ++$totalSuccessfullyProcessedMovies;
                 continue;
             } catch (\Exception $exception) {
                 continue;
@@ -65,21 +65,21 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
                 $similarMovies = $this->normalizer->normalizeMoviesToObjects($similarMovies);
             } catch (\Exception $exception) {
                 echo $exception->getMessage();
-                $totalSuccessfullyProcessedMovies++;
+                ++$totalSuccessfullyProcessedMovies;
                 continue;
             }
 
             if (!count($similarMovies)) {
                 echo "There's no similar movies to {$movie->getOriginalTitle()}\r\n";
-                $totalSuccessfullyProcessedMovies++;
+                ++$totalSuccessfullyProcessedMovies;
                 continue;
             }
 
             $allSimilarMoviesTable[$movie->getId()] = array_map(function (Movie $newSimilarMovie) {
-                    return $newSimilarMovie->getTmdb()->getId(); // bcuz $newSimilarMovie->getId() === null, currently
-                }, $similarMovies);
+                return $newSimilarMovie->getTmdb()->getId(); // bcuz $newSimilarMovie->getId() === null, currently
+            }, $similarMovies);
             $allSimilarMoviesToSave = array_merge($allSimilarMoviesToSave, $similarMovies);
-            $totalSuccessfullyProcessedMovies++;
+            ++$totalSuccessfullyProcessedMovies;
         }
 
         echo "Sync movies: \r\n";
@@ -93,12 +93,14 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
         if (count($movies) === $totalSuccessfullyProcessedMovies) {
             echo "Saved {$totalSuccessfullyProcessedMovies} similar movies!";
             echo "\r\n";
+
             return self::ACK;
         }
 
         $total = count($movies);
         echo "REQUEUE. Saved {$totalSuccessfullyProcessedMovies} of {$total} similar movies!";
         echo "\r\n";
+
         return self::REQUEUE;
     }
 
@@ -129,8 +131,8 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
 
     /**
      * @param array|Movie[] $movies
-     * @return array|Movie[]
      *
+     * @return array|Movie[]
      */
     private function getUniqueSimilarMoviesToSave(array $movies)
     {

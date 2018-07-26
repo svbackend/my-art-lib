@@ -92,9 +92,11 @@ class TmdbSearchService
     /**
      * @param int $tmdb_id
      * @param int $page
-     * @return array
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     *
+     * @return array
      */
     public function findSimilarMoviesById(int $tmdb_id, int $page = 1): array
     {
@@ -111,10 +113,12 @@ class TmdbSearchService
     /**
      * @param string $url
      * @param string $method
-     * @param array $params
-     * @return array
+     * @param array  $params
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     *
+     * @return array
      */
     private function request(string $url, string $method = 'GET', array $params = []): array
     {

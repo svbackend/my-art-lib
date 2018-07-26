@@ -23,13 +23,14 @@ class TmdbSyncService
 
     /**
      * @param array|Movie[] $movies
-     * @param bool $loadSimilar
-     * @param array $similarMoviesTable
+     * @param bool          $loadSimilar
+     * @param array         $similarMoviesTable
      */
     public function syncMovies(array $movies, bool $loadSimilar = true, array $similarMoviesTable = []): void
     {
         if (!count($movies)) {
             echo "Array of movies is empty! \r\n";
+
             return;
         }
 
