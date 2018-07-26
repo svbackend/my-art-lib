@@ -63,26 +63,30 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         foreach ($movies as $movie) {
             $movie = $this->refreshGenresAssociations($movie);
             $this->em->persist($movie);
+            echo "{$movie->getOriginalTitle()} saved with id {$movie->getId()} \r\n";
             $savedMoviesIds[] = $movie->getId();
             $savedMoviesTmdbIds[$movie->getTmdb()->getId()] = $movie;
             ++$moviesCount;
         }
 
-        echo "adding similar movies from similar_movies_table...\r\n";
-        echo var_export($message->getProperty('similar_movies_table', []));
-        $this->addSimilarMovies($message->getProperty('similar_movies_table', []), $savedMoviesTmdbIds);
+        //echo "adding similar movies from similar_movies_table...\r\n";
+        //echo var_export($message->getProperty('similar_movies_table', []));
+        //$this->addSimilarMovies($message->getProperty('similar_movies_table', []), $savedMoviesTmdbIds);
 
         try {
+            echo "Flushed with {$moviesCount} movies persisted.\r\n";
             $this->em->flush();
         } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
-            // do nothing, it's ok
+            echo $uniqueConstraintViolationException->getMessage();
         } catch (\Exception $exception) {
             echo $exception->getMessage();
         }
 
+        echo "Loading translations... \r\n";
         $this->loadTranslations($savedMoviesIds);
 
         if ($message->getProperty('load_similar', true) === true) {
+            echo "Loading similar movies... \r\n";
             $this->loadSimilarMovies($savedMoviesIds);
         }
 
@@ -101,6 +105,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
                     if (isset($savedMoviesTmdbIds[$tmdbId])) {
                         echo "Added {$savedMoviesTmdbIds[$tmdbId]->getOriginalTitle()} as similar movie to {$originalMovie->getOriginalTitle()}\r\n";
                         $originalMovie->addSimilarMovie($savedMoviesTmdbIds[$tmdbId]);
+                        $this->em->persist($savedMoviesTmdbIds[$tmdbId]);
                         $this->em->persist($originalMovie); // actually this line probably useless?
                     }
                 }

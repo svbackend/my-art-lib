@@ -78,6 +78,22 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
+    /**
+     * @param array $ids
+     *
+     * @return array|Movie[]
+     */
+    public function findAllByTmdbIds(array $ids)
+    {
+        $result = $this->getBaseQuery()
+            ->where('m.tmdb.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+
+        return $result;
+    }
+
     public function getAllWatchedMoviesByUserId(int $userId): Query
     {
         $result = $this->getBaseQuery()

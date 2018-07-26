@@ -59,8 +59,12 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
+        echo "MovieTranslationsProcessor processing...\r\n";
         $moviesIds = $message->getBody();
         $moviesIds = unserialize($moviesIds);
+
+        echo "Loading translations for ids:\r\n";
+        echo var_export($moviesIds);
 
         if ($this->em->isOpen() === false) {
             $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
@@ -70,10 +74,16 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
         $totalCounter = count($movies);
         $successfullySavedMoviesCounter = 0;
+
+        if ($totalCounter === 0) {
+            echo "Looks like movies not found...\r\n";
+        }
+
         foreach ($movies as $movie) {
             echo "Loading translations for {$movie->getOriginalTitle()}";
             echo "\r\n";
             if ($this->isAllTranslationsSaved($movie) === true) {
+                echo "{$movie->getOriginalTitle()} already had translations\r\n";
                 ++$successfullySavedMoviesCounter;
                 continue;
             }
@@ -81,10 +91,14 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             try {
                 $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
             } catch (TmdbRequestLimitException $requestLimitException) {
+                sleep(5);
                 continue;
             } catch (TmdbMovieNotFoundException $movieNotFoundException) {
                 // if movie not found let's think that it's successfully processed
                 ++$successfullySavedMoviesCounter;
+                continue;
+            } catch (\Exception $exception) {
+                echo "tmdb error...\r\n" . $exception->getMessage() . "\r\n";
                 continue;
             }
 
@@ -93,9 +107,11 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         }
 
         try {
+            echo "-----------Flushed {$successfullySavedMoviesCounter} translations.------------------\r\n";
             $this->em->flush();
         } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
             // do nothing, it's ok
+            echo $uniqueConstraintViolationException->getMessage();
         } catch (\Exception $exception) {
             echo $exception->getMessage();
         }
@@ -104,6 +120,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             return self::ACK;
         }
 
+        echo "Requeue. Loaded only {$successfullySavedMoviesCounter} of {$totalCounter} movies\r\n";
         return self::REQUEUE;
     }
 
@@ -171,7 +188,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             }
         }
 
-        return !count(array_diff($this->locales, $existingTranslations));
+        return count(array_diff($this->locales, $existingTranslations)) <= 2;
     }
 
     public static function getSubscribedTopics()

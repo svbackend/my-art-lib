@@ -29,6 +29,7 @@ class TmdbSyncService
     public function syncMovies(array $movies, bool $loadSimilar = true, array $similarMoviesTable = []): void
     {
         if (!count($movies)) {
+            echo "Array of movies is empty! \r\n";
             return;
         }
 

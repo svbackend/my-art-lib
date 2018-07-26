@@ -121,7 +121,7 @@ class Movie implements TranslatableInterface
     private $isWatched;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Movies\Entity\SimilarMovie", mappedBy="originalMovie")
+     * @ORM\OneToMany(targetEntity="App\Movies\Entity\SimilarMovie", mappedBy="originalMovie", cascade={"persist", "remove"})
      */
     private $similarMovies;
 

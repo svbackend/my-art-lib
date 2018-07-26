@@ -47,7 +47,7 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
     {
         echo "AddSimilarMoviesProcessor processing...";
         $moviesTable = $message->getBody();
-        $moviesTable = json_decode($moviesTable);
+        $moviesTable = json_decode($moviesTable, true);
 
         if ($this->em->isOpen() === false) {
             $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
@@ -57,7 +57,7 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
         $movies = $this->movieRepository->findAllByIds($originalMoviesIds);
 
         foreach ($movies as $movie) {
-            $similarMovies = $this->movieRepository->findAllByIds($moviesTable[$movie->getId()]);
+            $similarMovies = $this->movieRepository->findAllByTmdbIds($moviesTable[$movie->getId()]);
             foreach ($similarMovies as $similarMovie) {
                 echo "add {$similarMovie->getOriginalTitle()} as similar movie to {$movie->getOriginalTitle()}";
                 echo "\r\n";

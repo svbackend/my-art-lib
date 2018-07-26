@@ -57,6 +57,8 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
             } catch (TmdbMovieNotFoundException $movieNotFoundException) {
                 $totalSuccessfullyProcessedMovies++;
                 continue;
+            } catch (\Exception $exception) {
+                continue;
             }
 
             try {
@@ -83,6 +85,8 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
         echo "Sync movies: \r\n";
         echo var_export($allSimilarMoviesTable);
         echo "\r\n";
+
+        $allSimilarMoviesToSave = $this->getUniqueSimilarMoviesToSave($allSimilarMoviesToSave);
         $this->sync->syncMovies($allSimilarMoviesToSave, false, $allSimilarMoviesTable);
         $this->producer->sendEvent(AddSimilarMoviesProcessor::ADD_SIMILAR_MOVIES, json_encode($allSimilarMoviesTable));
 
@@ -121,6 +125,22 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         return $movies;
+    }
+
+    /**
+     * @param array|Movie[] $movies
+     * @return array|Movie[]
+     *
+     */
+    private function getUniqueSimilarMoviesToSave(array $movies)
+    {
+        $uniqueMovies = [];
+
+        foreach ($movies as $movie) {
+            $uniqueMovies[$movie->getTmdb()->getId()] = $movie;
+        }
+
+        return $uniqueMovies;
     }
 
     public static function getSubscribedTopics()
