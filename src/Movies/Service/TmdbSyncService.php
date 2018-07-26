@@ -27,12 +27,12 @@ class TmdbSyncService
      */
     public function syncMovies(array $movies, bool $loadSimilar = true): void
     {
-        if ($this->isSupport(reset($movies)) === false) {
-            throw new \InvalidArgumentException('Unsupported array of movies provided');
-        }
-
         if (!count($movies)) {
             return;
+        }
+
+        if ($this->isSupport(reset($movies)) === false) {
+            throw new \InvalidArgumentException('Unsupported array of movies provided');
         }
 
         $message = new Message(serialize($movies), [

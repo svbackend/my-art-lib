@@ -71,7 +71,10 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         $this->loadTranslations($savedMoviesIds);
-        $this->loadSimilarMovies($savedMoviesIds);
+
+        if ($message->getProperty('load_similar', true) === true) {
+            $this->loadSimilarMovies($savedMoviesIds);
+        }
 
         return self::ACK;
     }
