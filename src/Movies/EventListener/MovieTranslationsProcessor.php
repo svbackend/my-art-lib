@@ -13,6 +13,8 @@ use App\Service\LocaleService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Enqueue\Client\Message;
+use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
@@ -28,8 +30,9 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     private $movieRepository;
     private $locales;
     private $localesCount;
+    private $producer;
 
-    public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
         if ($em instanceof EntityManager === false) {
             throw new \InvalidArgumentException(
@@ -46,6 +49,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $this->searchService = $searchService;
         $this->locales = $localeService->getLocales();
         $this->localesCount = count($this->locales);
+        $this->producer = $producer;
     }
 
     /**
@@ -79,6 +83,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             echo "Looks like movies not found...\r\n";
         }
 
+        $failedMoviesIds = [];
         foreach ($movies as $movie) {
             echo "Loading translations for {$movie->getOriginalTitle()}";
             echo "\r\n";
@@ -91,6 +96,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             try {
                 $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
             } catch (TmdbRequestLimitException $requestLimitException) {
+                $failedMoviesIds[] = $movie->getId();
                 sleep(5);
                 continue;
             } catch (TmdbMovieNotFoundException $movieNotFoundException) {
@@ -98,6 +104,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
                 ++$successfullySavedMoviesCounter;
                 continue;
             } catch (\Exception $exception) {
+                $failedMoviesIds[] = $movie->getId();
                 echo "tmdb error...\r\n".$exception->getMessage()."\r\n";
                 continue;
             }
@@ -116,13 +123,14 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             echo $exception->getMessage();
         }
 
-        if ($successfullySavedMoviesCounter === $totalCounter) {
+        if ($successfullySavedMoviesCounter !== $totalCounter && $message->getProperty('retry', true) !== false) {
+            $retryMessage = new Message(serialize($failedMoviesIds), ['retry' => false]);
+            $this->producer->sendEvent(self::LOAD_TRANSLATIONS, $retryMessage);
+
             return self::ACK;
         }
 
-        echo "Requeue. Loaded only {$successfullySavedMoviesCounter} of {$totalCounter} movies\r\n";
-
-        return self::REQUEUE;
+        return self::ACK;
     }
 
     /**
