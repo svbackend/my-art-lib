@@ -169,6 +169,7 @@ class Movie implements TranslatableInterface
 
     public function addSimilarMovie(Movie $similarMovie)
     {
+        $similarMovie = new SimilarMovie($this, $similarMovie);
         $this->similarMovies->add($similarMovie);
 
         return $this;
