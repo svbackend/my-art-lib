@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass="App\Movies\Repository\MovieRecommendationRepository")
  * @ORM\Table(name="movies_recommendations",
  *     uniqueConstraints={
- *      @ORM\UniqueConstraint(name="idx_MovieRecommendation_original_movie_id_recommended_movie_id_user_id", columns={"original_movie_id", "recommended_movie_id", "user_id"})
+ *      @ORM\UniqueConstraint(name="MovieRecommendation_original_movie_recommended_movie_user", columns={"original_movie_id", "recommended_movie_id", "user_id"})
  *     })
  */
 class MovieRecommendation

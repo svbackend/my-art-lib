@@ -274,11 +274,22 @@ class Movie implements TranslatableInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getOriginalTitle()
     {
         return $this->originalTitle;
+    }
+
+    /**
+     * @param string $title
+     * @return $this
+     */
+    public function changeOriginalTitle(string $title)
+    {
+        $this->originalTitle = $title;
+
+        return $this;
     }
 
     /**

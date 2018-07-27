@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Tests\Functional\Controller;
+namespace App\Tests\Functional\Controller\Movies;
 
 use App\Genres\DataFixtures\GenresFixtures;
 use App\Movies\DataFixtures\MoviesFixtures;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\MovieSyncProcessor;
+use App\Tests\Functional\Controller\WatchedMovieControllerTest;
 use App\Users\DataFixtures\UsersFixtures;
 use Enqueue\Client\TraceableProducer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -172,12 +173,34 @@ class MoviesControllerTest extends WebTestCase
         // because entity should be already translated and merged with translation based on user preferred locale:
         self::assertArrayNotHasKey('translations', $response);
 
+        self::assertArrayHasKey('id', $response);
         self::assertArrayHasKey('genres', $response);
         self::assertArrayHasKey('releaseDate', $response);
         self::assertArrayHasKey('budget', $response);
         self::assertArrayHasKey('imdbId', $response);
         self::assertArrayHasKey('originalPosterUrl', $response);
         self::assertArrayHasKey('originalTitle', $response);
+    }
+
+    public function testAddMovieRecommendation()
+    {
+        $client = self::$client;
+        $apiToken = UsersFixtures::TESTER_API_TOKEN;
+
+        $client->request('GET', '/api/movies');
+        $movies = json_decode($client->getResponse()->getContent(), true)['data'];
+
+        $originalMovie = $movies[0];
+        $recommendedMovie = $movies[1];
+
+        $client->request('POST', "/api/movies/{$originalMovie['id']}/recommendations?api_token={$apiToken}", [
+            'recommendation' => [
+                'movie_id' => $recommendedMovie['id'],
+                'tmdb_id' => 0,
+            ]
+        ]);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     public function testFindExistingMovieInOurDatabase()
