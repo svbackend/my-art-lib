@@ -28,13 +28,13 @@ class SimilarMovie
      * @ORM\ManyToOne(targetEntity="App\Movies\Entity\Movie")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected $originalMovie;
+    private $originalMovie;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Movies\Entity\Movie")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected $similarMovie;
+    private $similarMovie;
 
     /**
      * SimilarMovie constructor.

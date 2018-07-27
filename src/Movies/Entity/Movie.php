@@ -9,6 +9,7 @@ use App\Guests\Entity\GuestWatchedMovie;
 use App\Movies\DTO\MovieDTO;
 use App\Translation\TranslatableInterface;
 use App\Translation\TranslatableTrait;
+use App\Users\Entity\User;
 use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -125,11 +126,17 @@ class Movie implements TranslatableInterface
      */
     private $similarMovies;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Movies\Entity\MovieRecommendation", mappedBy="originalMovie", cascade={"persist", "remove"})
+     */
+    private $recommendations;
+
     public function __construct(MovieDTO $movieDTO, MovieTMDB $tmdb)
     {
         $this->translations = new ArrayCollection();
         $this->genres = new ArrayCollection();
         $this->similarMovies = new ArrayCollection();
+        $this->recommendations = new ArrayCollection();
 
         $this->originalTitle = $movieDTO->getOriginalTitle();
         $this->originalPosterUrl = $movieDTO->getOriginalPosterUrl();
@@ -188,6 +195,29 @@ class Movie implements TranslatableInterface
     public function getSimilarMovies()
     {
         return $this->similarMovies->toArray();
+    }
+
+    /**
+     * @return Genre[]|array
+     */
+    public function getRecommendations()
+    {
+        return $this->recommendations->toArray();
+    }
+
+    public function addRecommendation(User $user, self $recommendedMovie)
+    {
+        $recommendedMovie = new MovieRecommendation($user, $this, $recommendedMovie);
+        $this->recommendations->add($recommendedMovie);
+
+        return $this;
+    }
+
+    public function removeAllRecommendations()
+    {
+        $this->recommendations->clear();
+
+        return $this;
     }
 
     public function updateTmdb(MovieTMDB $tmdb)
