@@ -23,3 +23,7 @@ services:
     App\Movies\EventListener\AddSimilarMoviesProcessor:
         tags:
             - { name: enqueue.client.processor }
+
+    App\Movies\EventListener\AddRecommendationProcessor:
+        tags:
+            - { name: enqueue.client.processor }
