@@ -5,6 +5,7 @@ namespace App\Tests\Unit\EventListener;
 
 use App\Genres\Entity\Genre;
 use App\Movies\Entity\Movie;
+use App\Movies\Entity\MovieTMDB;
 use App\Movies\EventListener\MovieSyncProcessor;
 use Doctrine\ORM\EntityManager;
 use Enqueue\Client\ProducerInterface;
@@ -55,6 +56,9 @@ class MovieSyncProcessorTest extends KernelTestCase
         /** @var $movie Movie|MockObject */
         $movie = $this->createMock(Movie::class);
         $movie->method('getGenres')->willReturn([$genre]);
+        $movieTmdb = $this->createMock(MovieTMDB::class);
+        $movieTmdb->method('getId')->willReturn(1);
+        $movie->method('getTmdb')->willReturn($movieTmdb);
 
         $movies = serialize([$movie]);
 
@@ -62,6 +66,7 @@ class MovieSyncProcessorTest extends KernelTestCase
             [Genre::class, $genre->getId(), $genre],
         ]));
         $this->psrMessage->method('getBody')->willReturn($movies);
+        $this->psrMessage->method('getProperty')->with('load_similar', true)->willReturn(false);
 
         $persistedEntities = [];
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
@@ -105,9 +110,13 @@ class MovieSyncProcessorTest extends KernelTestCase
         /** @var $movie Movie|MockObject */
         $movie = $this->createMock(Movie::class);
         $movie->method('getGenres')->willReturn([$genre]);
+        $movieTmdb = $this->createMock(MovieTMDB::class);
+        $movieTmdb->method('getId')->willReturn(1);
+        $movie->method('getTmdb')->willReturn($movieTmdb);
 
         $movies = serialize([$movie]);
         $this->psrMessage->method('getBody')->willReturn($movies);
+        $this->psrMessage->method('getProperty')->with('load_similar', true)->willReturn(false);
 
         $persistedEntities = [];
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {

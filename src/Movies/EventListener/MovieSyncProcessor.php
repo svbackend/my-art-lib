@@ -20,9 +20,8 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     private $em;
     private $producer;
-    private $repository;
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, MovieRepository $repository)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer)
     {
         if ($em instanceof EntityManager === false) {
             throw new \InvalidArgumentException(
@@ -36,7 +35,6 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
         $this->em = $em;
         $this->producer = $producer;
-        $this->repository = $repository;
     }
 
     /**
@@ -49,7 +47,6 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
-        echo "MovieSyncProcessor processing...\r\n";
         $movies = $message->getBody();
         $movies = unserialize($movies);
         $savedMoviesIds = [];
@@ -63,18 +60,12 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         foreach ($movies as $movie) {
             $movie = $this->refreshGenresAssociations($movie);
             $this->em->persist($movie);
-            echo "{$movie->getOriginalTitle()} saved with id {$movie->getId()} \r\n";
             $savedMoviesIds[] = $movie->getId();
             $savedMoviesTmdbIds[$movie->getTmdb()->getId()] = $movie;
             ++$moviesCount;
         }
 
-        //echo "adding similar movies from similar_movies_table...\r\n";
-        //echo var_export($message->getProperty('similar_movies_table', []));
-        //$this->addSimilarMovies($message->getProperty('similar_movies_table', []), $savedMoviesTmdbIds);
-
         try {
-            echo "Flushed with {$moviesCount} movies persisted.\r\n";
             $this->em->flush();
         } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
             echo $uniqueConstraintViolationException->getMessage();
@@ -82,35 +73,13 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
             echo $exception->getMessage();
         }
 
-        echo "Loading translations... \r\n";
         $this->loadTranslations($savedMoviesIds);
 
         if ($message->getProperty('load_similar', true) === true) {
-            echo "Loading similar movies... \r\n";
             $this->loadSimilarMovies($savedMoviesIds);
         }
 
         return self::ACK;
-    }
-
-    private function addSimilarMovies(array $similarMoviesTable, array $savedMoviesTmdbIds)
-    {
-        if (count($similarMoviesTable)) {
-            echo "trying to find all movies by ids: \r\n";
-            echo var_export(array_values($similarMoviesTable));
-            $originalMovies = $this->repository->findAllByIds(array_keys($similarMoviesTable));
-            foreach ($originalMovies as $originalMovie) {
-                $similarMoviesTmdbIds = $similarMoviesTable[$originalMovie->getId()];
-                foreach ($similarMoviesTmdbIds as $tmdbId) {
-                    if (isset($savedMoviesTmdbIds[$tmdbId])) {
-                        echo "Added {$savedMoviesTmdbIds[$tmdbId]->getOriginalTitle()} as similar movie to {$originalMovie->getOriginalTitle()}\r\n";
-                        $originalMovie->addSimilarMovie($savedMoviesTmdbIds[$tmdbId]);
-                        $this->em->persist($savedMoviesTmdbIds[$tmdbId]);
-                        $this->em->persist($originalMovie); // actually this line probably useless?
-                    }
-                }
-            }
-        }
     }
 
     /**

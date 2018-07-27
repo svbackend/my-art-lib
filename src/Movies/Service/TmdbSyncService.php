@@ -29,8 +29,6 @@ class TmdbSyncService
     public function syncMovies(array $movies, bool $loadSimilar = true, array $similarMoviesTable = []): void
     {
         if (!count($movies)) {
-            echo "Array of movies is empty! \r\n";
-
             return;
         }
 
@@ -43,8 +41,6 @@ class TmdbSyncService
             'similar_movies_table' => $similarMoviesTable,
         ]);
 
-        echo "Event sent with similar_movies_table as: \r\n";
-        echo var_export($similarMoviesTable);
         $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
     }
 

@@ -14,6 +14,7 @@ use App\Movies\Service\TmdbSearchService;
 use App\Service\LocaleService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Enqueue\Client\ProducerInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -42,6 +43,9 @@ class MovieTranslationsProcessorTest extends KernelTestCase
     /** @var LocaleService|MockObject */
     private $localeService;
 
+    /** @var ProducerInterface|MockObject */
+    private $producer;
+
     /**
      * @throws \ReflectionException
      */
@@ -55,8 +59,9 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $this->searchService = $this->createMock(TmdbSearchService::class);
         $this->localeService = $this->createMock(LocaleService::class);
         $this->localeService->method('getLocales')->willReturn(['en', 'uk', 'ru']);
+        $this->producer = $this->createMock(ProducerInterface::class);
 
-        $this->movieTranslationsProcessor = new MovieTranslationsProcessor($this->em, $this->movieRepository, $this->searchService, $this->localeService);
+        $this->movieTranslationsProcessor = new MovieTranslationsProcessor($this->em, $this->producer, $this->movieRepository, $this->searchService, $this->localeService);
     }
 
     /**
@@ -67,7 +72,7 @@ class MovieTranslationsProcessorTest extends KernelTestCase
     {
         /** @var $emInterfaceMock EntityManagerInterface */
         $emInterfaceMock = $this->createMock(EntityManagerInterface::class);
-        $this->movieTranslationsProcessor = new MovieTranslationsProcessor($emInterfaceMock, $this->movieRepository, $this->searchService, $this->localeService);
+        $this->movieTranslationsProcessor = new MovieTranslationsProcessor($emInterfaceMock, $this->producer, $this->movieRepository, $this->searchService, $this->localeService);
     }
 
     public function testThatAllMoviesTranslationsWillBeCorrectlySaved()
@@ -92,6 +97,8 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $movie3 = $this->createMock(Movie::class);
         $movie3->method('getTranslation')->withAnyParameters()->willReturn(null);
         $movie3->method('getTmdb')->willReturn($movieTMDB);
+
+        $this->em->method('getReference')->willReturn($movie1, $movie2, $movie3);
 
         $movies = [$movie1, $movie2, $movie3];
         $this->movieRepository->method('findAllByIds')->with($moviesIdsArray)->willReturn($movies);
@@ -137,8 +144,10 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $movieTMDB->method('getId')->willReturn(0);
 
         $movie1 = $this->createMock(Movie::class);
+        $movie1->method('getId')->willReturn(1);
         $movie1->method('getTranslation')->withAnyParameters()->willReturn(null);
         $movie1->method('getTmdb')->willReturn($movieTMDB);
+        $this->em->method('getReference')->willReturn($movie1);
 
         $movies = [$movie1];
         $this->movieRepository->method('findAllByIds')->with($moviesIdsArray)->willReturn($movies);
@@ -152,16 +161,18 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         }));
 
         $this->em->expects($this->once())->method('flush');
+        $this->producer->expects($this->once())->method('sendEvent');
 
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->movieTranslationsProcessor::REQUEUE, $result);
+        $this->assertEquals($this->movieTranslationsProcessor::ACK, $result);
     }
 
     public function testThatTmdbMovieNotFoundIsNotAProblem()
     {
         $moviesIdsArray = [1];
         $moviesIds = serialize($moviesIdsArray);
+        $this->psrMessage->method('getProperty')->with('retry', true)->willReturn(false);
         $this->psrMessage->method('getBody')->willReturn($moviesIds);
 
         $this->em->method('isOpen')->willReturn(true);
@@ -170,8 +181,10 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $movieTMDB->method('getId')->willReturn(0);
 
         $movie1 = $this->createMock(Movie::class);
+        $movie1->method('getId')->willReturn(1);
         $movie1->method('getTranslation')->withAnyParameters()->willReturn(null);
         $movie1->method('getTmdb')->willReturn($movieTMDB);
+        $this->em->method('getReference')->willReturn($movie1);
 
         $movies = [$movie1];
         $this->movieRepository->method('findAllByIds')->with($moviesIdsArray)->willReturn($movies);

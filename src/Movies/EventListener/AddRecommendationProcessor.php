@@ -38,7 +38,6 @@ class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     public function process(PsrMessage $message, PsrContext $session)
     {
-        echo 'AddRecommendationProcessor processing...';
         $movie = $message->getBody();
         $movie = json_decode($movie, true);
 
@@ -65,7 +64,6 @@ class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterfa
             return self::ACK;
         }
 
-        echo "{$recommendedMovie->getOriginalTitle()} added as recommended movie to {$originalMovie->getOriginalTitle()} \r\n";
         $originalMovie->addRecommendation($user, $recommendedMovie);
 
         try {

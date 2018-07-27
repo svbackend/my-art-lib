@@ -70,7 +70,6 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
             }
 
             if (!count($similarMovies)) {
-                echo "There's no similar movies to {$movie->getOriginalTitle()}\r\n";
                 ++$totalSuccessfullyProcessedMovies;
                 continue;
             }
@@ -82,24 +81,15 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
             ++$totalSuccessfullyProcessedMovies;
         }
 
-        echo "Sync movies: \r\n";
-        echo var_export($allSimilarMoviesTable);
-        echo "\r\n";
-
         $allSimilarMoviesToSave = $this->getUniqueSimilarMoviesToSave($allSimilarMoviesToSave);
         $this->sync->syncMovies($allSimilarMoviesToSave, false, $allSimilarMoviesTable);
         $this->producer->sendEvent(AddSimilarMoviesProcessor::ADD_SIMILAR_MOVIES, json_encode($allSimilarMoviesTable));
 
         if (count($movies) === $totalSuccessfullyProcessedMovies) {
-            echo "Saved {$totalSuccessfullyProcessedMovies} similar movies!";
-            echo "\r\n";
-
             return self::ACK;
         }
 
         $total = count($movies);
-        echo "REQUEUE. Saved {$totalSuccessfullyProcessedMovies} of {$total} similar movies!";
-        echo "\r\n";
 
         return self::REQUEUE;
     }
