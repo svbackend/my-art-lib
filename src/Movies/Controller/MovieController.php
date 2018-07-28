@@ -5,6 +5,7 @@ namespace App\Movies\Controller;
 use App\Controller\BaseController;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\AddRecommendationProcessor;
+use App\Movies\Repository\MovieRecommendationRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\CreateMovieRequest;
 use App\Movies\Request\NewMovieRecommendationRequest;
@@ -182,8 +183,10 @@ class MovieController extends BaseController
     /**
      * @Route("/api/movies/{id}/recommendations", methods={"GET"})
      */
-    public function getMoviesRecommendations(Movie $movie)
+    public function getMoviesRecommendations(Movie $movie, MovieRecommendationRepository $repository)
     {
-        // todo view all recommended movies to $movie
+        $user = $this->getUser();
+        $recommendedMovies = $repository->findAllByMovieAndUser($movie->getId(), $user->getId());
+        return $this->response($recommendedMovies);
     }
 }

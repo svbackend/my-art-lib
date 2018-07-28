@@ -26,19 +26,29 @@ class MovieRecommendationRepository extends ServiceEntityRepository
         parent::__construct($registry, MovieRecommendation::class);
     }
 
-    public function findAllByMovie(int $movieId)
+    public function findAllByMovieAndUser(int $movieId, int $userId)
     {
-        // todo
-        /*
-            SELECT DISTINCT ON(mr.recommended_movie_id) mrj.id, mr.recommended_movie_id, mr.rate
+        $connection = $this->getEntityManager()->getConnection();
+
+        $sql = 'SELECT DISTINCT ON(mr.recommended_movie_id) mr.recommended_movie_id, mr.rate, umr.user_id, movies.*, mt.*, uwm.*
             FROM (
                 SELECT mr.recommended_movie_id, COUNT(mr.recommended_movie_id) rate
                 FROM movies_recommendations mr
-                WHERE mr.original_movie_id = 16718
+                WHERE mr.original_movie_id = :movie_id
                 GROUP BY mr.recommended_movie_id
-            ) mr
-            JOIN movies_recommendations mrj ON mr.recommended_movie_id = mrj.recommended_movie_id
-            GROUP BY mrj.id, mr.recommended_movie_id, mr.rate
-         */
+                ORDER BY rate
+            ) mr 
+			LEFT JOIN movies_recommendations umr ON umr.recommended_movie_id = mr.recommended_movie_id AND umr.user_id = :user_id
+			LEFT JOIN movies ON movies.id = mr.recommended_movie_id
+			LEFT JOIN movies_translations mt ON movies.id = mt.movie_id
+			LEFT JOIN users_watched_movies uwm ON uwm.movie_id = mr.recommended_movie_id AND uwm.user_id = :user_id';
+
+        $statement = $connection->prepare($sql);
+        $statement->bindValue('movie_id', $movieId);
+        $statement->bindValue('user_id', $userId);
+
+        $statement->execute();
+
+        return $statement->fetchAll();
     }
 }
