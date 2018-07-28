@@ -178,4 +178,12 @@ class MovieController extends BaseController
 
         return new JsonResponse();
     }
+
+    /**
+     * @Route("/api/movies/{id}/recommendations", methods={"GET"})
+     */
+    public function getMoviesRecommendations(Movie $movie)
+    {
+        // todo view all recommended movies to $movie
+    }
 }

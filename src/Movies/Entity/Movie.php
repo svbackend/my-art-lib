@@ -198,7 +198,7 @@ class Movie implements TranslatableInterface
     }
 
     /**
-     * @return Genre[]|array
+     * @return Movie[]|array
      */
     public function getRecommendations()
     {
