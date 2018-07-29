@@ -58,6 +58,14 @@ class MovieRecommendation
     }
 
     /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
      * @return User
      */
     public function getUser(): User

@@ -26,11 +26,17 @@ class MovieRecommendationRepository extends ServiceEntityRepository
         parent::__construct($registry, MovieRecommendation::class);
     }
 
-    public function findAllByMovieAndUser(int $movieId, int $userId)
+    /**
+     * @param int $movieId
+     * @param int $userId
+     * @return array [...[movie_id: int, rate: int, user_id: ?int]}
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function findAllByMovieAndUser(int $movieId, int $userId): array
     {
         $connection = $this->getEntityManager()->getConnection();
 
-        $sql = 'SELECT DISTINCT ON(mr.recommended_movie_id) mr.recommended_movie_id, mr.rate, umr.user_id, movies.*, mt.*, uwm.*
+        $sql = 'SELECT DISTINCT ON(mr.recommended_movie_id) mr.recommended_movie_id movie_id, mr.rate, umr.user_id
             FROM (
                 SELECT mr.recommended_movie_id, COUNT(mr.recommended_movie_id) rate
                 FROM movies_recommendations mr
@@ -38,10 +44,7 @@ class MovieRecommendationRepository extends ServiceEntityRepository
                 GROUP BY mr.recommended_movie_id
                 ORDER BY rate
             ) mr 
-			LEFT JOIN movies_recommendations umr ON umr.recommended_movie_id = mr.recommended_movie_id AND umr.user_id = :user_id
-			LEFT JOIN movies ON movies.id = mr.recommended_movie_id
-			LEFT JOIN movies_translations mt ON movies.id = mt.movie_id
-			LEFT JOIN users_watched_movies uwm ON uwm.movie_id = mr.recommended_movie_id AND uwm.user_id = :user_id';
+			LEFT JOIN movies_recommendations umr ON umr.recommended_movie_id = mr.recommended_movie_id AND umr.user_id = :user_id';
 
         $statement = $connection->prepare($sql);
         $statement->bindValue('movie_id', $movieId);

@@ -183,10 +183,19 @@ class MovieController extends BaseController
     /**
      * @Route("/api/movies/{id}/recommendations", methods={"GET"})
      */
-    public function getMoviesRecommendations(Movie $movie, MovieRecommendationRepository $repository)
+    public function getMoviesRecommendations(Movie $movie, MovieRepository $movieRepository, MovieRecommendationRepository $repository)
     {
         $user = $this->getUser();
-        $recommendedMovies = $repository->findAllByMovieAndUser($movie->getId(), $user->getId());
-        return $this->response($recommendedMovies);
+        $recommendedMoviesIds = $repository->findAllByMovieAndUser($movie->getId(), $user->getId());
+        usort($recommendedMoviesIds, function (array $movie1, array $movie2) {
+            return $movie2['rate'] <=> $movie1['rate'];
+        });
+
+        $recommendedMovies = $movieRepository->findAllByIdsWithFlags(array_map(function (array $recommendedMovie) {
+            return $recommendedMovie['movie_id'];
+        }, $recommendedMoviesIds), $user->getId());
+        return $this->response($recommendedMovies, 200, [], [
+            'groups' => ['list'],
+        ]);
     }
 }

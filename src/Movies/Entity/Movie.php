@@ -122,6 +122,13 @@ class Movie implements TranslatableInterface
     private $isWatched;
 
     /**
+     * @var MovieRecommendation
+     * @ORM\OneToOne(targetEntity="App\Movies\Entity\MovieRecommendation", mappedBy="recommendedMovie")
+     * @Groups({"ROLE_USER"})
+     */
+    private $userRecommendedMovie;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Movies\Entity\SimilarMovie", mappedBy="originalMovie", cascade={"persist", "remove"})
      */
     private $similarMovies;
@@ -355,6 +362,11 @@ class Movie implements TranslatableInterface
         $this->isWatched = ($this->userWatchedMovie || $this->guestWatchedMovie) ? true : false;
 
         return $this->isWatched;
+    }
+
+    public function getUserRecommendedMovie()
+    {
+        return $this->userRecommendedMovie;
     }
 
     public function __toString()
