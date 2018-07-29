@@ -186,14 +186,23 @@ class MovieController extends BaseController
     public function getMoviesRecommendations(Movie $movie, MovieRepository $movieRepository, MovieRecommendationRepository $repository)
     {
         $user = $this->getUser();
-        $recommendedMoviesIds = $repository->findAllByMovieAndUser($movie->getId(), $user->getId());
-        usort($recommendedMoviesIds, function (array $movie1, array $movie2) {
+        $sortRecommendedMovies = function (array $movie1, array $movie2) {
             return $movie2['rate'] <=> $movie1['rate'];
-        });
+        };
 
-        $recommendedMovies = $movieRepository->findAllByIdsWithFlags(array_map(function (array $recommendedMovie) {
-            return $recommendedMovie['movie_id'];
-        }, $recommendedMoviesIds), $user->getId());
+        if ($user instanceof User) {
+            $recommendedMoviesIds = $repository->findAllByMovieAndUser($movie->getId(), $user->getId());
+            usort($recommendedMoviesIds, $sortRecommendedMovies);
+            $recommendedMovies = $movieRepository->findAllByIdsWithFlags(array_map(function (array $recommendedMovie) {
+                return $recommendedMovie['movie_id'];
+            }, $recommendedMoviesIds), $user->getId());
+        } else {
+            $recommendedMoviesIds = $repository->findAllByMovie($movie->getId());
+            usort($recommendedMoviesIds, $sortRecommendedMovies);
+            $recommendedMovies = $movieRepository->findAllByIdsWithoutFlags(array_map(function (array $recommendedMovie) {
+                return $recommendedMovie['movie_id'];
+            }, $recommendedMoviesIds));
+        }
         return $this->response($recommendedMovies, 200, [], [
             'groups' => ['list'],
         ]);

@@ -54,4 +54,31 @@ class MovieRecommendationRepository extends ServiceEntityRepository
 
         return $statement->fetchAll();
     }
+
+    /**
+     * @param int $movieId
+     * @return array [...[movie_id: int, rate: int]}
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function findAllByMovie(int $movieId): array
+    {
+        $connection = $this->getEntityManager()->getConnection();
+
+        $sql = 'SELECT DISTINCT ON(mr.recommended_movie_id) mr.recommended_movie_id movie_id, mr.rate
+            FROM (
+                SELECT mr.recommended_movie_id, COUNT(mr.recommended_movie_id) rate
+                FROM movies_recommendations mr
+                WHERE mr.original_movie_id = :movie_id
+                GROUP BY mr.recommended_movie_id
+                ORDER BY rate
+            ) mr
+            ';
+
+        $statement = $connection->prepare($sql);
+        $statement->bindValue('movie_id', $movieId);
+
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
 }

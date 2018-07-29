@@ -38,7 +38,6 @@ class MovieRepository extends ServiceEntityRepository
 
     public function findAllByIdsWithFlags(array $ids, int $userId)
     {
-
         $result = $this->getBaseQuery()
             ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id') // if this relation exists then user has already watched this movie
             ->addSelect('uwm')
@@ -49,6 +48,20 @@ class MovieRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
+
+        // Sorting here because ORDER BY FIELD(m.id, ...$ids) not working in postgres, we need to use joins on sorted table and so on, but I dont want to
+        // todo => add sorting to sql
+        $reversedIds = array_flip($ids);
+        usort($result, function (Movie $movie1, Movie $movie2) use ($reversedIds) {
+            return $reversedIds[$movie1->getId()] <=> $reversedIds[$movie2->getId()];
+        });
+
+        return $result;
+    }
+
+    public function findAllByIdsWithoutFlags(array $ids)
+    {
+        $result = $this->findAllByIds($ids);
 
         // Sorting here because ORDER BY FIELD(m.id, ...$ids) not working in postgres, we need to use joins on sorted table and so on, but I dont want to
         // todo => add sorting to sql
