@@ -5,6 +5,7 @@ namespace App\Movies\Controller;
 use App\Controller\BaseController;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\AddRecommendationProcessor;
+use App\Movies\Pagination\MovieCollection;
 use App\Movies\Repository\MovieRecommendationRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\CreateMovieRequest;
@@ -182,6 +183,12 @@ class MovieController extends BaseController
 
     /**
      * @Route("/api/movies/{id}/recommendations", methods={"GET"})
+     *
+     * @param Movie $movie
+     * @param MovieRepository $movieRepository
+     * @param MovieRecommendationRepository $repository
+     * @return JsonResponse
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function getMoviesRecommendations(Movie $movie, MovieRepository $movieRepository, MovieRecommendationRepository $repository)
     {
@@ -205,6 +212,25 @@ class MovieController extends BaseController
         }
         return $this->response($recommendedMovies, 200, [], [
             'groups' => ['list'],
+        ]);
+    }
+
+    /**
+     * @Route("/api/recommendations", methods={"GET"})
+     */
+    public function getAllRecommendations(Request $request, MovieRecommendationRepository $repository)
+    {
+        $this->denyAccessUnlessGranted(UserRoles::ROLE_USER);
+        $user = $this->getUser();
+
+        $offset = (int) $request->get('offset', 0);
+        $limit = $request->get('limit', null);
+
+        $query = $repository->findAllByUser($user->getId());
+        $movies = new PaginatedCollection($query, $offset, $limit, false);
+
+        return $this->response($movies, 200, [], [
+            'groups' => ['list']
         ]);
     }
 }

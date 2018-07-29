@@ -36,6 +36,11 @@ class MovieRepository extends ServiceEntityRepository
             ->addSelect('mgt');
     }
 
+    public function getAllRecommendations(int $userId)
+    {
+
+    }
+
     public function findAllByIdsWithFlags(array $ids, int $userId)
     {
         $result = $this->getBaseQuery()

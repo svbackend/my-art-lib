@@ -8,6 +8,7 @@ use App\Guests\Entity\GuestSession;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieRecommendation;
 use App\Users\Entity\User;
+use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
@@ -24,6 +25,23 @@ class MovieRecommendationRepository extends ServiceEntityRepository
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, MovieRecommendation::class);
+    }
+
+    public function findAllByUser(int $userId, int $minVote = 7): Query
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('m, COUNT(mr.recommendedMovie) HIDDEN rate')
+            ->from(UserWatchedMovie::class, 'uwm')
+            ->leftJoin(MovieRecommendation::class, 'mr', 'WITH', 'uwm.movie = mr.originalMovie')
+            ->leftJoin(Movie::class, 'm', 'WITH', 'mr.recommendedMovie = m')
+            ->where('uwm.user = :user AND uwm.vote >= :vote')
+            ->setParameter('user', $userId)
+            ->setParameter('vote', $minVote)
+            ->groupBy('mr.recommendedMovie, m.id')
+            ->orderBy('rate', 'DESC')
+            ->getQuery();
+
+        return $query;
     }
 
     /**
