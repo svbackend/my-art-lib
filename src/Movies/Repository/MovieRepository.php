@@ -38,7 +38,6 @@ class MovieRepository extends ServiceEntityRepository
 
     public function getAllRecommendations(int $userId)
     {
-
     }
 
     public function findAllByIdsWithFlags(array $ids, int $userId)

@@ -290,6 +290,7 @@ class Movie implements TranslatableInterface
 
     /**
      * @param string $title
+     *
      * @return $this
      */
     public function changeOriginalTitle(string $title)

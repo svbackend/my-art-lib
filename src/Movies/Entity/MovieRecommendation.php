@@ -46,7 +46,7 @@ class MovieRecommendation
     /**
      * MovieRecommendation constructor.
      *
-     * @param User $user
+     * @param User  $user
      * @param Movie $originalMovie
      * @param Movie $recommendedMovie
      */

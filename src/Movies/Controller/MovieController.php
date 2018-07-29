@@ -5,7 +5,6 @@ namespace App\Movies\Controller;
 use App\Controller\BaseController;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\AddRecommendationProcessor;
-use App\Movies\Pagination\MovieCollection;
 use App\Movies\Repository\MovieRecommendationRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\CreateMovieRequest;
@@ -136,16 +135,19 @@ class MovieController extends BaseController
     }
 
     /**
-     * Add new recommendation
+     * Add new recommendation.
      *
      * @Route("/api/movies/{id}/recommendations", methods={"POST"})
 
+     *
      * @param NewMovieRecommendationRequest $request
-     * @param Movie $originalMovie
-     * @param EntityManagerInterface $em
-     * @param ProducerInterface $producer
-     * @return JsonResponse
+     * @param Movie                         $originalMovie
+     * @param EntityManagerInterface        $em
+     * @param ProducerInterface             $producer
+     *
      * @throws \Doctrine\ORM\ORMException
+     *
+     * @return JsonResponse
      */
     public function postMoviesRecommendations(NewMovieRecommendationRequest $request, Movie $originalMovie, EntityManagerInterface $em, ProducerInterface $producer)
     {
@@ -184,11 +186,13 @@ class MovieController extends BaseController
     /**
      * @Route("/api/movies/{id}/recommendations", methods={"GET"})
      *
-     * @param Movie $movie
-     * @param MovieRepository $movieRepository
+     * @param Movie                         $movie
+     * @param MovieRepository               $movieRepository
      * @param MovieRecommendationRepository $repository
-     * @return JsonResponse
+     *
      * @throws \Doctrine\DBAL\DBALException
+     *
+     * @return JsonResponse
      */
     public function getMoviesRecommendations(Movie $movie, MovieRepository $movieRepository, MovieRecommendationRepository $repository)
     {
@@ -210,6 +214,7 @@ class MovieController extends BaseController
                 return $recommendedMovie['movie_id'];
             }, $recommendedMoviesIds));
         }
+
         return $this->response($recommendedMovies, 200, [], [
             'groups' => ['list'],
         ]);
@@ -217,6 +222,11 @@ class MovieController extends BaseController
 
     /**
      * @Route("/api/recommendations", methods={"GET"})
+     *
+     * @param Request                       $request
+     * @param MovieRecommendationRepository $repository
+     *
+     * @return JsonResponse
      */
     public function getAllRecommendations(Request $request, MovieRecommendationRepository $repository)
     {
@@ -230,7 +240,7 @@ class MovieController extends BaseController
         $movies = new PaginatedCollection($query, $offset, $limit, false);
 
         return $this->response($movies, 200, [], [
-            'groups' => ['list']
+            'groups' => ['list'],
         ]);
     }
 }

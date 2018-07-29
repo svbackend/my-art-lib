@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Movies\Repository;
 
-use App\Guests\Entity\GuestSession;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieRecommendation;
 use App\Users\Entity\User;
 use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -47,8 +45,10 @@ class MovieRecommendationRepository extends ServiceEntityRepository
     /**
      * @param int $movieId
      * @param int $userId
-     * @return array [...[movie_id: int, rate: int, user_id: ?int]}
+     *
      * @throws \Doctrine\DBAL\DBALException
+     *
+     * @return array [...[movie_id: int, rate: int, user_id: ?int]}
      */
     public function findAllByMovieAndUser(int $movieId, int $userId): array
     {
@@ -75,8 +75,10 @@ class MovieRecommendationRepository extends ServiceEntityRepository
 
     /**
      * @param int $movieId
-     * @return array [...[movie_id: int, rate: int]}
+     *
      * @throws \Doctrine\DBAL\DBALException
+     *
+     * @return array [...[movie_id: int, rate: int]}
      */
     public function findAllByMovie(int $movieId): array
     {

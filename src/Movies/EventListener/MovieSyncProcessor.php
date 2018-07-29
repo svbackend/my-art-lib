@@ -4,7 +4,6 @@ namespace App\Movies\EventListener;
 
 use App\Genres\Entity\Genre;
 use App\Movies\Entity\Movie;
-use App\Movies\Repository\MovieRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
