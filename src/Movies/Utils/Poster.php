@@ -6,7 +6,7 @@ class Poster
 {
     const TMDB_BASE_URL = 'https://image.tmdb.org/t/p/original';
     const BASE_URL = '/f/movies/{movieId}/poster.jpg';
-    const BASE_PATH = __DIR__ . '/../../../public/f/movies/{movieId}/poster.jpg';
+    const BASE_PATH = PUBLIC_PATH . '/f/movies/{movieId}/poster.jpg';
 
     /**
      * @param int $movieId
@@ -16,6 +16,12 @@ class Poster
     public static function savePoster(int $movieId, string $posterUrl): ?string
     {
         $saveTo = str_replace('{movieId}', $movieId, self::BASE_PATH);
+        $destinationDir = realpath($saveTo);
+
+        if (is_dir($destinationDir) === false) {
+            unlink($destinationDir);
+            mkdir($destinationDir);
+        }
 
         $ch = curl_init($posterUrl);
         curl_setopt($ch, CURLOPT_HEADER, 0);

@@ -308,6 +308,11 @@ class Movie implements TranslatableInterface
         return $this->originalPosterUrl;
     }
 
+    public function setOriginalPosterUrl(string $url)
+    {
+        return $this->originalPosterUrl = $url;
+    }
+
     /**
      * @return MovieTMDB
      */
