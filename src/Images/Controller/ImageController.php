@@ -18,7 +18,7 @@ class ImageController extends BaseController
      */
     public function resizeImage(string $image)
     {
-        $pathToFile = PUBLIC_PATH . '/f/' . $image;
+        $pathToFile = __DIR__ . '/../../../public/f/' . $image;
         $imagePathParts = explode('/', $image);
         $filename = end($imagePathParts);
         $filenameParts = explode('.', $filename);
