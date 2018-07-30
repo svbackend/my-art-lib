@@ -10,6 +10,9 @@ genres:
 movies:
     resource: ../src/Movies/Controller
     type: annotation
+images:
+    resource: ../src/Images/Controller
+    type: annotation
 
 # Confirm email route used for generating url to confirmation url in email letters
 confirm_email:

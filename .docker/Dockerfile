@@ -12,8 +12,15 @@ RUN a2enmod rewrite
 RUN a2enmod headers
 
 # ZIP + ZLIB
-RUN apt-get update && apt-get install -y zlib1g-dev \
-    && docker-php-ext-install zip
+RUN apt-get install -y \
+        libzip-dev \
+        zip \
+  && docker-php-ext-configure zip --with-libzip \
+  && docker-php-ext-install zip
+
+RUN apt-get install -y libwebp-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libfreetype6-dev
+RUN docker-php-ext-configure gd --with-gd --with-webp-dir --with-jpeg-dir --with-png-dir --with-zlib-dir --with-xpm-dir --with-freetype-dir \
+    && docker-php-ext-install gd
 
 RUN apt-get install -y libpq-dev \
     && mkdir -p /usr/src/php/ext/redis \

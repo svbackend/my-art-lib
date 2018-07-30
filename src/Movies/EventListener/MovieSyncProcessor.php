@@ -78,6 +78,8 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
             $this->loadSimilarMovies($savedMoviesIds);
         }
 
+        $this->loadPosters($savedMoviesIds);
+
         return self::ACK;
     }
 
@@ -127,6 +129,11 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     private function loadSimilarMovies(array $moviesIds)
     {
         $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, serialize($moviesIds));
+    }
+
+    private function loadPosters(array $moviesIds)
+    {
+        $this->producer->sendEvent(MoviePostersProcessor::LOAD_POSTERS, serialize($moviesIds));
     }
 
     public static function getSubscribedTopics()
