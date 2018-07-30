@@ -81,6 +81,8 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
         } catch (\Throwable $exception) {
             echo $exception->getMessage();
         }
+
+        return self::ACK;
     }
 
     public static function getSubscribedTopics()
