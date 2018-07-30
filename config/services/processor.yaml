@@ -27,3 +27,7 @@ services:
     App\Movies\EventListener\AddRecommendationProcessor:
         tags:
             - { name: enqueue.client.processor }
+
+    App\Movies\EventListener\MoviePostersProcessor:
+        tags:
+            - { name: enqueue.client.processor }

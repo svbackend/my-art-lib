@@ -57,11 +57,11 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         $movies = $this->movieRepository->findAllByIds($moviesIds);
-        $total = count($movies);
+        // $total = count($movies);
         $processed = 0;
         foreach ($movies as $movie) {
             $posterUrl = $movie->getOriginalPosterUrl();
-            $posterName = str_replace('https://image.tmdb.org/t/p/original', '', $posterUrl);
+            // $posterName = str_replace('https://image.tmdb.org/t/p/original', '', $posterUrl);
             if ($posterUrl === 'https://image.tmdb.org/t/p/original') {
                 $processed++;
                 continue;
