@@ -74,9 +74,9 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
         $this->loadTranslations($savedMoviesIds);
 
-        if ($message->getProperty('load_similar', true) === true) {
+        //if ($message->getProperty('load_similar', true) === true) {
             $this->loadSimilarMovies($savedMoviesIds);
-        }
+        //}
 
         $this->loadPosters($savedMoviesIds);
 
@@ -128,7 +128,9 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     private function loadSimilarMovies(array $moviesIds)
     {
-        $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, serialize($moviesIds));
+        foreach ($moviesIds as $id) {
+            $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, serialize([$id]));
+        }
     }
 
     private function loadPosters(array $moviesIds)

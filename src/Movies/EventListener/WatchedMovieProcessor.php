@@ -44,6 +44,7 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
+        return self::ACK;
         $watchedMovies = $message->getBody();
         $watchedMovies = unserialize($watchedMovies);
         $validClasses = [UserWatchedMovie::class, GuestWatchedMovie::class];
@@ -73,6 +74,7 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
             ]);
         }
 
+        gc_collect_cycles();
         return self::ACK;
     }
 

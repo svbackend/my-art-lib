@@ -117,6 +117,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             return self::ACK;
         }
 
+        gc_collect_cycles();
         return self::ACK;
     }
 

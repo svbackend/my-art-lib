@@ -23,6 +23,8 @@ class TmdbNormalizerService
     }
 
     /**
+     * TODO can we use generator here?
+     *
      * @param array  $movies
      * @param string $locale
      *
@@ -30,9 +32,9 @@ class TmdbNormalizerService
      *
      * @return Movie[]
      */
-    public function normalizeMoviesToObjects(array $movies, string $locale = 'en'): array
+    public function normalizeMoviesToObjects(array $movies, string $locale = 'en'): \Iterator
     {
-        $normalizedMovies = [];
+        //$normalizedMovies = [];
         foreach ($movies as $movie) {
             $movieDTO = $this->createMovieDTO($movie);
             $tmdb = $this->createMovieTmdbDTO($movie);
@@ -45,10 +47,10 @@ class TmdbNormalizerService
             $genresIds = $this->getGenresIds($movie);
             $movieObject = $this->addGenres($movieObject, $genresIds);
 
-            $normalizedMovies[] = $movieObject;
+            yield $movieObject;
         }
 
-        return $normalizedMovies;
+        #return $normalizedMovies;
     }
 
     /**
@@ -62,7 +64,7 @@ class TmdbNormalizerService
     {
         return new MovieDTO(
             $movie['original_title'],
-            self::IMAGE_HOST.$movie['poster_path'],
+            isset($movie['poster_path']) ? self::IMAGE_HOST.$movie['poster_path'] : '',
             $movie['imdb_id'] ?? null,
             isset($movie['budget']) ? (int) $movie['budget'] : null,
             isset($movie['runtime']) ? (int) $movie['runtime'] : null,

@@ -67,6 +67,7 @@ class SearchService
         $movies = $this->normalizer->normalizeMoviesToObjects($movies['results'], $locale);
         $this->sync->syncMovies($movies);
 
+        $movies = iterator_to_array($movies);
         return new MovieCollection($movies, $totalResults, $offset);
     }
 

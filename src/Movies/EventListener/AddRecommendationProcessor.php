@@ -76,6 +76,7 @@ class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterfa
             echo $exception->getMessage();
         }
 
+        gc_collect_cycles();
         return self::ACK;
     }
 

@@ -82,6 +82,7 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
             echo $exception->getMessage();
         }
 
+        gc_collect_cycles();
         return self::ACK;
     }
 

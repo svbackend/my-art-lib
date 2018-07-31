@@ -124,6 +124,24 @@ class MovieRepository extends ServiceEntityRepository
      *
      * @return array|Movie[]
      */
+    public function findAllByIdsWithSimilarMovies(array $ids): array
+    {
+        $result = $this->createQueryBuilder('m')
+            ->leftJoin('m.similarMovies', 'sm')
+            ->addSelect('sm')
+            ->where('m.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getScalarResult();
+
+        return $result;
+    }
+
+    /**
+     * @param array $ids
+     *
+     * @return array|Movie[]
+     */
     public function findAllByTmdbIds(array $ids)
     {
         $result = $this->getBaseQuery()

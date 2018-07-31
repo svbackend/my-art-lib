@@ -73,6 +73,7 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
             echo $exception->getMessage();
         }
 
+        gc_collect_cycles();
         return self::ACK;
     }
 
