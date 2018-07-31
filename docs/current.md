@@ -5,6 +5,7 @@ Warning: Some examples in this documentation can be simplifier for better readab
 ### Most used commands
 
 * `php bin/console doctrine:schema:update --force`
+* `php bin/console doctrine:migr:migr`
 * `php bin/console doctrine:fixtures:load --purge-with-truncate`
 * `bin/console enqueue:consume --setup-broker -vvv`
 * `php vendor/bin/php-cs-fixer fix src`
