@@ -4,6 +4,7 @@ namespace App\Movies\EventListener;
 
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbSearchService;
+use App\Users\Entity\User;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -54,6 +55,10 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
             $similarMovies = $this->movieRepository->findAllByTmdbIds($moviesTable[$movie->getId()]);
             foreach ($similarMovies as $similarMovie) {
                 $movie->addSimilarMovie($similarMovie);
+                if ($similarMovie->getTmdb()->getVoteAverage() !== null && $similarMovie->getTmdb()->getVoteAverage() >= 7) {
+                    $supportAcc = $this->em->getReference(User::class, 1);
+                    $movie->addRecommendation($supportAcc, $similarMovie);
+                }
             }
 
             $this->em->persist($movie);
