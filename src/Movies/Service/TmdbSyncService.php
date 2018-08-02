@@ -32,7 +32,18 @@ class TmdbSyncService
             throw new \InvalidArgumentException('Unsupported array of movies provided');
         }
 
+        $alreadySavedMovies = $this->repository->findAllByTmdbIds(array_map(function (array $tmdbMovie) {
+            return $tmdbMovie['id'];
+        }, $movies));
+        $alreadySavedMoviesIds = array_flip(array_map(function (Movie $movie) {
+            return $movie->getId();
+        }, $alreadySavedMovies));
+
         foreach ($movies as $movie) {
+            if (isset($alreadySavedMoviesIds[$movie['id']])) {
+                continue;
+            }
+
             $message = new Message(json_encode($movie));
             $message->setPriority(MessagePriority::HIGH);
 

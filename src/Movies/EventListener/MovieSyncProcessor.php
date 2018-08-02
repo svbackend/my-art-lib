@@ -4,6 +4,7 @@ namespace App\Movies\EventListener;
 
 use App\Genres\Entity\Genre;
 use App\Movies\Entity\Movie;
+use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
@@ -25,13 +26,15 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     private $producer;
     private $normalizer;
     private $logger;
+    private $movieRepository;
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository)
     {
         $this->em = $em;
         $this->producer = $producer;
         $this->normalizer = $normalizer;
         $this->logger = $logger;
+        $this->movieRepository = $movieRepository;
     }
 
     public function process(PsrMessage $message, PsrContext $session)
@@ -40,6 +43,11 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
         $movie = $message->getBody();
         $movie = json_decode($movie, true);
+
+        if (null !== $this->movieRepository->findOneByIdOrTmdbId(null, (int)$movie['id'])) {
+            return self::ACK;
+        }
+
         $movies = $this->normalizer->normalizeMoviesToObjects([$movie]);
         $savedMoviesIds = [];
         $savedMoviesTmdbIds = []; // tmdbId => Movie Object
@@ -57,7 +65,11 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
             ++$moviesCount;
         }
 
-        $this->em->flush();
+        try {
+            $this->em->flush();
+        } catch (UniqueConstraintViolationException $uniqueException) {
+            return self::ACK;
+        }
         $this->em->clear();
 
         $this->loadTranslations($savedMoviesIds);
