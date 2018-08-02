@@ -25,23 +25,12 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
 {
     const LOAD_POSTERS = 'LoadMoviesPosters';
 
-    /** @var EntityManager */
     private $em;
     private $movieRepository;
     private $producer;
 
     public function __construct(EntityManagerInterface $em, ProducerInterface $producer, MovieRepository $movieRepository)
     {
-        if ($em instanceof EntityManager === false) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'MovieTranslationsProcessor expects %s as %s realization',
-                    EntityManager::class,
-                    EntityManagerInterface::class
-                )
-            );
-        }
-
         $this->em = $em;
         $this->movieRepository = $movieRepository;
         $this->producer = $producer;
@@ -53,7 +42,7 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
         $moviesIds = unserialize($moviesIds);
 
         if ($this->em->isOpen() === false) {
-            $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
+            throw new \ErrorException('em is closed');
         }
 
         $movies = $this->movieRepository->findAllByIds($moviesIds);
@@ -80,9 +69,13 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
             $this->em->flush();
         } catch (\Throwable $exception) {
             echo $exception->getMessage();
+        } finally {
+            $this->em->clear();
         }
 
-        gc_collect_cycles();
+        $message = $session = $moviesIds = $movies = null;
+        unset($message, $session, $moviesIds, $movies);
+
         return self::ACK;
     }
 

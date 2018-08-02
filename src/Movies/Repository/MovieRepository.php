@@ -153,6 +153,23 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
+    /**
+     * @param array $ids
+     *
+     * @return array of int
+     */
+    public function findAllIdsByTmdbIds(array $ids)
+    {
+        $result = $this->createQueryBuilder('m')
+            ->select('m.id, m.tmdb.voteAverage')
+            ->where('m.tmdb.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getScalarResult();
+
+        return $result;
+    }
+
     public function getAllWatchedMoviesByUserId(int $userId): Query
     {
         $result = $this->getBaseQuery()

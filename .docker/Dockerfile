@@ -4,6 +4,7 @@ MAINTAINER Valentyn Saik
 
 COPY . /srv/app
 COPY .docker/vhost.conf /etc/apache2/sites-available/000-default.conf
+COPY .docker/supervisord.conf /etc/supervisord.conf
 
 WORKDIR /srv/app
 
@@ -13,6 +14,7 @@ RUN a2enmod headers
 
 # ZIP + ZLIB
 RUN apt-get install -y \
+        supervisor \
         libzip-dev \
         zip \
   && docker-php-ext-configure zip --with-libzip \

@@ -12,6 +12,7 @@ use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
 use Interop\Queue\PsrProcessor;
+use Psr\Log\LoggerInterface;
 
 class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 {
@@ -19,33 +20,19 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     private $em;
     private $producer;
+    private $logger;
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, LoggerInterface $logger)
     {
-        if ($em instanceof EntityManager === false) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'MovieSyncProcessor expects %s as %s realization',
-                    EntityManager::class,
-                    EntityManagerInterface::class
-                )
-            );
-        }
-
         $this->em = $em;
         $this->producer = $producer;
+        $this->logger = $logger;
     }
 
-    /**
-     * @param PsrMessage $message
-     * @param PsrContext $session
-     *
-     * @throws \Doctrine\ORM\ORMException
-     *
-     * @return string
-     */
     public function process(PsrMessage $message, PsrContext $session)
     {
+        $this->logger->info('MovieSyncProcessor start with memory usage: ', [memory_get_usage()]);
+
         $movies = $message->getBody();
         $movies = unserialize($movies);
         $savedMoviesIds = [];
@@ -53,7 +40,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         $moviesCount = 0;
 
         if ($this->em->isOpen() === false) {
-            $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
+            throw new \ErrorException('em is closed');
         }
 
         foreach ($movies as $movie) {
@@ -70,6 +57,8 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
             echo $uniqueConstraintViolationException->getMessage();
         } catch (\Exception $exception) {
             echo $exception->getMessage();
+        } finally {
+            $this->em->clear();
         }
 
         $this->loadTranslations($savedMoviesIds);
@@ -78,7 +67,12 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
             $this->loadSimilarMovies($savedMoviesIds);
         //}
 
-        $this->loadPosters($savedMoviesIds);
+        #$this->loadPosters($savedMoviesIds);
+
+        $message = $session = $movies = $savedMoviesIds = $savedMoviesTmdbIds = $moviesCount = null;
+        unset($message, $session, $movies, $savedMoviesIds, $savedMoviesTmdbIds, $moviesCount);
+
+        $this->logger->info('MovieSyncProcessor end with memory usage: ', [memory_get_usage()]);
 
         return self::ACK;
     }
@@ -123,7 +117,9 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
     private function loadTranslations(array $moviesIds)
     {
-        $this->producer->sendEvent(MovieTranslationsProcessor::LOAD_TRANSLATIONS, serialize($moviesIds));
+        foreach ($moviesIds as $movieId) {
+            $this->producer->sendEvent(MovieTranslationsProcessor::LOAD_TRANSLATIONS, serialize([$movieId]));
+        }
     }
 
     private function loadSimilarMovies(array $moviesIds)

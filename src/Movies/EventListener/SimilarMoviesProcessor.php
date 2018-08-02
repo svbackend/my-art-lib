@@ -36,31 +36,25 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
 
     public function process(PsrMessage $message, PsrContext $session)
     {
-        echo "\r\n================BEFORE==================\r\n";
-        echo memory_get_usage();
-        echo "\r\n========================================\r\n";
         $moviesIds = $message->getBody();
         $moviesIds = unserialize($moviesIds);
 
         $movies = $this->movieRepository->findAllByIdsWithSimilarMovies($moviesIds);
-        $allSimilarMoviesToSave = [];
         $allSimilarMoviesTable = [];
         $totalSuccessfullyProcessedMovies = 0;
         $requeueIds = [];
 
         foreach ($movies as $movie) {
-            echo "\r\n";
-            echo var_export($movie);
-            echo "\r\n";
             if ($movie['sm_id'] !== null) {
                 ++$totalSuccessfullyProcessedMovies;
                 continue;
             }
 
             try {
-                $similarMovies = $this->loadSimilarMoviesFromTMDB($movie['tmdb']['id']);
+                $similarMovies = $this->loadSimilarMoviesFromTMDB($movie['m_tmdb.id']);
             } catch (TmdbRequestLimitException $requestLimitException) {
-                $requeueIds[] = $movie['id'];
+                $requeueIds[] = $movie['m_id'];
+                sleep(5);
                 continue;
             } catch (TmdbMovieNotFoundException $movieNotFoundException) {
                 ++$totalSuccessfullyProcessedMovies;
@@ -70,6 +64,10 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
                 continue;
             }
 
+            $allSimilarMoviesTable[$movie['m_id']] = array_map(function (array $newSimilarMovie) {
+                return $newSimilarMovie['id'];
+            }, $similarMovies);
+
             try {
                 $similarMovies = $this->normalizer->normalizeMoviesToObjects($similarMovies);
             } catch (\Exception $exception) {
@@ -78,43 +76,23 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
                 continue;
             }
 
-            if (!count($similarMovies)) {
+            if (!$similarMovies->current()) {
                 ++$totalSuccessfullyProcessedMovies;
                 continue;
             }
 
-            $allSimilarMoviesTable[$movie['id']] = array_map(function (Movie $newSimilarMovie) {
-                return $newSimilarMovie->getTmdb()->getId(); // bcuz $newSimilarMovie->getId() === null, currently
-            }, $similarMovies);
-            $allSimilarMoviesToSave = array_merge($allSimilarMoviesToSave, $similarMovies);
+            $this->sync->syncMovies($similarMovies);
             ++$totalSuccessfullyProcessedMovies;
         }
 
-        $allSimilarMoviesToSave = $this->getUniqueSimilarMoviesToSave($allSimilarMoviesToSave);
-        $this->sync->syncMovies($allSimilarMoviesToSave, false, $allSimilarMoviesTable);
         $this->producer->sendEvent(AddSimilarMoviesProcessor::ADD_SIMILAR_MOVIES, json_encode($allSimilarMoviesTable));
 
-        if (count($movies) === $totalSuccessfullyProcessedMovies) {
-
-
-            echo "\r\n=============AFTER (BEFORE CLEANUP)===========\r\n";
-            echo memory_get_usage();
-            $message = $session = $moviesIds = $movies = $allSimilarMoviesToSave = $allSimilarMoviesTable = $totalSuccessfullyProcessedMovies = $requeueIds = $movie = null;
-            unset($message, $session, $moviesIds, $movies, $allSimilarMoviesToSave, $allSimilarMoviesTable, $totalSuccessfullyProcessedMovies, $requeueIds, $movie);
-            gc_collect_cycles();
-
-            echo "\r\n=============AFTER (AFTER CLEANUP)===========\r\n";
-            echo memory_get_usage();
-            echo "\r\n=======================================\r\n";
-
-            return self::ACK;
+        if (count($requeueIds)) {
+            $this->producer->sendEvent(self::LOAD_SIMILAR_MOVIES, serialize($requeueIds));
         }
 
-        $this->producer->sendEvent(self::LOAD_SIMILAR_MOVIES, serialize($requeueIds));
-
-        $message = $session = $moviesIds = $movies = $allSimilarMoviesToSave = $allSimilarMoviesTable = $totalSuccessfullyProcessedMovies = $requeueIds = $movie = null;
-        unset($message, $session, $moviesIds, $movies, $allSimilarMoviesToSave, $allSimilarMoviesTable, $totalSuccessfullyProcessedMovies, $requeueIds, $movie);
-        gc_collect_cycles();
+        $message = $session = $moviesIds = $movies = $allSimilarMoviesTable = $totalSuccessfullyProcessedMovies = $requeueIds = $movie = null;
+        unset($message, $session, $moviesIds, $movies, $allSimilarMoviesTable, $totalSuccessfullyProcessedMovies, $requeueIds, $movie);
 
         return self::ACK;
     }
@@ -142,22 +120,6 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         return $movies;
-    }
-
-    /**
-     * @param array|Movie[] $movies
-     *
-     * @return array|Movie[]
-     */
-    private function getUniqueSimilarMoviesToSave(array $movies)
-    {
-        $uniqueMovies = [];
-
-        foreach ($movies as $movie) {
-            $uniqueMovies[$movie->getTmdb()->getId()] = $movie;
-        }
-
-        return $uniqueMovies;
     }
 
     public static function getSubscribedTopics()

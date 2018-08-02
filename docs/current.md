@@ -1,6 +1,6 @@
 ## Documentation
 
-Warning: Some examples in this documentation can be simplifier for better readability, it's not best practices and single way to do things, just use common sense.
+Warning: Some examples in this documentation can be simplified for better readability, it's not best practices and single way to do things, just use common sense.
 
 ### Most used commands
 

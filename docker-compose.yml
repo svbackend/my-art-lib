@@ -21,6 +21,7 @@ services:
           REDIS_HOST: redis
           SESSION_DRIVER: redis
           CACHE_DRIVER: redis
+    command: [".docker/entrypoint.sh"]
   postgres:
       image: postgres:9.6
       ports:

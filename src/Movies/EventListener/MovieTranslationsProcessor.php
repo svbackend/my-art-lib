@@ -24,7 +24,6 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 {
     const LOAD_TRANSLATIONS = 'LoadMoviesTranslationsFromTMDB';
 
-    /** @var EntityManager */
     private $em;
     private $searchService;
     private $movieRepository;
@@ -34,16 +33,6 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     public function __construct(EntityManagerInterface $em, ProducerInterface $producer, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
-        if ($em instanceof EntityManager === false) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'MovieTranslationsProcessor expects %s as %s realization',
-                    EntityManager::class,
-                    EntityManagerInterface::class
-                )
-            );
-        }
-
         $this->em = $em;
         $this->movieRepository = $movieRepository;
         $this->searchService = $searchService;
@@ -67,7 +56,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $moviesIds = unserialize($moviesIds);
 
         if ($this->em->isOpen() === false) {
-            $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
+            throw new \ErrorException('em is closed');
         }
 
         $movies = $this->movieRepository->findAllByIds($moviesIds);
@@ -108,6 +97,8 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             echo $uniqueConstraintViolationException->getMessage();
         } catch (\Exception $exception) {
             echo $exception->getMessage();
+        } finally {
+            $this->em->clear();
         }
 
         if ($successfullySavedMoviesCounter !== $totalCounter && $message->getProperty('retry', true) !== false) {
@@ -117,7 +108,9 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             return self::ACK;
         }
 
-        gc_collect_cycles();
+        $message = $session = $movies = $moviesIds = $totalCounter = $successfullySavedMoviesCounter = $failedMoviesIds = null;
+        unset($message, $session, $movies, $moviesIds, $totalCounter, $successfullySavedMoviesCounter, $failedMoviesIds);
+
         return self::ACK;
     }
 
@@ -127,9 +120,9 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
      * @throws TmdbRequestLimitException
      * @throws \App\Movies\Exception\TmdbMovieNotFoundException
      *
-     * @return array|MovieTranslationDTO[]
+     * @return \Iterator|MovieTranslationDTO[]
      */
-    private function loadTranslationsFromTMDB(int $tmdbId): array
+    private function loadTranslationsFromTMDB(int $tmdbId): \Iterator
     {
         $translationsResponse = $this->searchService->findMovieTranslationsById($tmdbId);
         $translations = $translationsResponse['translations'];
@@ -141,10 +134,8 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             }
             $data = $translation['data'];
 
-            $newTranslations[] = new MovieTranslationDTO($translation['iso_639_1'], $data['title'], $data['overview'], null);
+            yield new MovieTranslationDTO($translation['iso_639_1'], $data['title'], $data['overview'], null);
         }
-
-        return $newTranslations;
     }
 
     /**
@@ -154,7 +145,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
      */
-    private function addTranslations(array $moviesTranslationsDTOs, Movie $movie): void
+    private function addTranslations(\Iterator $moviesTranslationsDTOs, Movie $movie): void
     {
         /** @var $movieReference Movie */
         $movieReference = $this->em->getReference(Movie::class, $movie->getId());

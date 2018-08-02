@@ -28,14 +28,33 @@ class TmdbSyncService
      */
     public function syncMovies(\Iterator $movies, bool $loadSimilar = true, array $similarMoviesTable = []): void
     {
-        /**
-         * @var $movies \Iterator
-         */
-        if (!$movies->current()) {
+        if ($this->isSupport($movies->current()) === false) {
+            throw new \InvalidArgumentException('Unsupported array of movies provided');
+        }
+
+        foreach ($movies as $movie) {
+            $message = new Message(serialize([$movie]), [
+                'load_similar' => $loadSimilar,
+                'similar_movies_table' => $similarMoviesTable,
+            ]);
+
+            $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
+        }
+
+    }
+
+    /**
+     * @param array         $movies
+     * @param bool          $loadSimilar
+     * @param array         $similarMoviesTable
+     */
+    public function syncMoviesByArray(array $movies, bool $loadSimilar = true, array $similarMoviesTable = []): void
+    {
+        if (!count($movies)) {
             return;
         }
 
-        if ($this->isSupport($movies->current()) === false) {
+        if ($this->isSupport(reset($movies)) === false) {
             throw new \InvalidArgumentException('Unsupported array of movies provided');
         }
 

@@ -52,6 +52,10 @@ class SearchService
             return new MovieCollection([], 0, $offset);
         }
 
+        $moviesObjects = $this->normalizer->normalizeMoviesToObjects($movies['results'], $locale);
+        $result = iterator_to_array($moviesObjects);
+        $this->sync->syncMoviesByArray($result);
+
         // If we have a lot of movies then save it all
         if (isset($movies['total_pages']) && $movies['total_pages'] > 1) {
             // $i = 2 because $movies currently already has movies from page 1
@@ -64,11 +68,7 @@ class SearchService
             }
         }
 
-        $movies = $this->normalizer->normalizeMoviesToObjects($movies['results'], $locale);
-        $this->sync->syncMovies($movies);
-
-        $movies = iterator_to_array($movies);
-        return new MovieCollection($movies, $totalResults, $offset);
+        return new MovieCollection($result, $totalResults, $offset);
     }
 
     /**

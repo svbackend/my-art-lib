@@ -2,6 +2,7 @@
 
 namespace App\Movies\EventListener;
 
+use App\Movies\Entity\Movie;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbSearchService;
 use App\Users\Entity\User;
@@ -24,16 +25,6 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
 
     public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository, TmdbSearchService $searchService)
     {
-        if ($em instanceof EntityManager === false) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'AddSimilarMoviesProcessor expects %s as %s realization',
-                    EntityManager::class,
-                    EntityManagerInterface::class
-                )
-            );
-        }
-
         $this->em = $em;
         $this->movieRepository = $movieRepository;
         $this->searchService = $searchService;
@@ -45,19 +36,20 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
         $moviesTable = json_decode($moviesTable, true);
 
         if ($this->em->isOpen() === false) {
-            $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
+            throw new \ErrorException('em is closed');
         }
 
         $originalMoviesIds = array_keys($moviesTable);
         $movies = $this->movieRepository->findAllByIds($originalMoviesIds);
 
         foreach ($movies as $movie) {
-            $similarMovies = $this->movieRepository->findAllByTmdbIds($moviesTable[$movie->getId()]);
+            $similarMovies = $this->movieRepository->findAllIdsByTmdbIds($moviesTable[$movie->getId()]);
             foreach ($similarMovies as $similarMovie) {
-                $movie->addSimilarMovie($similarMovie);
-                if ($similarMovie->getTmdb()->getVoteAverage() !== null && $similarMovie->getTmdb()->getVoteAverage() >= 7) {
+                $similarMovieRef = $this->em->getReference(Movie::class, $similarMovie['m_id']);
+                $movie->addSimilarMovie($similarMovieRef);
+                if (is_numeric($similarMovie['m_tmdb.vote_average']) && $similarMovie['m_tmdb.vote_average'] >= 7) {
                     $supportAcc = $this->em->getReference(User::class, 1);
-                    $movie->addRecommendation($supportAcc, $similarMovie);
+                    $movie->addRecommendation($supportAcc, $similarMovieRef);
                 }
             }
 
@@ -71,9 +63,10 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
             // do nothing, it's ok
         } catch (\Exception $exception) {
             echo $exception->getMessage();
+        } finally {
+            $this->em->clear();
         }
 
-        gc_collect_cycles();
         return self::ACK;
     }
 
