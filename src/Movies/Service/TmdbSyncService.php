@@ -8,6 +8,7 @@ use App\Movies\Entity\Movie;
 use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\Repository\MovieRepository;
 use Enqueue\Client\Message;
+use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
 
 class TmdbSyncService
@@ -21,34 +22,7 @@ class TmdbSyncService
         $this->producer = $producer;
     }
 
-    /**
-     * @param \Iterator $movies
-     * @param bool          $loadSimilar
-     * @param array         $similarMoviesTable
-     */
-    public function syncMovies(\Iterator $movies, bool $loadSimilar = true, array $similarMoviesTable = []): void
-    {
-        if ($this->isSupport($movies->current()) === false) {
-            throw new \InvalidArgumentException('Unsupported array of movies provided');
-        }
-
-        foreach ($movies as $movie) {
-            $message = new Message(serialize([$movie]), [
-                'load_similar' => $loadSimilar,
-                'similar_movies_table' => $similarMoviesTable,
-            ]);
-
-            $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
-        }
-
-    }
-
-    /**
-     * @param array         $movies
-     * @param bool          $loadSimilar
-     * @param array         $similarMoviesTable
-     */
-    public function syncMoviesByArray(array $movies, bool $loadSimilar = true, array $similarMoviesTable = []): void
+    public function syncMovies(array $movies): void
     {
         if (!count($movies)) {
             return;
@@ -59,10 +33,8 @@ class TmdbSyncService
         }
 
         foreach ($movies as $movie) {
-            $message = new Message(serialize([$movie]), [
-                'load_similar' => $loadSimilar,
-                'similar_movies_table' => $similarMoviesTable,
-            ]);
+            $message = new Message(json_encode($movie));
+            $message->setPriority(MessagePriority::HIGH);
 
             $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
         }
@@ -71,6 +43,6 @@ class TmdbSyncService
 
     private function isSupport($movie)
     {
-        return $movie instanceof Movie;
+        return is_array($movie) && isset($movie['id']) && isset($movie['original_title']);
     }
 }

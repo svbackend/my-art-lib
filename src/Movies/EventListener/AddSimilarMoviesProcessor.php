@@ -45,9 +45,9 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
         foreach ($movies as $movie) {
             $similarMovies = $this->movieRepository->findAllIdsByTmdbIds($moviesTable[$movie->getId()]);
             foreach ($similarMovies as $similarMovie) {
-                $similarMovieRef = $this->em->getReference(Movie::class, $similarMovie['m_id']);
+                $similarMovieRef = $this->em->getReference(Movie::class, $similarMovie['id']);
                 $movie->addSimilarMovie($similarMovieRef);
-                if (is_numeric($similarMovie['m_tmdb.vote_average']) && $similarMovie['m_tmdb.vote_average'] >= 7) {
+                if (is_numeric($similarMovie['tmdb.voteAverage']) && $similarMovie['tmdb.voteAverage'] >= 7) {
                     $supportAcc = $this->em->getReference(User::class, 1);
                     $movie->addRecommendation($supportAcc, $similarMovieRef);
                 }
@@ -56,16 +56,8 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
             $this->em->persist($movie);
         }
 
-        try {
             $this->em->flush();
-        } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
-            echo $uniqueConstraintViolationException->getMessage();
-            // do nothing, it's ok
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
-        } finally {
             $this->em->clear();
-        }
 
         return self::ACK;
     }

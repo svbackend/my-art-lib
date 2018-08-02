@@ -9,6 +9,8 @@ use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
 use App\Movies\Service\TmdbSyncService;
+use Enqueue\Client\Message;
+use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
@@ -36,60 +38,34 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
 
     public function process(PsrMessage $message, PsrContext $session)
     {
-        $moviesIds = $message->getBody();
-        $moviesIds = unserialize($moviesIds);
+        $movieId = $message->getBody();
+        $movieId = json_decode($movieId, true);
 
-        $movies = $this->movieRepository->findAllByIdsWithSimilarMovies($moviesIds);
+        $movies = $this->movieRepository->findAllByIdsWithSimilarMovies([$movieId]);
         $allSimilarMoviesTable = [];
-        $totalSuccessfullyProcessedMovies = 0;
-        $requeueIds = [];
+        $movie = reset($movies);
 
-        foreach ($movies as $movie) {
             if ($movie['sm_id'] !== null) {
-                ++$totalSuccessfullyProcessedMovies;
-                continue;
+                return self::ACK;
             }
 
             try {
                 $similarMovies = $this->loadSimilarMoviesFromTMDB($movie['m_tmdb.id']);
             } catch (TmdbRequestLimitException $requestLimitException) {
-                $requeueIds[] = $movie['m_id'];
                 sleep(5);
-                continue;
+                return self::REQUEUE;
             } catch (TmdbMovieNotFoundException $movieNotFoundException) {
-                ++$totalSuccessfullyProcessedMovies;
-                continue;
-            } catch (\Exception $exception) {
-                ++$totalSuccessfullyProcessedMovies;
-                continue;
+                return self::ACK;
             }
 
             $allSimilarMoviesTable[$movie['m_id']] = array_map(function (array $newSimilarMovie) {
                 return $newSimilarMovie['id'];
             }, $similarMovies);
 
-            try {
-                $similarMovies = $this->normalizer->normalizeMoviesToObjects($similarMovies);
-            } catch (\Exception $exception) {
-                echo $exception->getMessage();
-                ++$totalSuccessfullyProcessedMovies;
-                continue;
-            }
-
-            if (!$similarMovies->current()) {
-                ++$totalSuccessfullyProcessedMovies;
-                continue;
-            }
-
             $this->sync->syncMovies($similarMovies);
-            ++$totalSuccessfullyProcessedMovies;
-        }
 
-        $this->producer->sendEvent(AddSimilarMoviesProcessor::ADD_SIMILAR_MOVIES, json_encode($allSimilarMoviesTable));
 
-        if (count($requeueIds)) {
-            $this->producer->sendEvent(self::LOAD_SIMILAR_MOVIES, serialize($requeueIds));
-        }
+        $this->addSimilarMovies($allSimilarMoviesTable);
 
         $message = $session = $moviesIds = $movies = $allSimilarMoviesTable = $totalSuccessfullyProcessedMovies = $requeueIds = $movie = null;
         unset($message, $session, $moviesIds, $movies, $allSimilarMoviesTable, $totalSuccessfullyProcessedMovies, $requeueIds, $movie);
@@ -113,6 +89,7 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
         // If we have a lot of movies then load it all
         if (isset($similarMoviesResponse['total_pages']) && $similarMoviesResponse['total_pages'] > 1) {
             // $i = 2 because $movies currently already has movies from page 1
+            $similarMoviesResponse['total_pages'] = $similarMoviesResponse['total_pages'] > 5 ? 5 : $similarMoviesResponse['total_pages'];
             for ($i = 2; $i <= $similarMoviesResponse['total_pages']; ++$i) {
                 $moviesOnPage = $this->searchService->findSimilarMoviesById($tmdbId, $i);
                 $movies = array_merge($movies, $moviesOnPage['results']);
@@ -120,6 +97,13 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         return $movies;
+    }
+
+    private function addSimilarMovies(array $allSimilarMoviesTable)
+    {
+        $message = new Message(json_encode($allSimilarMoviesTable));
+        $message->setPriority(MessagePriority::VERY_LOW);
+        $this->producer->sendEvent(AddSimilarMoviesProcessor::ADD_SIMILAR_MOVIES, $message);
     }
 
     public static function getSubscribedTopics()

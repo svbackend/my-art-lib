@@ -41,75 +41,36 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $this->producer = $producer;
     }
 
-    /**
-     * @param PsrMessage $message
-     * @param PsrContext $session
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \ErrorException
-     *
-     * @return string
-     */
     public function process(PsrMessage $message, PsrContext $session)
     {
-        $moviesIds = $message->getBody();
-        $moviesIds = unserialize($moviesIds);
+        $movieId = $message->getBody();
+        $movieId = json_decode($movieId, true);
 
         if ($this->em->isOpen() === false) {
             throw new \ErrorException('em is closed');
         }
 
-        $movies = $this->movieRepository->findAllByIds($moviesIds);
+        $movie = $this->movieRepository->find($movieId);
 
-        $totalCounter = count($movies);
-        $successfullySavedMoviesCounter = 0;
-
-        $failedMoviesIds = [];
-        foreach ($movies as $movie) {
-            if ($this->isAllTranslationsSaved($movie) === true) {
-                ++$successfullySavedMoviesCounter;
-                continue;
-            }
+        if ($this->isAllTranslationsSaved($movie) === true) {
+            return self::ACK;
+        }
 
             try {
                 $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
             } catch (TmdbRequestLimitException $requestLimitException) {
-                $failedMoviesIds[] = $movie->getId();
                 sleep(5);
-                continue;
-            } catch (TmdbMovieNotFoundException $movieNotFoundException) {
-                // if movie not found let's think that it's successfully processed
-                ++$successfullySavedMoviesCounter;
-                continue;
-            } catch (\Exception $exception) {
-                $failedMoviesIds[] = $movie->getId();
-                continue;
+                return self::REQUEUE;
             }
 
             $this->addTranslations($translationsDTOs, $movie);
-            ++$successfullySavedMoviesCounter;
-        }
 
-        try {
-            $this->em->flush();
-        } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
-            // do nothing, it's ok
-            echo $uniqueConstraintViolationException->getMessage();
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
-        } finally {
-            $this->em->clear();
-        }
 
-        if ($successfullySavedMoviesCounter !== $totalCounter && $message->getProperty('retry', true) !== false) {
-            $retryMessage = new Message(serialize($failedMoviesIds), ['retry' => false]);
-            $this->producer->sendEvent(self::LOAD_TRANSLATIONS, $retryMessage);
+        $this->em->flush();
+        $this->em->clear();
 
-            return self::ACK;
-        }
-
-        $message = $session = $movies = $moviesIds = $totalCounter = $successfullySavedMoviesCounter = $failedMoviesIds = null;
-        unset($message, $session, $movies, $moviesIds, $totalCounter, $successfullySavedMoviesCounter, $failedMoviesIds);
+        $message = $session = $movie = $movieId = null;
+        unset($message, $session, $movie, $movieId);
 
         return self::ACK;
     }
@@ -126,7 +87,6 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     {
         $translationsResponse = $this->searchService->findMovieTranslationsById($tmdbId);
         $translations = $translationsResponse['translations'];
-        $newTranslations = [];
 
         foreach ($translations as $translation) {
             if (in_array($translation['iso_639_1'], $this->locales, true) === false) {

@@ -38,40 +38,34 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
 
     public function process(PsrMessage $message, PsrContext $session)
     {
-        $moviesIds = $message->getBody();
-        $moviesIds = unserialize($moviesIds);
+        $movieId = $message->getBody();
+        $movieId = json_decode($movieId, true);
 
         if ($this->em->isOpen() === false) {
             throw new \ErrorException('em is closed');
         }
 
-        $movies = $this->movieRepository->findAllByIds($moviesIds);
-        // $total = count($movies);
-        $processed = 0;
-        foreach ($movies as $movie) {
+        $movie = $this->movieRepository->find($movieId);
+
+        if ($movie === null) {
+            return self::ACK;
+        }
+
             $posterUrl = $movie->getOriginalPosterUrl();
             // $posterName = str_replace('https://image.tmdb.org/t/p/original', '', $posterUrl);
             if ($posterUrl === 'https://image.tmdb.org/t/p/original') {
-                $processed++;
-                continue;
+                return self::ACK;
             }
 
             $posterPath = Poster::savePoster($movie->getId(), $movie->getOriginalPosterUrl());
             if ($posterPath === null) {
-                $processed++;
-                continue;
+                return self::ACK;
             }
 
             $movie->setOriginalPosterUrl(Poster::getUrl($movie->getId()));
-        }
 
-        try {
             $this->em->flush();
-        } catch (\Throwable $exception) {
-            echo $exception->getMessage();
-        } finally {
             $this->em->clear();
-        }
 
         $message = $session = $moviesIds = $movies = null;
         unset($message, $session, $moviesIds, $movies);
