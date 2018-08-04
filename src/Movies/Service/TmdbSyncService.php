@@ -22,7 +22,7 @@ class TmdbSyncService
         $this->producer = $producer;
     }
 
-    public function syncMovies(array $movies): void
+    public function syncMovies(array $movies, bool $loadSimilar = false): void
     {
         if (!count($movies)) {
             return;
@@ -46,6 +46,7 @@ class TmdbSyncService
 
             $message = new Message(json_encode($movie));
             $message->setPriority(MessagePriority::HIGH);
+            $message->setProperty(MovieSyncProcessor::PARAM_LOAD_SIMILAR_MOVIES, $loadSimilar);
 
             $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
         }

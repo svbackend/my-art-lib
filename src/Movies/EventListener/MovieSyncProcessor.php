@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 {
     const ADD_MOVIES_TMDB = 'addMoviesTMDB';
+    const PARAM_LOAD_SIMILAR_MOVIES = 'loadSimilarMovies';
 
     private $em;
     private $producer;
@@ -49,21 +50,14 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         $movies = $this->normalizer->normalizeMoviesToObjects([$movie]);
-        $savedMoviesIds = [];
-        $savedMoviesTmdbIds = []; // tmdbId => Movie Object
-        $moviesCount = 0;
+        $movie = reset($movies);
 
         if ($this->em->isOpen() === false) {
             throw new \ErrorException('em is closed');
         }
 
-        foreach ($movies as $movie) {
-            $this->em->persist($movie);
-            $this->logger->info(sprintf('Saved %s with id %s', $movie->getOriginalTitle(), $movie->getId()));
-            $savedMoviesIds[] = $movie->getId();
-            $savedMoviesTmdbIds[$movie->getTmdb()->getId()] = $movie;
-            ++$moviesCount;
-        }
+        $this->em->persist($movie);
+        $this->logger->info(sprintf('Saved %s with id %s', $movie->getOriginalTitle(), $movie->getId()));
 
         try {
             $this->em->flush();
@@ -72,9 +66,11 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         }
         $this->em->clear();
 
-        $this->loadTranslations($savedMoviesIds);
-        $this->loadSimilarMovies($savedMoviesIds);
-        $this->loadPosters($savedMoviesIds);
+        $this->loadTranslations($movie->getId());
+        if ($message->getProperty(self::PARAM_LOAD_SIMILAR_MOVIES, false) === true) {
+            $this->loadSimilarMovies($movie->getId());
+        }
+        $this->loadPosters($movie->getId());
 
         $message = $session = $movies = $savedMoviesIds = $savedMoviesTmdbIds = $moviesCount = null;
         unset($message, $session, $movies, $savedMoviesIds, $savedMoviesTmdbIds, $moviesCount);
@@ -84,30 +80,23 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         return self::ACK;
     }
 
-    private function loadTranslations(array $moviesIds)
+    private function loadTranslations(int $movieId)
     {
-        foreach ($moviesIds as $movieId) {
-            $this->producer->sendEvent(MovieTranslationsProcessor::LOAD_TRANSLATIONS, json_encode($movieId));
-        }
+        $this->producer->sendEvent(MovieTranslationsProcessor::LOAD_TRANSLATIONS, json_encode($movieId));
     }
 
-    private function loadSimilarMovies(array $moviesIds)
+    private function loadSimilarMovies(int $movieId)
     {
-        foreach ($moviesIds as $id) {
-            $message = new Message(json_encode($id));
-            $message->setPriority(MessagePriority::VERY_LOW);
-            $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, $message);
-        }
+        $message = new Message(json_encode($movieId));
+        $message->setPriority(MessagePriority::VERY_LOW);
+        $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, $message);
     }
 
-    private function loadPosters(array $moviesIds)
+    private function loadPosters(int $movieId)
     {
-        foreach ($moviesIds as $id) {
-            $message = new Message(json_encode($id));
-            $message->setPriority(MessagePriority::VERY_LOW);
-            $this->producer->sendEvent(MoviePostersProcessor::LOAD_POSTERS, $message);
-        }
-
+        $message = new Message(json_encode($movieId));
+        $message->setPriority(MessagePriority::VERY_LOW);
+        $this->producer->sendEvent(MoviePostersProcessor::LOAD_POSTERS, $message);
     }
 
     public static function getSubscribedTopics()
