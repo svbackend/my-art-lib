@@ -10,6 +10,7 @@ use App\Guests\Repository\WatchedMovieRepository;
 use App\Movies\DTO\WatchedMovieDTO;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\WatchedMovie;
+use App\Movies\EventListener\SimilarMoviesProcessor;
 use App\Movies\EventListener\WatchedMovieProcessor;
 use App\Movies\Repository\MovieRepository;
 use App\Users\Entity\User;
@@ -71,6 +72,7 @@ class WatchedMovieService
         try {
             $this->em->persist($newWatchedMovie);
             $this->em->flush();
+            $this->onMovieAdded($newWatchedMovie);
         } catch (UniqueConstraintViolationException $exception) {
             // You can throw new BadRequestHttpException('This movie already in your library of watched movies');
             // But I think its nice to return 202 like operation was successful
@@ -119,6 +121,7 @@ class WatchedMovieService
         try {
             $this->em->persist($newWatchedMovie);
             $this->em->flush();
+            $this->onMovieAdded($newWatchedMovie);
         } catch (UniqueConstraintViolationException $exception) {
             // You can throw new BadRequestHttpException('This movie already in your library of watched movies');
             // But I think its nice to return 202 like operation was successful
@@ -164,5 +167,13 @@ class WatchedMovieService
     {
         $watchedMoviesSerialized = serialize($watchedMovies);
         $this->producer->sendEvent(WatchedMovieProcessor::ADD_WATCHED_MOVIE_TMDB, $watchedMoviesSerialized);
+    }
+
+    private function onMovieAdded(WatchedMovie $watchedMovie): void
+    {
+        $movie = $watchedMovie->getMovie();
+        if (count($movie->getSimilarMovies()) === 0) {
+            $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, json_encode($movie->getId()));
+        }
     }
 }

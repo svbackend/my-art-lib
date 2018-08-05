@@ -5,6 +5,7 @@ namespace App\Movies\Controller;
 use App\Controller\BaseController;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\AddRecommendationProcessor;
+use App\Movies\EventListener\SimilarMoviesProcessor;
 use App\Movies\Repository\MovieRecommendationRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\CreateMovieRequest;
@@ -65,11 +66,16 @@ class MovieController extends BaseController
      * @Route("/api/movies/{id}", methods={"GET"})
      *
      * @param Movie $movie
+     * @param ProducerInterface $producer
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function getMovies(Movie $movie)
+    public function getMovies(Movie $movie, ProducerInterface $producer)
     {
+        if (count($movie->getSimilarMovies()) === 0) {
+            $producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, json_encode($movie->getId()));
+        }
+
         return $this->response($movie, 200, [], [
             'groups' => ['view'],
         ]);

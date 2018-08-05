@@ -53,6 +53,9 @@
             <exclude>
                 <directory>src/DataFixtures</directory>
             </exclude>
+            <exclude>
+                <directory>src/Migrations</directory>
+            </exclude>
         </whitelist>
     </filter>
 
