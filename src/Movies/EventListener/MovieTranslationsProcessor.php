@@ -41,6 +41,13 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $this->producer = $producer;
     }
 
+    /**
+     * @param PsrMessage $message
+     * @param PsrContext $session
+     * @return object|string
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \ErrorException
+     */
     public function process(PsrMessage $message, PsrContext $session)
     {
         $movieId = $message->getBody();
@@ -56,15 +63,16 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             return self::ACK;
         }
 
-            try {
-                $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
-            } catch (TmdbRequestLimitException $requestLimitException) {
-                sleep(5);
-                return self::REQUEUE;
-            }
+        try {
+            $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
+        } catch (TmdbRequestLimitException $requestLimitException) {
+            sleep(5);
+            return self::REQUEUE;
+        } catch (TmdbMovieNotFoundException $notFoundException) {
+            return self::REJECT;
+        }
 
-            $this->addTranslations($translationsDTOs, $movie);
-
+        $this->addTranslations($translationsDTOs, $movie);
 
         $this->em->flush();
         $this->em->clear();
@@ -77,11 +85,9 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     /**
      * @param int $tmdbId
-     *
+     * @return \Iterator
+     * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
-     * @throws \App\Movies\Exception\TmdbMovieNotFoundException
-     *
-     * @return \Iterator|MovieTranslationDTO[]
      */
     private function loadTranslationsFromTMDB(int $tmdbId): \Iterator
     {

@@ -38,6 +38,12 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         $this->movieRepository = $movieRepository;
     }
 
+    /**
+     * @param PsrMessage $message
+     * @param PsrContext $session
+     * @return object|string
+     * @throws \ErrorException
+     */
     public function process(PsrMessage $message, PsrContext $session)
     {
         $this->logger->info('MovieSyncProcessor start with memory usage: ', [memory_get_usage()]);
@@ -50,7 +56,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         $movies = $this->normalizer->normalizeMoviesToObjects([$movie]);
-        $movie = reset($movies);
+        $movie = $movies->current();
 
         if ($this->em->isOpen() === false) {
             throw new \ErrorException('em is closed');

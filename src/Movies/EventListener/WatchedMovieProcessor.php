@@ -19,6 +19,7 @@ use Psr\Log\LoggerInterface;
 
 // Looks like here some logic problem
 // todo construct entities by params from message here instead of create each of them with correct associations
+// TODO IMPORTANT
 class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
 {
     const ADD_WATCHED_MOVIE_TMDB = 'addWatchedMovieTMDB';

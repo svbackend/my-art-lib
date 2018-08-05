@@ -23,18 +23,13 @@ class TmdbNormalizerService
     }
 
     /**
-     * TODO can we use generator here?
-     *
      * @param array  $movies
      * @param string $locale
-     *
-     * @throws \Exception
-     *
-     * @return Movie[]
+     * @return \Iterator
+     * @throws \ErrorException
      */
     public function normalizeMoviesToObjects(array $movies, string $locale = 'en'): \Iterator
     {
-        //$normalizedMovies = [];
         foreach ($movies as $movie) {
             $movieDTO = $this->createMovieDTO($movie);
             $tmdb = $this->createMovieTmdbDTO($movie);
@@ -49,8 +44,6 @@ class TmdbNormalizerService
 
             yield $movieObject;
         }
-
-        #return $normalizedMovies;
     }
 
     /**

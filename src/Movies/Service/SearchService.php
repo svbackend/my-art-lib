@@ -92,6 +92,6 @@ class SearchService
 
         $movies = $this->normalizer->normalizeMoviesToObjects([$movie], $locale);
 
-        return reset($movies) ?: null;
+        return $movies->current() ?: null;
     }
 }
