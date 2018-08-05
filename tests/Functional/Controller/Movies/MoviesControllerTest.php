@@ -265,13 +265,8 @@ class MoviesControllerTest extends WebTestCase
         // Test that movies will be saved in background
         $traces = $this->getProducer($client)->getTopicTraces(MovieSyncProcessor::ADD_MOVIES_TMDB);
         $this->assertCount(1, $traces);
-        $movies = unserialize($traces[0]['body']);
-        $movie = reset($movies);
-        /** @var $movie Movie */
-        self::assertInstanceOf(Movie::class, $movie);
-        $genres = $movie->getGenres();
-        $genre = reset($genres);
-        self::assertEquals(GenresFixtures::GENRE_TMDB_ID, $genre->getTmdbId());
+        $processedMovie = json_decode($traces[0]['body'], true);
+        $this->assertEquals($movie['tmdb']['id'], $processedMovie['id']);
     }
 
     /**
