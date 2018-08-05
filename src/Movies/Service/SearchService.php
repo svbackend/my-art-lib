@@ -6,6 +6,7 @@ namespace App\Movies\Service;
 
 use App\Movies\Entity\Movie;
 use App\Movies\Exception\TmdbMovieNotFoundException;
+use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Pagination\MovieCollection;
 use App\Movies\Repository\MovieRepository;
 use App\Pagination\PaginatedCollection;
@@ -52,22 +53,25 @@ class SearchService
             return new MovieCollection([], 0, $offset);
         }
 
+        $moviesObjects = $this->normalizer->normalizeMoviesToObjects($movies['results'], $locale);
+        $this->sync->syncMovies($movies['results']);
+
         // If we have a lot of movies then save it all
         if (isset($movies['total_pages']) && $movies['total_pages'] > 1) {
             // $i = 2 because $movies currently already has movies from page 1
             for ($i = 2; $i <= $movies['total_pages']; ++$i) {
-                $moviesOnPage = $this->tmdb->findMoviesByQuery($query, $locale, [
-                    'page' => $i,
-                ]);
-                $moviesObjectsOnPage = $this->normalizer->normalizeMoviesToObjects($moviesOnPage['results'], $locale);
-                $this->sync->syncMovies($moviesObjectsOnPage);
+                try {
+                    $moviesOnPage = $this->tmdb->findMoviesByQuery($query, $locale, [
+                        'page' => $i,
+                    ]);
+                } catch (TmdbRequestLimitException $requestLimitException) {
+                    continue;
+                }
+                $this->sync->syncMovies($moviesOnPage['results']);
             }
         }
 
-        $movies = $this->normalizer->normalizeMoviesToObjects($movies['results'], $locale);
-        $this->sync->syncMovies($movies);
-
-        return new MovieCollection($movies, $totalResults, $offset);
+        return new MovieCollection($moviesObjects, $totalResults, $offset);
     }
 
     /**
@@ -88,6 +92,6 @@ class SearchService
 
         $movies = $this->normalizer->normalizeMoviesToObjects([$movie], $locale);
 
-        return reset($movies) ?: null;
+        return $movies->current() ?: null;
     }
 }

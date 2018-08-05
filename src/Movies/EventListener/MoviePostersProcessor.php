@@ -25,23 +25,12 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
 {
     const LOAD_POSTERS = 'LoadMoviesPosters';
 
-    /** @var EntityManager */
     private $em;
     private $movieRepository;
     private $producer;
 
     public function __construct(EntityManagerInterface $em, ProducerInterface $producer, MovieRepository $movieRepository)
     {
-        if ($em instanceof EntityManager === false) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'MovieTranslationsProcessor expects %s as %s realization',
-                    EntityManager::class,
-                    EntityManagerInterface::class
-                )
-            );
-        }
-
         $this->em = $em;
         $this->movieRepository = $movieRepository;
         $this->producer = $producer;
@@ -49,38 +38,37 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
 
     public function process(PsrMessage $message, PsrContext $session)
     {
-        $moviesIds = $message->getBody();
-        $moviesIds = unserialize($moviesIds);
+        $movieId = $message->getBody();
+        $movieId = json_decode($movieId, true);
 
         if ($this->em->isOpen() === false) {
-            $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
+            throw new \ErrorException('em is closed');
         }
 
-        $movies = $this->movieRepository->findAllByIds($moviesIds);
-        // $total = count($movies);
-        $processed = 0;
-        foreach ($movies as $movie) {
+        $movie = $this->movieRepository->find($movieId);
+
+        if ($movie === null) {
+            return self::ACK;
+        }
+
             $posterUrl = $movie->getOriginalPosterUrl();
             // $posterName = str_replace('https://image.tmdb.org/t/p/original', '', $posterUrl);
             if ($posterUrl === 'https://image.tmdb.org/t/p/original') {
-                $processed++;
-                continue;
+                return self::ACK;
             }
 
             $posterPath = Poster::savePoster($movie->getId(), $movie->getOriginalPosterUrl());
             if ($posterPath === null) {
-                $processed++;
-                continue;
+                return self::ACK;
             }
 
             $movie->setOriginalPosterUrl(Poster::getUrl($movie->getId()));
-        }
 
-        try {
             $this->em->flush();
-        } catch (\Throwable $exception) {
-            echo $exception->getMessage();
-        }
+            $this->em->clear();
+
+        $message = $session = $moviesIds = $movies = null;
+        unset($message, $session, $moviesIds, $movies);
 
         return self::ACK;
     }

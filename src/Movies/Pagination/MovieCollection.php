@@ -13,7 +13,10 @@ class MovieCollection implements PaginatedCollectionInterface
     private $totalCount;
     private $movies;
 
-    public function __construct(array $movies, $totalCount, int $offset = 0)
+    /**
+     * @param integer $totalCount
+     */
+    public function __construct($movies, $totalCount, int $offset = 0)
     {
         $this->totalCount = abs($totalCount);
         $this->offset = abs($offset);

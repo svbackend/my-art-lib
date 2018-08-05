@@ -16,22 +16,11 @@ class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterfa
 {
     const ADD_RECOMMENDATION = 'AddRecommendation';
 
-    /** @var EntityManager */
     private $em;
     private $movieRepository;
 
     public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository)
     {
-        if ($em instanceof EntityManager === false) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'AddRecommendationProcessor expects %s as %s realization',
-                    EntityManager::class,
-                    EntityManagerInterface::class
-                )
-            );
-        }
-
         $this->em = $em;
         $this->movieRepository = $movieRepository;
     }
@@ -42,7 +31,7 @@ class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterfa
         $movie = json_decode($movie, true);
 
         if ($this->em->isOpen() === false) {
-            $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
+            throw new \ErrorException('em is closed');
         }
 
         $originalMovie = $this->movieRepository->findOneByIdOrTmdbId($movie['movie_id']);
@@ -74,6 +63,8 @@ class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterfa
             // do nothing, it's ok
         } catch (\Exception $exception) {
             echo $exception->getMessage();
+        } finally {
+            $this->em->clear();
         }
 
         return self::ACK;

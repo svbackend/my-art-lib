@@ -124,6 +124,24 @@ class MovieRepository extends ServiceEntityRepository
      *
      * @return array|Movie[]
      */
+    public function findAllByIdsWithSimilarMovies(array $ids): array
+    {
+        $result = $this->createQueryBuilder('m')
+            ->leftJoin('m.similarMovies', 'sm')
+            ->addSelect('sm')
+            ->where('m.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getScalarResult();
+
+        return $result;
+    }
+
+    /**
+     * @param array $ids
+     *
+     * @return array|Movie[]
+     */
     public function findAllByTmdbIds(array $ids)
     {
         $result = $this->getBaseQuery()
@@ -131,6 +149,23 @@ class MovieRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
+
+        return $result;
+    }
+
+    /**
+     * @param array $ids
+     *
+     * @return array of int
+     */
+    public function findAllIdsByTmdbIds(array $ids)
+    {
+        $result = $this->createQueryBuilder('m')
+            ->select('m.id, m.tmdb.voteAverage')
+            ->where('m.tmdb.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getScalarResult();
 
         return $result;
     }

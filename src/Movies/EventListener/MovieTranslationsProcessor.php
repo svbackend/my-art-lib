@@ -10,10 +10,7 @@ use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbSearchService;
 use App\Service\LocaleService;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
@@ -24,7 +21,6 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 {
     const LOAD_TRANSLATIONS = 'LoadMoviesTranslationsFromTMDB';
 
-    /** @var EntityManager */
     private $em;
     private $searchService;
     private $movieRepository;
@@ -34,16 +30,6 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     public function __construct(EntityManagerInterface $em, ProducerInterface $producer, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
-        if ($em instanceof EntityManager === false) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'MovieTranslationsProcessor expects %s as %s realization',
-                    EntityManager::class,
-                    EntityManagerInterface::class
-                )
-            );
-        }
-
         $this->em = $em;
         $this->movieRepository = $movieRepository;
         $this->searchService = $searchService;
@@ -55,84 +41,55 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     /**
      * @param PsrMessage $message
      * @param PsrContext $session
-     *
+     * @return object|string
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
-     *
-     * @return string
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
-        $moviesIds = $message->getBody();
-        $moviesIds = unserialize($moviesIds);
+        $movieId = $message->getBody();
+        $movieId = json_decode($movieId, true);
 
         if ($this->em->isOpen() === false) {
-            $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
+            throw new \ErrorException('em is closed');
         }
 
-        $movies = $this->movieRepository->findAllByIds($moviesIds);
+        $movie = $this->movieRepository->find($movieId);
 
-        $totalCounter = count($movies);
-        $successfullySavedMoviesCounter = 0;
-
-        $failedMoviesIds = [];
-        foreach ($movies as $movie) {
-            if ($this->isAllTranslationsSaved($movie) === true) {
-                ++$successfullySavedMoviesCounter;
-                continue;
-            }
-
-            try {
-                $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
-            } catch (TmdbRequestLimitException $requestLimitException) {
-                $failedMoviesIds[] = $movie->getId();
-                sleep(5);
-                continue;
-            } catch (TmdbMovieNotFoundException $movieNotFoundException) {
-                // if movie not found let's think that it's successfully processed
-                ++$successfullySavedMoviesCounter;
-                continue;
-            } catch (\Exception $exception) {
-                $failedMoviesIds[] = $movie->getId();
-                continue;
-            }
-
-            $this->addTranslations($translationsDTOs, $movie);
-            ++$successfullySavedMoviesCounter;
+        if ($this->isAllTranslationsSaved($movie) === true) {
+            return self::ACK;
         }
 
         try {
-            $this->em->flush();
-        } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
-            // do nothing, it's ok
-            echo $uniqueConstraintViolationException->getMessage();
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
+            $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
+        } catch (TmdbRequestLimitException $requestLimitException) {
+            sleep(5);
+            return self::REQUEUE;
+        } catch (TmdbMovieNotFoundException $notFoundException) {
+            return self::REJECT;
         }
 
-        if ($successfullySavedMoviesCounter !== $totalCounter && $message->getProperty('retry', true) !== false) {
-            $retryMessage = new Message(serialize($failedMoviesIds), ['retry' => false]);
-            $this->producer->sendEvent(self::LOAD_TRANSLATIONS, $retryMessage);
+        $this->addTranslations($translationsDTOs, $movie);
 
-            return self::ACK;
-        }
+        $this->em->flush();
+        $this->em->clear();
+
+        $message = $session = $movie = $movieId = null;
+        unset($message, $session, $movie, $movieId);
 
         return self::ACK;
     }
 
     /**
      * @param int $tmdbId
-     *
+     * @return \Iterator
+     * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
-     * @throws \App\Movies\Exception\TmdbMovieNotFoundException
-     *
-     * @return array|MovieTranslationDTO[]
      */
-    private function loadTranslationsFromTMDB(int $tmdbId): array
+    private function loadTranslationsFromTMDB(int $tmdbId): \Iterator
     {
         $translationsResponse = $this->searchService->findMovieTranslationsById($tmdbId);
         $translations = $translationsResponse['translations'];
-        $newTranslations = [];
 
         foreach ($translations as $translation) {
             if (in_array($translation['iso_639_1'], $this->locales, true) === false) {
@@ -140,20 +97,18 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             }
             $data = $translation['data'];
 
-            $newTranslations[] = new MovieTranslationDTO($translation['iso_639_1'], $data['title'], $data['overview'], null);
+            yield new MovieTranslationDTO($translation['iso_639_1'], $data['title'], $data['overview'], null);
         }
-
-        return $newTranslations;
     }
 
     /**
-     * @param array $moviesTranslationsDTOs
+     * @param \Iterator $moviesTranslationsDTOs
      * @param Movie $movie
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
      */
-    private function addTranslations(array $moviesTranslationsDTOs, Movie $movie): void
+    private function addTranslations(\Iterator $moviesTranslationsDTOs, Movie $movie): void
     {
         /** @var $movieReference Movie */
         $movieReference = $this->em->getReference(Movie::class, $movie->getId());

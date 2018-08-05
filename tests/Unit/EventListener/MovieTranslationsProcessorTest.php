@@ -7,12 +7,9 @@ use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTMDB;
 use App\Movies\Entity\MovieTranslations;
 use App\Movies\EventListener\MovieTranslationsProcessor;
-use App\Movies\Exception\TmdbMovieNotFoundException;
-use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbSearchService;
 use App\Service\LocaleService;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Interop\Queue\PsrContext;
@@ -54,7 +51,7 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $this->psrContext = $this->createMock(PsrContext::class);
         $this->psrMessage = $this->createMock(PsrMessage::class);
 
-        $this->em = $this->createMock(EntityManager::class);
+        $this->em = $this->createMock(EntityManagerInterface::class);
         $this->movieRepository = $this->createMock(MovieRepository::class);
         $this->searchService = $this->createMock(TmdbSearchService::class);
         $this->localeService = $this->createMock(LocaleService::class);
@@ -64,44 +61,21 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $this->movieTranslationsProcessor = new MovieTranslationsProcessor($this->em, $this->producer, $this->movieRepository, $this->searchService, $this->localeService);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @expectedException \InvalidArgumentException
-     */
-    public function testConfigurationException()
-    {
-        /** @var $emInterfaceMock EntityManagerInterface */
-        $emInterfaceMock = $this->createMock(EntityManagerInterface::class);
-        $this->movieTranslationsProcessor = new MovieTranslationsProcessor($emInterfaceMock, $this->producer, $this->movieRepository, $this->searchService, $this->localeService);
-    }
-
     public function testThatAllMoviesTranslationsWillBeCorrectlySaved()
     {
-        $moviesIdsArray = [1, 2, 3];
-        $moviesIds = serialize($moviesIdsArray);
-        $this->psrMessage->method('getBody')->willReturn($moviesIds);
-
-        $this->em->method('isOpen')->willReturn(true);
+        $movieId = 1;
+        $this->psrMessage->method('getBody')->willReturn(json_encode($movieId));
 
         $movieTMDB = $this->createMock(MovieTMDB::class);
-        $movieTMDB->method('getId')->willReturn(0);
+        $movieTMDB->method('getId')->willReturn(2);
 
         $movie1 = $this->createMock(Movie::class);
         $movie1->method('getTranslation')->withAnyParameters()->willReturn(null);
         $movie1->method('getTmdb')->willReturn($movieTMDB);
 
-        $movie2 = $this->createMock(Movie::class);
-        $movie2->method('getTranslation')->withAnyParameters()->willReturn(null);
-        $movie2->method('getTmdb')->willReturn($movieTMDB);
+        $this->movieRepository->method('find')->with($movieId)->willReturn($movie1);
 
-        $movie3 = $this->createMock(Movie::class);
-        $movie3->method('getTranslation')->withAnyParameters()->willReturn(null);
-        $movie3->method('getTmdb')->willReturn($movieTMDB);
-
-        $this->em->method('getReference')->willReturn($movie1, $movie2, $movie3);
-
-        $movies = [$movie1, $movie2, $movie3];
-        $this->movieRepository->method('findAllByIds')->with($moviesIdsArray)->willReturn($movies);
+        $this->em->method('getReference')->willReturn($movie1);
 
         $tmdbResponse = [
             'translations' => [
@@ -123,36 +97,32 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
         $this->assertEquals($this->movieTranslationsProcessor::ACK, $result);
-        $this->assertEquals(9, count($persistedEntities)); // 3 movies * 3 locales
+        $this->assertEquals(3, count($persistedEntities)); // 3 locales
         $this->assertContainsOnlyInstancesOf(MovieTranslations::class, $persistedEntities);
     }
 
     /**
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
-     * @throws \ReflectionException
+     * @expectedException \App\Movies\Exception\TmdbMovieNotFoundException
      */
-    public function testThatTmdbRequestLimitIsNotAProblem()
+    public function testThatTmdbNotFoundIsntAProblem()
     {
-        $moviesIdsArray = [1];
-        $moviesIds = serialize($moviesIdsArray);
-        $this->psrMessage->method('getBody')->willReturn($moviesIds);
-
-        $this->em->method('isOpen')->willReturn(true);
+        $movieId = 1;
+        $this->psrMessage->method('getBody')->willReturn(json_encode($movieId));
 
         $movieTMDB = $this->createMock(MovieTMDB::class);
-        $movieTMDB->method('getId')->willReturn(0);
+        $movieTMDB->method('getId')->willReturn(2);
 
         $movie1 = $this->createMock(Movie::class);
-        $movie1->method('getId')->willReturn(1);
         $movie1->method('getTranslation')->withAnyParameters()->willReturn(null);
         $movie1->method('getTmdb')->willReturn($movieTMDB);
+
+        $this->movieRepository->method('find')->with($movieId)->willReturn($movie1);
+
         $this->em->method('getReference')->willReturn($movie1);
 
-        $movies = [$movie1];
-        $this->movieRepository->method('findAllByIds')->with($moviesIdsArray)->willReturn($movies);
-
-        $this->searchService->method('findMovieTranslationsById')->willThrowException(new TmdbRequestLimitException());
+        $this->searchService->method('findMovieTranslationsById')->willThrowException(new \App\Movies\Exception\TmdbMovieNotFoundException());
 
         $persistedEntities = [];
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
@@ -160,36 +130,36 @@ class MovieTranslationsProcessorTest extends KernelTestCase
             return true;
         }));
 
-        $this->em->expects($this->once())->method('flush');
-        $this->producer->expects($this->once())->method('sendEvent');
+        $this->em->expects($this->never())->method('flush');
 
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->movieTranslationsProcessor::ACK, $result);
+        $this->assertEquals($this->movieTranslationsProcessor::REJECT, $result);
+        $this->assertEquals(0, count($persistedEntities));
     }
 
-    public function testThatTmdbMovieNotFoundIsNotAProblem()
+    /**
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \ErrorException
+     * @expectedException \App\Movies\Exception\TmdbRequestLimitException
+     */
+    public function testThatTmdbRequestLimitIsntAProblem()
     {
-        $moviesIdsArray = [1];
-        $moviesIds = serialize($moviesIdsArray);
-        $this->psrMessage->method('getProperty')->with('retry', true)->willReturn(false);
-        $this->psrMessage->method('getBody')->willReturn($moviesIds);
-
-        $this->em->method('isOpen')->willReturn(true);
+        $movieId = 1;
+        $this->psrMessage->method('getBody')->willReturn(json_encode($movieId));
 
         $movieTMDB = $this->createMock(MovieTMDB::class);
-        $movieTMDB->method('getId')->willReturn(0);
+        $movieTMDB->method('getId')->willReturn(2);
 
         $movie1 = $this->createMock(Movie::class);
-        $movie1->method('getId')->willReturn(1);
         $movie1->method('getTranslation')->withAnyParameters()->willReturn(null);
         $movie1->method('getTmdb')->willReturn($movieTMDB);
+
+        $this->movieRepository->method('find')->with($movieId)->willReturn($movie1);
+
         $this->em->method('getReference')->willReturn($movie1);
 
-        $movies = [$movie1];
-        $this->movieRepository->method('findAllByIds')->with($moviesIdsArray)->willReturn($movies);
-
-        $this->searchService->method('findMovieTranslationsById')->willThrowException(new TmdbMovieNotFoundException());
+        $this->searchService->method('findMovieTranslationsById')->willThrowException(new \App\Movies\Exception\TmdbRequestLimitException());
 
         $persistedEntities = [];
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
@@ -197,11 +167,11 @@ class MovieTranslationsProcessorTest extends KernelTestCase
             return true;
         }));
 
-        $this->em->expects($this->once())->method('flush');
+        $this->em->expects($this->never())->method('flush');
 
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->movieTranslationsProcessor::ACK, $result);
+        $this->assertEquals($this->movieTranslationsProcessor::REQUEUE, $result);
         $this->assertEquals(0, count($persistedEntities));
     }
 }

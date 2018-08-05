@@ -8,6 +8,7 @@ use App\Movies\Entity\Movie;
 use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\Repository\MovieRepository;
 use Enqueue\Client\Message;
+use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
 
 class TmdbSyncService
@@ -21,12 +22,7 @@ class TmdbSyncService
         $this->producer = $producer;
     }
 
-    /**
-     * @param array|Movie[] $movies
-     * @param bool          $loadSimilar
-     * @param array         $similarMoviesTable
-     */
-    public function syncMovies(array $movies, bool $loadSimilar = true, array $similarMoviesTable = []): void
+    public function syncMovies(array $movies, bool $loadSimilar = false): void
     {
         if (!count($movies)) {
             return;
@@ -36,16 +32,29 @@ class TmdbSyncService
             throw new \InvalidArgumentException('Unsupported array of movies provided');
         }
 
-        $message = new Message(serialize($movies), [
-            'load_similar' => $loadSimilar,
-            'similar_movies_table' => $similarMoviesTable,
-        ]);
+        $alreadySavedMovies = $this->repository->findAllByTmdbIds(array_map(function (array $tmdbMovie) {
+            return $tmdbMovie['id'];
+        }, $movies));
+        $alreadySavedMoviesIds = array_flip(array_map(function (Movie $movie) {
+            return $movie->getId();
+        }, $alreadySavedMovies));
 
-        $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
+        foreach ($movies as $movie) {
+            if (isset($alreadySavedMoviesIds[$movie['id']])) {
+                continue;
+            }
+
+            $message = new Message(json_encode($movie));
+            $message->setPriority(MessagePriority::HIGH);
+            $message->setProperty(MovieSyncProcessor::PARAM_LOAD_SIMILAR_MOVIES, $loadSimilar);
+
+            $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
+        }
+
     }
 
     private function isSupport($movie)
     {
-        return $movie instanceof Movie;
+        return is_array($movie) && isset($movie['id']) && isset($movie['original_title']);
     }
 }

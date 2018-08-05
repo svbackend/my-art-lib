@@ -19,6 +19,7 @@ use Psr\Log\LoggerInterface;
 
 // Looks like here some logic problem
 // todo construct entities by params from message here instead of create each of them with correct associations
+// TODO IMPORTANT
 class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
 {
     const ADD_WATCHED_MOVIE_TMDB = 'addWatchedMovieTMDB';
@@ -33,7 +34,7 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
     }
 
     /**
-     * This method called when user or guest trying to add movie to own list of watched movies but we've not.
+     * This method called when user or guest trying to add movie to own list of watched movies but we do not have this movie in our db yet.
      *
      * @param PsrMessage $message
      * @param PsrContext $session
@@ -47,6 +48,10 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
         $watchedMovies = $message->getBody();
         $watchedMovies = unserialize($watchedMovies);
         $validClasses = [UserWatchedMovie::class, GuestWatchedMovie::class];
+
+        if ($this->em->isOpen() === false) {
+            throw new \ErrorException('em is closed');
+        }
 
         /** @var $watchedMovies UserWatchedMovie[]|GuestWatchedMovie[] */
         foreach ($watchedMovies as $watchedMovie) {
@@ -71,6 +76,8 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
             $this->logger->error('UniqueConstraintViolationException when we are trying to save watched movie', [
                 'message' => $exception->getMessage(),
             ]);
+        } finally {
+            $this->em->clear();
         }
 
         return self::ACK;
