@@ -25,8 +25,10 @@ class TmdbNormalizerService
     /**
      * @param array  $movies
      * @param string $locale
-     * @return \Iterator
+     *
      * @throws \ErrorException
+     *
+     * @return \Iterator
      */
     public function normalizeMoviesToObjects(array $movies, string $locale = 'en'): \Iterator
     {

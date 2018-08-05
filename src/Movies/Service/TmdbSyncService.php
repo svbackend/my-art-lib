@@ -50,7 +50,6 @@ class TmdbSyncService
 
             $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);
         }
-
     }
 
     private function isSupport($movie)

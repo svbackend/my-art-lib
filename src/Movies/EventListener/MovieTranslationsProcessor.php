@@ -41,9 +41,11 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     /**
      * @param PsrMessage $message
      * @param PsrContext $session
-     * @return object|string
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
+     *
+     * @return object|string
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
@@ -64,6 +66,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             $translationsDTOs = $this->loadTranslationsFromTMDB($movie->getTmdb()->getId());
         } catch (TmdbRequestLimitException $requestLimitException) {
             sleep(5);
+
             return self::REQUEUE;
         } catch (TmdbMovieNotFoundException $notFoundException) {
             return self::REJECT;
@@ -82,9 +85,11 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     /**
      * @param int $tmdbId
-     * @return \Iterator
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     *
+     * @return \Iterator
      */
     private function loadTranslationsFromTMDB(int $tmdbId): \Iterator
     {
@@ -103,7 +108,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
     /**
      * @param \Iterator $moviesTranslationsDTOs
-     * @param Movie $movie
+     * @param Movie     $movie
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException

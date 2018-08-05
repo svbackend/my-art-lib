@@ -2,7 +2,6 @@
 
 namespace App\Movies\EventListener;
 
-use App\Movies\Entity\Movie;
 use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
@@ -45,25 +44,25 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
         $allSimilarMoviesTable = [];
         $movie = reset($movies);
 
-            if ($movie['sm_id'] !== null) {
-                return self::ACK;
-            }
+        if ($movie['sm_id'] !== null) {
+            return self::ACK;
+        }
 
-            try {
-                $similarMovies = $this->loadSimilarMoviesFromTMDB($movie['m_tmdb.id']);
-            } catch (TmdbRequestLimitException $requestLimitException) {
-                sleep(5);
-                return self::REQUEUE;
-            } catch (TmdbMovieNotFoundException $movieNotFoundException) {
-                return self::ACK;
-            }
+        try {
+            $similarMovies = $this->loadSimilarMoviesFromTMDB($movie['m_tmdb.id']);
+        } catch (TmdbRequestLimitException $requestLimitException) {
+            sleep(5);
 
-            $allSimilarMoviesTable[$movie['m_id']] = array_map(function (array $newSimilarMovie) {
-                return $newSimilarMovie['id'];
-            }, $similarMovies);
+            return self::REQUEUE;
+        } catch (TmdbMovieNotFoundException $movieNotFoundException) {
+            return self::ACK;
+        }
 
-            $this->sync->syncMovies($similarMovies);
+        $allSimilarMoviesTable[$movie['m_id']] = array_map(function (array $newSimilarMovie) {
+            return $newSimilarMovie['id'];
+        }, $similarMovies);
 
+        $this->sync->syncMovies($similarMovies);
 
         $this->addSimilarMovies($allSimilarMoviesTable);
 

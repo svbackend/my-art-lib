@@ -2,12 +2,9 @@
 
 namespace App\Movies\EventListener;
 
-use App\Genres\Entity\Genre;
-use App\Movies\Entity\Movie;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\Message;
 use Enqueue\Client\MessagePriority;
@@ -41,8 +38,10 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     /**
      * @param PsrMessage $message
      * @param PsrContext $session
-     * @return object|string
+     *
      * @throws \ErrorException
+     *
+     * @return object|string
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
@@ -51,7 +50,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         $movie = $message->getBody();
         $movie = json_decode($movie, true);
 
-        if (null !== $this->movieRepository->findOneByIdOrTmdbId(null, (int)$movie['id'])) {
+        if (null !== $this->movieRepository->findOneByIdOrTmdbId(null, (int) $movie['id'])) {
             return self::ACK;
         }
 

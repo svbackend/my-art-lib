@@ -2,19 +2,9 @@
 
 namespace App\Movies\EventListener;
 
-use App\Movies\DTO\MovieTranslationDTO;
-use App\Movies\Entity\Movie;
-use App\Movies\Entity\MovieTranslations;
-use App\Movies\Exception\TmdbMovieNotFoundException;
-use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
-use App\Movies\Service\TmdbSearchService;
 use App\Movies\Utils\Poster;
-use App\Service\LocaleService;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
@@ -51,21 +41,21 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
             return self::ACK;
         }
 
-            $posterUrl = $movie->getOriginalPosterUrl();
-            // $posterName = str_replace('https://image.tmdb.org/t/p/original', '', $posterUrl);
-            if ($posterUrl === 'https://image.tmdb.org/t/p/original') {
-                return self::ACK;
-            }
+        $posterUrl = $movie->getOriginalPosterUrl();
+        // $posterName = str_replace('https://image.tmdb.org/t/p/original', '', $posterUrl);
+        if ($posterUrl === 'https://image.tmdb.org/t/p/original') {
+            return self::ACK;
+        }
 
-            $posterPath = Poster::savePoster($movie->getId(), $movie->getOriginalPosterUrl());
-            if ($posterPath === null) {
-                return self::ACK;
-            }
+        $posterPath = Poster::savePoster($movie->getId(), $movie->getOriginalPosterUrl());
+        if ($posterPath === null) {
+            return self::ACK;
+        }
 
-            $movie->setOriginalPosterUrl(Poster::getUrl($movie->getId()));
+        $movie->setOriginalPosterUrl(Poster::getUrl($movie->getId()));
 
-            $this->em->flush();
-            $this->em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         $message = $session = $moviesIds = $movies = null;
         unset($message, $session, $moviesIds, $movies);

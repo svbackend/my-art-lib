@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
@@ -22,7 +24,6 @@ final class Version20180804082737 extends AbstractMigration
 
             foreach ($genre['translations'] as $locale => $name) {
                 $this->addSql("INSERT INTO genres_translations (id, genre_id, locale, \"name\") VALUES (NEXTVAL('genres_translations_id_seq'), CURRVAL('genres_id_seq'), '$locale', '$name')");
-
             }
         }
     }
@@ -230,6 +231,5 @@ final class Version20180804082737 extends AbstractMigration
   }
 ]
 JSON;
-
     }
 }

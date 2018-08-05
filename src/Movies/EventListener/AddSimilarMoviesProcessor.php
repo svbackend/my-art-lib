@@ -55,8 +55,8 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
             $this->em->persist($movie);
         }
 
-            $this->em->flush();
-            $this->em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         return self::ACK;
     }

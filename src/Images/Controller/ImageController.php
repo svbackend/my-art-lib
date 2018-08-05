@@ -12,19 +12,22 @@ class ImageController extends BaseController
 {
     /**
      * @Route("/f/{image}", methods={"GET"}, name="resizeImage", requirements={"image"=".+"})
+     *
      * @param string $image
-     * @return BinaryFileResponse|Response
+     *
      * @throws \Gumlet\ImageResizeException
+     *
+     * @return BinaryFileResponse|Response
      */
     public function resizeImage(string $image)
     {
-        $pathToFile = __DIR__ . '/../../../public/f/' . $image;
+        $pathToFile = __DIR__.'/../../../public/f/'.$image;
         $imagePathParts = explode('/', $image);
         $filename = end($imagePathParts);
         $filenameParts = explode('.', $filename);
         $ext = end($filenameParts);
 
-        if (in_array($ext, ['jpg']) === false) {
+        if (in_array($ext, ['jpg'], true) === false) {
             return new Response('Image not found (404)', 404);
         }
         $size = $filenameParts[1]; // string '64x64'

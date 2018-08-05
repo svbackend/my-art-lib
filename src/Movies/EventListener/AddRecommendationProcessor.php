@@ -5,7 +5,6 @@ namespace App\Movies\EventListener;
 use App\Movies\Repository\MovieRepository;
 use App\Users\Entity\User;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;

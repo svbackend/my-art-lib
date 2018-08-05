@@ -6,11 +6,12 @@ class Poster
 {
     const TMDB_BASE_URL = 'https://image.tmdb.org/t/p/original';
     const BASE_URL = '/f/movies/{movieId}/poster.jpg';
-    const BASE_PATH = __DIR__ . '/../../../public/f/movies/{movieId}/poster.jpg';
+    const BASE_PATH = __DIR__.'/../../../public/f/movies/{movieId}/poster.jpg';
 
     /**
-     * @param int $movieId
+     * @param int    $movieId
      * @param string $posterUrl
+     *
      * @return null|string
      */
     public static function savePoster(int $movieId, string $posterUrl): ?string
@@ -33,6 +34,7 @@ class Poster
 
         if (curl_errno($ch) !== 0) {
             curl_close($ch);
+
             return null;
         }
 
@@ -50,6 +52,7 @@ class Poster
 
     /**
      * @param int $movieId
+     *
      * @return string
      */
     public static function getUrl(int $movieId): string

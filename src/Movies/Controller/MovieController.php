@@ -65,7 +65,7 @@ class MovieController extends BaseController
      *
      * @Route("/api/movies/{id}", methods={"GET"})
      *
-     * @param Movie $movie
+     * @param Movie             $movie
      * @param ProducerInterface $producer
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
