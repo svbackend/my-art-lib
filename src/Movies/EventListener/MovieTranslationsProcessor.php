@@ -10,10 +10,7 @@ use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbSearchService;
 use App\Service\LocaleService;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
@@ -105,7 +102,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     }
 
     /**
-     * @param array $moviesTranslationsDTOs
+     * @param \Iterator $moviesTranslationsDTOs
      * @param Movie $movie
      *
      * @throws \Doctrine\ORM\ORMException
