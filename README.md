@@ -18,9 +18,8 @@ Install:
 * `cp .env.dist .env`
 * `cp .env.dist .env.test`
 * Open .env.test and change db name: `DATABASE_URL="pgsql://my_art_lib:my_art_lib@postgres/test_my_art_lib"`
-* Add new crontab line: `* * * * * docker-compose exec app bin/console swiftmailer:spool:send`
 * `docker-compose exec app bash`
-* `php bin/console doctrine:schema:update --force`
+* `php bin/console doctrine:migr:migr`
 * Not required, but recommended: `php bin/console doctrine:fixtures:load --purge-with-truncate`
 * `php bin/phpunit`
 

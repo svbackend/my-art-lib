@@ -4,136 +4,105 @@ namespace App\Movies\EventListener;
 
 use App\Genres\Entity\Genre;
 use App\Movies\Entity\Movie;
+use App\Movies\Repository\MovieRepository;
+use App\Movies\Service\TmdbNormalizerService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Enqueue\Client\Message;
+use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
 use Interop\Queue\PsrProcessor;
+use Psr\Log\LoggerInterface;
 
 class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 {
     const ADD_MOVIES_TMDB = 'addMoviesTMDB';
+    const PARAM_LOAD_SIMILAR_MOVIES = 'loadSimilarMovies';
 
     private $em;
     private $producer;
+    private $normalizer;
+    private $logger;
+    private $movieRepository;
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository)
     {
-        if ($em instanceof EntityManager === false) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'MovieSyncProcessor expects %s as %s realization',
-                    EntityManager::class,
-                    EntityManagerInterface::class
-                )
-            );
-        }
-
         $this->em = $em;
         $this->producer = $producer;
+        $this->normalizer = $normalizer;
+        $this->logger = $logger;
+        $this->movieRepository = $movieRepository;
     }
 
     /**
      * @param PsrMessage $message
      * @param PsrContext $session
-     *
-     * @throws \Doctrine\ORM\ORMException
-     *
-     * @return string
+     * @return object|string
+     * @throws \ErrorException
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
-        $movies = $message->getBody();
-        $movies = unserialize($movies);
-        $savedMoviesIds = [];
-        $savedMoviesTmdbIds = []; // tmdbId => Movie Object
-        $moviesCount = 0;
+        $this->logger->info('MovieSyncProcessor start with memory usage: ', [memory_get_usage()]);
+
+        $movie = $message->getBody();
+        $movie = json_decode($movie, true);
+
+        if (null !== $this->movieRepository->findOneByIdOrTmdbId(null, (int)$movie['id'])) {
+            return self::ACK;
+        }
+
+        $movies = $this->normalizer->normalizeMoviesToObjects([$movie]);
+        $movie = $movies->current();
 
         if ($this->em->isOpen() === false) {
-            $this->em = $this->em->create($this->em->getConnection(), $this->em->getConfiguration());
+            throw new \ErrorException('em is closed');
         }
 
-        foreach ($movies as $movie) {
-            $movie = $this->refreshGenresAssociations($movie);
-            $this->em->persist($movie);
-            $savedMoviesIds[] = $movie->getId();
-            $savedMoviesTmdbIds[$movie->getTmdb()->getId()] = $movie;
-            ++$moviesCount;
-        }
+        $this->em->persist($movie);
+        $this->logger->info(sprintf('Saved %s with id %s', $movie->getOriginalTitle(), $movie->getId()));
 
         try {
             $this->em->flush();
-        } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
-            echo $uniqueConstraintViolationException->getMessage();
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
+        } catch (UniqueConstraintViolationException $uniqueException) {
+            return self::ACK;
         }
+        $this->em->clear();
 
-        $this->loadTranslations($savedMoviesIds);
-
-        if ($message->getProperty('load_similar', true) === true) {
-            $this->loadSimilarMovies($savedMoviesIds);
+        $this->loadTranslations($movie->getId());
+        if ($message->getProperty(self::PARAM_LOAD_SIMILAR_MOVIES, false) === true) {
+            $this->loadSimilarMovies($movie->getId());
         }
+        $this->loadPosters($movie->getId());
 
-        $this->loadPosters($savedMoviesIds);
+        $message = $session = $movies = $savedMoviesIds = $savedMoviesTmdbIds = $moviesCount = null;
+        unset($message, $session, $movies, $savedMoviesIds, $savedMoviesTmdbIds, $moviesCount);
+
+        $this->logger->info('MovieSyncProcessor end with memory usage: ', [memory_get_usage()]);
 
         return self::ACK;
     }
 
-    /**
-     * @param Movie $movie
-     *
-     * @throws \Doctrine\ORM\ORMException
-     *
-     * @return Movie
-     */
-    private function refreshGenresAssociations(Movie $movie): Movie
+    private function loadTranslations(int $movieId)
     {
-        $genres = $movie->getGenres();
-        $movie->removeAllGenres(); // Because doctrine doesn't know about these genres due unserialization
-
-        foreach ($genres as $genre) {
-            if ($genre->getId()) {
-                // if genre already saved then just add it as reference
-                $movie->addGenre($this->getGenreReference($genre->getId()));
-            } else {
-                // Otherwise we need to persist $genre to save it
-                $this->em->persist($genre);
-                $movie->addGenre($genre);
-            }
-        }
-
-        return $movie;
+        $this->producer->sendEvent(MovieTranslationsProcessor::LOAD_TRANSLATIONS, json_encode($movieId));
     }
 
-    /**
-     * @param int $id
-     *
-     * @throws \Doctrine\ORM\ORMException
-     *
-     * @return null|Genre
-     */
-    private function getGenreReference(int $id): ?object
+    private function loadSimilarMovies(int $movieId)
     {
-        return $this->em->getReference(Genre::class, $id);
+        $message = new Message(json_encode($movieId));
+        $message->setPriority(MessagePriority::VERY_LOW);
+        $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, $message);
     }
 
-    private function loadTranslations(array $moviesIds)
+    private function loadPosters(int $movieId)
     {
-        $this->producer->sendEvent(MovieTranslationsProcessor::LOAD_TRANSLATIONS, serialize($moviesIds));
-    }
-
-    private function loadSimilarMovies(array $moviesIds)
-    {
-        $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, serialize($moviesIds));
-    }
-
-    private function loadPosters(array $moviesIds)
-    {
-        $this->producer->sendEvent(MoviePostersProcessor::LOAD_POSTERS, serialize($moviesIds));
+        $message = new Message(json_encode($movieId));
+        $message->setPriority(MessagePriority::VERY_LOW);
+        $this->producer->sendEvent(MoviePostersProcessor::LOAD_POSTERS, $message);
     }
 
     public static function getSubscribedTopics()
