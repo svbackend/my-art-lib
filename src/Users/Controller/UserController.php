@@ -119,10 +119,11 @@ class UserController extends BaseController
     }
 
     /**
-     * @Route("/api/users/{id}", methods={"POST", "PUT", "PATCH"})
+     * @Route("/api/users/{id}", methods={"POST", "PUT", "PATCH"}, requirements={"id"="\d+"})
      *
-     * @param User $user
+     * @param User              $user
      * @param UpdateUserRequest $request
+     *
      * @throws \Exception
      *
      * @return JsonResponse
