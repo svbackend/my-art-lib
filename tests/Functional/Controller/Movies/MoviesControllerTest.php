@@ -203,6 +203,36 @@ class MoviesControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
+    //todo
+    public function testEditMovieSuccess()
+    {
+        $client = self::$client;
+        $apiToken = UsersFixtures::ADMIN_API_TOKEN;
+
+        $client->request('GET', '/api/movies');
+        $movies = json_decode($client->getResponse()->getContent(), true)['data'];
+
+        $movie = reset($movies);
+
+        $client->request('POST', "/api/movies/{$movie['id']}?api_token={$apiToken}", [
+            'movie' => [
+                'originalTitle' => 'new original title',
+                'imdbId' => 'newImdbId',
+                'runtime' => 90,
+                'budget' => 123456,
+                'releaseDate' => '2018-12-20',
+                'translations' => [
+                    ['locale' => 'en', 'title' => 'new translated title (en)', 'overview' => 'new translated overview (en)'],
+                    ['locale' => 'ru', 'title' => 'new translated title (ru)', 'overview' => 'new translated overview (ru)'],
+                    ['locale' => 'uk', 'title' => 'new translated title (uk)', 'overview' => 'new translated overview (uk)'],
+                    ['locale' => 'pl', 'title' => 'new translated title (pl)', 'overview' => 'new translated overview (pl)'],
+                ]
+            ]
+        ]);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
     public function testFindExistingMovieInOurDatabase()
     {
         $this->checkIsApiKeyProvided();
@@ -281,7 +311,8 @@ class MoviesControllerTest extends WebTestCase
     private function checkIsApiKeyProvided()
     {
         if (!\getenv('MOVIE_DB_API_KEY')) {
-            $this->fail('You should provide MOVIE_DB_API_KEY in your .env.test');
+            echo "\r\nYou should provide MOVIE_DB_API_KEY in your .env.test\r\n";
+            $this->markTestSkipped();
         }
     }
 }

@@ -237,7 +237,7 @@ class Movie implements TranslatableInterface
      *
      * @return Movie
      */
-    private function setImdbId(?string $imdbId)
+    public function setImdbId(?string $imdbId)
     {
         $this->imdbId = $imdbId;
 
@@ -249,7 +249,7 @@ class Movie implements TranslatableInterface
      *
      * @return Movie
      */
-    private function setRuntime(int $runtime)
+    public function setRuntime(int $runtime)
     {
         $this->runtime = $runtime;
 
@@ -261,7 +261,7 @@ class Movie implements TranslatableInterface
      *
      * @return Movie
      */
-    private function setBudget(int $budget)
+    public function setBudget(int $budget)
     {
         $this->budget = $budget;
 
@@ -273,7 +273,7 @@ class Movie implements TranslatableInterface
      *
      * @return Movie
      */
-    private function setReleaseDate(\DateTimeInterface $releaseDate)
+    public function setReleaseDate(\DateTimeInterface $releaseDate)
     {
         $this->releaseDate = $releaseDate;
 
@@ -373,6 +373,14 @@ class Movie implements TranslatableInterface
     public function getUserRecommendedMovie()
     {
         return $this->userRecommendedMovie;
+    }
+
+    /**
+     * @param string $originalTitle
+     */
+    public function setOriginalTitle(string $originalTitle): void
+    {
+        $this->originalTitle = $originalTitle;
     }
 
     public function __toString()

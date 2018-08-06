@@ -94,4 +94,20 @@ class MovieTranslations implements EntityTranslationInterface
     {
         return $this->overview;
     }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @param string $overview
+     */
+    public function setOverview(string $overview): void
+    {
+        $this->overview = $overview;
+    }
 }
