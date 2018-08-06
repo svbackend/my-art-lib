@@ -4,11 +4,13 @@ namespace App\Users\Controller;
 
 use App\Controller\BaseController;
 use App\Users\Entity\User;
+use App\Users\Entity\UserRoles;
 use App\Users\Event\UserRegisteredEvent;
 use App\Users\Repository\ConfirmationTokenRepository;
 use App\Users\Repository\UserRepository;
 use App\Users\Request\ConfirmEmailRequest;
 use App\Users\Request\RegisterUserRequest;
+use App\Users\Request\UpdateUserRequest;
 use App\Users\Service\RegisterService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -114,6 +116,39 @@ class UserController extends BaseController
         return $this->response($user, 200, [], [
             'groups' => ['view'],
         ]);
+    }
+
+    /**
+     * @Route("/api/users/{id}", methods={"POST", "PUT", "PATCH"})
+     *
+     * @param User $user
+     * @param UpdateUserRequest $request
+     * @throws \Exception
+     *
+     * @return JsonResponse
+     */
+    public function putUsers(User $user, UpdateUserRequest $request)
+    {
+        $currentUser = $this->getUser();
+        if ($currentUser === null) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        }
+
+        /** @var $currentUser User */
+        if ($currentUser->getId() !== $user->getId()) {
+            $this->denyAccessUnlessGranted(UserRoles::ROLE_ADMIN);
+        }
+
+        $profile = $user->getProfile();
+        $profileData = $request->get('profile');
+        $profile->setFirstName($profileData['first_name']);
+        $profile->setLastName($profileData['last_name']);
+        $profile->setBirthDate(new \DateTimeImmutable($profileData['birth_date']));
+        $profile->setAbout($profileData['about']);
+        $profile->setPublicEmail($profileData['public_email']);
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse(null, 202);
     }
 
     /**

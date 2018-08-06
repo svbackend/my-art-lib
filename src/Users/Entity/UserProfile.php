@@ -161,11 +161,11 @@ class UserProfile
     }
 
     /**
-     * @param \DateTime $birth_date
+     * @param \DateTimeInterface $birth_date
      *
      * @return UserProfile
      */
-    public function setBirthDate(\DateTime $birth_date)
+    public function setBirthDate(\DateTimeInterface $birth_date)
     {
         $this->birth_date = $birth_date;
 
