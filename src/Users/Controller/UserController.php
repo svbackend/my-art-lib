@@ -92,7 +92,7 @@ class UserController extends BaseController
     /**
      * Get single user.
      *
-     * @Route("/api/users/{id}", methods={"GET"})
+     * @Route("/api/users/{id}", methods={"GET"}, requirements={"id"="\d+"})
      *
      * @param $id
      * @param TranslatorInterface $translator
@@ -168,6 +168,18 @@ class UserController extends BaseController
 
         return $this->response($users, 200, [], [
             'groups' => ['list'],
+        ]);
+    }
+
+    /**
+     * @Route("/api/users/me", methods={"GET"})
+     */
+    public function getMe()
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+        return $this->response($this->getUser(), 200, [], [
+            'groups' => ['view'],
         ]);
     }
 }

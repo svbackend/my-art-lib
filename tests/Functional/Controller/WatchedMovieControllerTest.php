@@ -10,8 +10,8 @@ class WatchedMovieControllerTest extends WebTestCase
     /**
      * @var \Symfony\Bundle\FrameworkBundle\Client
      */
-    protected static $client;
-    protected static $movies;
+    private static $client;
+    private static $movies;
 
     public static function setUpBeforeClass()
     {
