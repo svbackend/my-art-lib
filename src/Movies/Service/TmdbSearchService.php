@@ -10,6 +10,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
 
+// todo use append_to_response + cache to decrease amount of requests to external api
 class TmdbSearchService
 {
     private $apiKey;
@@ -68,6 +69,42 @@ class TmdbSearchService
         ]);
 
         return $movie;
+    }
+
+    public function findActorsByMovieId(int $personId, string $locale = 'en'): array
+    {
+        $actors = $this->request("/movie/{$personId}/credits", 'GET', [
+            'query' => [
+                'api_key' => $this->apiKey,
+                'language' => $locale,
+            ],
+        ]);
+
+        return $actors;
+    }
+
+    public function findActorById(int $personId, string $locale = 'en'): array
+    {
+        $actors = $this->request("/person/{$personId}", 'GET', [
+            'query' => [
+                'api_key' => $this->apiKey,
+                'language' => $locale,
+            ],
+        ]);
+
+        return $actors;
+    }
+
+    public function findActorTranslationsById(int $personId, string $locale = 'en'): array
+    {
+        $actors = $this->request("/person/{$personId}/translations", 'GET', [
+            'query' => [
+                'api_key' => $this->apiKey,
+                'language' => $locale,
+            ],
+        ]);
+
+        return $actors;
     }
 
     /**

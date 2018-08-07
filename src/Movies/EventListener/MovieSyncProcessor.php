@@ -75,6 +75,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         if ($message->getProperty(self::PARAM_LOAD_SIMILAR_MOVIES, false) === true) {
             $this->loadSimilarMovies($movie->getId());
         }
+        $this->loadActors($movie->getId());
         $this->loadPosters($movie->getId());
 
         $message = $session = $movies = $savedMoviesIds = $savedMoviesTmdbIds = $moviesCount = null;
@@ -101,6 +102,12 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     {
         $message = new Message(json_encode($movieId));
         $message->setPriority(MessagePriority::VERY_LOW);
+        $this->producer->sendEvent(MoviePostersProcessor::LOAD_POSTERS, $message);
+    }
+
+    private function loadActors(int $movieId)
+    {
+        $message = new Message(json_encode($movieId));
         $this->producer->sendEvent(MoviePostersProcessor::LOAD_POSTERS, $message);
     }
 

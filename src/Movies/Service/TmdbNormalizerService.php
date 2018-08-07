@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
+use App\Actors\Entity\Actor;
+use App\Actors\Entity\ActorTMDB;
+use App\Actors\Entity\ActorTranslations;
 use App\Genres\Repository\GenreRepository;
 use App\Movies\DTO\MovieDTO;
 use App\Movies\DTO\MovieTranslationDTO;
@@ -45,6 +48,24 @@ class TmdbNormalizerService
             $movieObject = $this->addGenres($movieObject, $genresIds);
 
             yield $movieObject;
+        }
+    }
+
+    public function normalizeActorsToObjects(array $actors, string $locale = 'en'): \Iterator
+    {
+        foreach ($actors as $actor) {
+            $actorTmdbObject = new ActorTMDB($actor['id']);
+            $actorObject = new Actor($actor['name'], $actorTmdbObject);
+            $actorObject->setImdbId($actor['imdb_id'] ?? '');
+            $actorObject->setBirthday(new \DateTimeImmutable($actor['birthday'] ?? ''));
+            $actorObject->setGender($actor['gender'] ?? $actorObject::GENDER_MALE);
+            $photoUrl = isset($actor['profile_path']) ? self::IMAGE_HOST . $actor['profile_path'] : '';
+            $actorObject->setPhoto($photoUrl);
+
+            $actorTranslationObject = new ActorTranslations($actorObject, $locale, $actorObject->getOriginalName());
+            $actorObject->addTranslation($actorTranslationObject);
+
+            yield $actorObject;
         }
     }
 
