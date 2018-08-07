@@ -20,8 +20,8 @@ class PasswordRecoveryController extends BaseController
      * @Route("/api/passwordLostRequest", methods={"POST"});
      *
      * @param PasswordLostRequest $request
-     * @param UserRepository $repository
-     * @param SendEmailService $sendEmailService
+     * @param UserRepository      $repository
+     * @param SendEmailService    $sendEmailService
      *
      * @return JsonResponse
      */
@@ -39,12 +39,13 @@ class PasswordRecoveryController extends BaseController
 
         return new JsonResponse();
     }
+
     /**
      * @Route("/api/passwordRecovery", methods={"POST"});
      *
-     * @param PasswordRecoveryRequest $request
+     * @param PasswordRecoveryRequest     $request
      * @param ConfirmationTokenRepository $tokenRepository
-     * @param ApiTokenRepository $apiTokenRepository
+     * @param ApiTokenRepository          $apiTokenRepository
      *
      * @return JsonResponse
      */

@@ -146,8 +146,9 @@ class MovieController extends BaseController
     /**
      * @Route("/api/movies/{id}", methods={"POST", "PUT", "PATCH"}, requirements={"id"="\d+"})
      *
-     * @param Movie $movie
+     * @param Movie              $movie
      * @param UpdateMovieRequest $request
+     *
      * @throws \ErrorException
      * @throws \Exception
      *
