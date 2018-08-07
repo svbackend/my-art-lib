@@ -203,7 +203,6 @@ class MoviesControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
-    //todo
     public function testEditMovieSuccess()
     {
         $client = self::$client;
@@ -230,7 +229,45 @@ class MoviesControllerTest extends WebTestCase
             ]
         ]);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+        $client->request('GET', "/api/movies/{$movie['id']}?language=pl");
+        $updatedMovie = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals('new original title', $updatedMovie['originalTitle']);
+        $this->assertEquals('newImdbId', $updatedMovie['imdbId']);
+        $this->assertEquals(90, $updatedMovie['runtime']);
+        $this->assertEquals(123456, $updatedMovie['budget']);
+        $this->assertEquals(strtotime('2018-12-20'), strtotime($updatedMovie['releaseDate']));
+        $this->assertEquals('new translated title (pl)', $updatedMovie['title']);
+        $this->assertEquals('new translated overview (pl)', $updatedMovie['overview']);
+    }
+
+    public function testEditMovieWithoutAccess()
+    {
+        $client = self::$client;
+        $apiToken = UsersFixtures::TESTER_API_TOKEN;
+
+        $client->request('GET', '/api/movies');
+        $movies = json_decode($client->getResponse()->getContent(), true)['data'];
+
+        $movie = reset($movies);
+
+        $client->request('POST', "/api/movies/{$movie['id']}?api_token={$apiToken}", [
+            'movie' => [
+                'originalTitle' => 'new original title',
+                'imdbId' => 'newImdbId',
+                'runtime' => 90,
+                'budget' => 123456,
+                'releaseDate' => '2018-12-20',
+                'translations' => [
+                    ['locale' => 'en', 'title' => 'new translated title (en)', 'overview' => 'new translated overview (en)'],
+                    ['locale' => 'ru', 'title' => 'new translated title (ru)', 'overview' => 'new translated overview (ru)'],
+                    ['locale' => 'uk', 'title' => 'new translated title (uk)', 'overview' => 'new translated overview (uk)'],
+                    ['locale' => 'pl', 'title' => 'new translated title (pl)', 'overview' => 'new translated overview (pl)'],
+                ]
+            ]
+        ]);
+
+        $this->assertEquals(403, $client->getResponse()->getStatusCode());
     }
 
     public function testFindExistingMovieInOurDatabase()

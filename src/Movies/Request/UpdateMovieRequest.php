@@ -21,7 +21,7 @@ class UpdateMovieRequest extends BaseRequest
                 'translations' => $this->eachItemValidation([
                     'locale' => [new Assert\NotBlank(), new Assert\Locale()],
                     'title' => [new Assert\NotBlank(), new Assert\Length(['min' => 3, 'max' => 50])],
-                    'overview' => [new Assert\NotBlank(), new Assert\Length(['min' => 50])],
+                    'overview' => [new Assert\NotBlank()],
                 ]),
             ]),
         ]);
