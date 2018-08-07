@@ -30,7 +30,7 @@ class ApiTokenRepository extends ServiceEntityRepository
 
     public function findAllByUser(int $userId): array
     {
-        return $this->findOneBy([
+        return $this->findBy([
             'user' => $userId,
         ]);
     }

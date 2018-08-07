@@ -16,6 +16,7 @@ class UsersFixtures extends Fixture
     const TESTER_PASSWORD = '123456';
     const TESTER_API_TOKEN = 'tester_api_token';
     const TESTER_EMAIL_CONFIRMATION_TOKEN = '11kYJ3ut7aOISPQN0RSqceYDasNnb690';
+    const TESTER_PASSWORD_RECOVERY_TOKEN = '11kYJ3ut7aOISPQN0RSqceYDasNnb691';
 
     const ADMIN_EMAIL = 'admin@fixture.com';
     const ADMIN_USERNAME = 'admin_fixture';
@@ -44,6 +45,7 @@ class UsersFixtures extends Fixture
         // Tester
         $this->createTestApiToken($user, self::TESTER_API_TOKEN, $manager);
         $this->createEmailConfirmationToken($user, self::TESTER_EMAIL_CONFIRMATION_TOKEN, $manager);
+        $this->createPasswordRecoveryToken($user, self::TESTER_PASSWORD_RECOVERY_TOKEN, $manager);
         // Admin
         $this->createTestApiToken($admin, self::ADMIN_API_TOKEN, $manager);
     }
@@ -98,6 +100,19 @@ class UsersFixtures extends Fixture
     private function createEmailConfirmationToken(User $user, string $token, EntityManager $manager): void
     {
         $type = ConfirmationToken::TYPE_CONFIRM_EMAIL;
+        $manager->getConnection()->exec("INSERT INTO users_confirmation_tokens (id, user_id, token, type) VALUES (NEXTVAL('users_confirmation_tokens_id_seq'), {$user->getId()}, '{$token}', '{$type}');");
+    }
+
+    /**
+     * @param User          $user
+     * @param string        $token
+     * @param EntityManager $manager
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function createPasswordRecoveryToken(User $user, string $token, EntityManager $manager): void
+    {
+        $type = ConfirmationToken::TYPE_PASSWORD_RECOVERY;
         $manager->getConnection()->exec("INSERT INTO users_confirmation_tokens (id, user_id, token, type) VALUES (NEXTVAL('users_confirmation_tokens_id_seq'), {$user->getId()}, '{$token}', '{$type}');");
     }
 }

@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class PasswordRecoverController extends BaseController
+class PasswordRecoveryController extends BaseController
 {
     /**
      * @Route("/api/passwordLostRequest", methods={"POST"});
@@ -31,10 +31,7 @@ class PasswordRecoverController extends BaseController
             throw new AccessDeniedHttpException();
         }
 
-        if (null === $user = $repository->findOneBy([
-            'email' => $request->get('email')
-            ])
-        ) {
+        if (null === $user = $repository->findOneBy(['email' => $request->get('email')])) {
             throw new NotFoundHttpException();
         }
 

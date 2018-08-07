@@ -77,7 +77,7 @@ class ConfirmationToken
 
     public function getValidTypes(): array
     {
-        return [self::TYPE_CONFIRM_EMAIL];
+        return [self::TYPE_CONFIRM_EMAIL, self::TYPE_PASSWORD_RECOVERY];
     }
 
     /**

@@ -14,7 +14,11 @@ images:
     resource: ../src/Images/Controller
     type: annotation
 
-# Confirm email route used for generating url to confirmation url in email letters
+# FRONTEND ROUTES (used for url generation in templates/emails/*.twig)
 confirm_email:
-    path: /api/confirmEmail
+    path: /confirmEmail
+    methods: GET
+
+password_recovery:
+    path: /passwordRecovery
     methods: GET

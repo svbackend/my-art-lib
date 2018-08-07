@@ -53,11 +53,11 @@ class SendEmailService
 
     public function sendPasswordRecoveryConfirmation(User $user)
     {
-        $emailConfirmationToken = $this->confirmationTokenService->getPasswordRecoveryToken($user)->getToken();
+        $passwordRecoveryToken = $this->confirmationTokenService->getPasswordRecoveryToken($user)->getToken();
 
         $body = $this->twig->render(
             'emails/passwordRecovery.html.twig',
-            ['token' => $emailConfirmationToken]
+            ['token' => $passwordRecoveryToken]
         );
 
         $subject = $this->translator->trans('user_password_recovery_email_subject', [], 'users');
