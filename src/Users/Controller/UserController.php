@@ -14,6 +14,7 @@ use App\Users\Request\UpdateUserRequest;
 use App\Users\Service\RegisterService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
@@ -36,7 +37,9 @@ class UserController extends BaseController
      */
     public function postUsers(RegisterUserRequest $request, RegisterService $registerService, EventDispatcherInterface $dispatcher, ValidatorInterface $validator)
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY'); // todo (not working)
+        if ($this->getUser() !== null) {
+            throw new AccessDeniedHttpException();
+        }
 
         $registeredUser = $registerService->registerByRequest($request);
         $errors = $validator->validate($registeredUser);
