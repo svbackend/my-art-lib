@@ -97,7 +97,7 @@ class UsersFixtures extends Fixture
      */
     private function createEmailConfirmationToken(User $user, string $token, EntityManager $manager): void
     {
-        $type = ConfirmationToken::TYPE_CONFIRM_EMAIl;
+        $type = ConfirmationToken::TYPE_CONFIRM_EMAIL;
         $manager->getConnection()->exec("INSERT INTO users_confirmation_tokens (id, user_id, token, type) VALUES (NEXTVAL('users_confirmation_tokens_id_seq'), {$user->getId()}, '{$token}', '{$type}');");
     }
 }

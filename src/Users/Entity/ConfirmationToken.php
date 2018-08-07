@@ -14,7 +14,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class ConfirmationToken
 {
-    const TYPE_CONFIRM_EMAIl = 'confirm_email';
+    const TYPE_CONFIRM_EMAIL = 'confirm_email';
+    const TYPE_PASSWORD_RECOVERY = 'password_recovery';
 
     /**
      * @ORM\Id()
@@ -76,7 +77,7 @@ class ConfirmationToken
 
     public function getValidTypes(): array
     {
-        return [self::TYPE_CONFIRM_EMAIl];
+        return [self::TYPE_CONFIRM_EMAIL];
     }
 
     /**

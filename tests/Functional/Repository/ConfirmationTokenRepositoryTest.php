@@ -46,7 +46,7 @@ class ConfirmationTokenRepositoryTest extends KernelTestCase
 
     private function createToken(User $user, \DateTimeImmutable $expires_at = null)
     {
-        $token = new ConfirmationToken($user, ConfirmationToken::TYPE_CONFIRM_EMAIl, $expires_at);
+        $token = new ConfirmationToken($user, ConfirmationToken::TYPE_CONFIRM_EMAIL, $expires_at);
         $this->entityManager->persist($token);
         return $token;
     }

@@ -25,6 +25,6 @@ class ConfirmationTokenTest extends KernelTestCase
     {
         $user = $this->createMock(User::class);
         $expires_at = new \DateTimeImmutable('-1 hour'); // already expired token
-        $confirmationToken = new ConfirmationToken($user, ConfirmationToken::TYPE_CONFIRM_EMAIl, $expires_at);
+        $confirmationToken = new ConfirmationToken($user, ConfirmationToken::TYPE_CONFIRM_EMAIL, $expires_at);
     }
 }

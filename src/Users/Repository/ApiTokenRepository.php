@@ -27,4 +27,11 @@ class ApiTokenRepository extends ServiceEntityRepository
             'token' => $token,
         ]);
     }
+
+    public function findAllByUser(int $userId): array
+    {
+        return $this->findOneBy([
+            'user' => $userId,
+        ]);
+    }
 }
