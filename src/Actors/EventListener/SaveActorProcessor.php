@@ -6,13 +6,11 @@ use App\Actors\Entity\Actor;
 use App\Actors\Repository\ActorRepository;
 use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Exception\TmdbRequestLimitException;
-use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\Message;
-use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
@@ -28,17 +26,15 @@ class SaveActorProcessor implements PsrProcessor, TopicSubscriberInterface
     private $producer;
     private $normalizer;
     private $logger;
-    private $movieRepository;
     private $actorRepository;
     private $searchService;
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository, ActorRepository $actorRepository, TmdbSearchService $searchService)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, ActorRepository $actorRepository, TmdbSearchService $searchService)
     {
         $this->em = $em;
         $this->producer = $producer;
         $this->normalizer = $normalizer;
         $this->logger = $logger;
-        $this->movieRepository = $movieRepository;
         $this->actorRepository = $actorRepository;
         $this->searchService = $searchService;
     }

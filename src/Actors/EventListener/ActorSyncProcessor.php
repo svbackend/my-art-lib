@@ -3,10 +3,7 @@
 namespace App\Actors\EventListener;
 
 use App\Movies\Repository\MovieRepository;
-use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\Message;
 use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
@@ -20,18 +17,14 @@ class ActorSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 {
     const ADD_ACTOR = 'addActor';
 
-    private $em;
     private $producer;
-    private $normalizer;
     private $logger;
     private $movieRepository;
     private $searchService;
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository, TmdbSearchService $searchService)
+    public function __construct(ProducerInterface $producer, LoggerInterface $logger, MovieRepository $movieRepository, TmdbSearchService $searchService)
     {
-        $this->em = $em;
         $this->producer = $producer;
-        $this->normalizer = $normalizer;
         $this->logger = $logger;
         $this->movieRepository = $movieRepository;
         $this->searchService = $searchService;

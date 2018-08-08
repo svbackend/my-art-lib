@@ -5,12 +5,7 @@ declare(strict_types=1);
 namespace App\Actors\Repository;
 
 use App\Actors\Entity\Actor;
-use App\Movies\Entity\Movie;
-use App\Movies\Entity\MovieRecommendation;
-use App\Users\Entity\User;
-use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**

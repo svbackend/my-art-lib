@@ -7,15 +7,10 @@ use App\Actors\Entity\ActorTranslations;
 use App\Actors\Repository\ActorRepository;
 use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Exception\TmdbRequestLimitException;
-use App\Movies\Repository\MovieRepository;
-use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
 use App\Service\LocaleService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
-use Enqueue\Client\Message;
-use Enqueue\Client\MessagePriority;
-use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
@@ -27,21 +22,15 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     const LOAD_TRANSLATIONS = 'loadActorTranslations';
 
     private $em;
-    private $producer;
-    private $normalizer;
     private $logger;
-    private $movieRepository;
     private $actorRepository;
     private $searchService;
     private $locales = [];
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository, ActorRepository $actorRepository, TmdbSearchService $searchService, LocaleService $localeService)
+    public function __construct(EntityManagerInterface $em, LoggerInterface $logger, ActorRepository $actorRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
         $this->em = $em;
-        $this->producer = $producer;
-        $this->normalizer = $normalizer;
         $this->logger = $logger;
-        $this->movieRepository = $movieRepository;
         $this->actorRepository = $actorRepository;
         $this->searchService = $searchService;
         $this->locales = $localeService->getLocales();

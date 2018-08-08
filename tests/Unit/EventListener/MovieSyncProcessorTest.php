@@ -85,8 +85,8 @@ class MovieSyncProcessorTest extends KernelTestCase
 
         $this->em->expects($this->once())->method('flush');
 
-        // 3 events should be fired: loadPosters, loadTranslations + load similar movies
-        $this->producer->expects($this->exactly(3))->method('sendEvent');
+        // 4 events should be fired: loadPosters, loadTranslations + load similar movies + loadActors
+        $this->producer->expects($this->exactly(4))->method('sendEvent');
 
         $this->movieSyncProcessor = new MovieSyncProcessor($this->em, $this->producer, $this->tmdbNormalizer, $this->logger, $this->repository);
         $result = $this->movieSyncProcessor->process($this->psrMessage, $this->psrContext);
@@ -118,8 +118,8 @@ class MovieSyncProcessorTest extends KernelTestCase
 
         $this->em->expects($this->once())->method('flush');
 
-        // 2 events should be fired: loadPosters and loadTranslations
-        $this->producer->expects($this->exactly(2))->method('sendEvent');
+        // 3 events should be fired: loadPosters and loadTranslations + loadActors
+        $this->producer->expects($this->exactly(3))->method('sendEvent');
 
         $this->movieSyncProcessor = new MovieSyncProcessor($this->em, $this->producer, $this->tmdbNormalizer, $this->logger, $this->repository);
         $result = $this->movieSyncProcessor->process($this->psrMessage, $this->psrContext);

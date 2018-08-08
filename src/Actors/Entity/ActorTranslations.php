@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actors\Entity;
 
-use App\Movies\DTO\MovieTranslationDTO;
 use App\Translation\EntityTranslationInterface;
 use App\Translation\TranslatableTrait;
 use Doctrine\ORM\Mapping as ORM;

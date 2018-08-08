@@ -18,7 +18,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-//todo production_countries, production_companies, actors
+//todo production_countries, production_companies
 
 /**
  * @ORM\Entity(repositoryClass="App\Movies\Repository\MovieRepository")
@@ -49,7 +49,7 @@ class Movie implements TranslatableInterface
 
     /**
      * @var Actor[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="App\Actors\Entity\Actor", mappedBy="movie", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="App\Movies\Entity\MovieActor", mappedBy="movie", cascade={"persist", "remove"})
      * @Assert\Valid(traverse=true)
      * @Groups({"view"})
      */
@@ -193,7 +193,8 @@ class Movie implements TranslatableInterface
 
     public function addActor(Actor $actor)
     {
-        $this->actors->add($actor);
+        $movieActor = new MovieActor($this, $actor);
+        $this->actors->add($movieActor);
 
         return $this;
     }
@@ -201,9 +202,12 @@ class Movie implements TranslatableInterface
     /**
      * @return Actor[]|array
      */
-    public function getActors()
+    public function getActors(): array
     {
-        return $this->genres->toArray();
+        $movieActors = $this->actors->toArray();
+        return array_map(function (MovieActor $movieActor) {
+            return $movieActor->getActor();
+        }, $movieActors);
     }
 
     public function addSimilarMovie(self $similarMovie)
