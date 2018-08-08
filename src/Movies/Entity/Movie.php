@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Movies\Entity;
 
+use App\Actors\Entity\Actor;
 use App\Genres\Entity\Genre;
 use App\Guests\Entity\GuestWatchedMovie;
 use App\Movies\DTO\MovieDTO;
@@ -45,6 +46,14 @@ class Movie implements TranslatableInterface
      * @Groups({"list", "view"})
      */
     private $translations;
+
+    /**
+     * @var Actor[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="App\Actors\Entity\Actor", mappedBy="movie", cascade={"persist"})
+     * @Assert\Valid(traverse=true)
+     * @Groups({"view"})
+     */
+    private $actors;
 
     /**
      * @var Genre[]|ArrayCollection
@@ -144,6 +153,7 @@ class Movie implements TranslatableInterface
         $this->genres = new ArrayCollection();
         $this->similarMovies = new ArrayCollection();
         $this->recommendations = new ArrayCollection();
+        $this->actors = new ArrayCollection();
 
         $this->originalTitle = $movieDTO->getOriginalTitle();
         $this->originalPosterUrl = $movieDTO->getOriginalPosterUrl();
@@ -177,6 +187,21 @@ class Movie implements TranslatableInterface
      * @return Genre[]|array
      */
     public function getGenres()
+    {
+        return $this->genres->toArray();
+    }
+
+    public function addActor(Actor $actor)
+    {
+        $this->actors->add($actor);
+
+        return $this;
+    }
+
+    /**
+     * @return Actor[]|array
+     */
+    public function getActors()
     {
         return $this->genres->toArray();
     }

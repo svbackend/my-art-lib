@@ -4,6 +4,7 @@ namespace App\Actors\EventListener;
 
 use App\Actors\Entity\Actor;
 use App\Actors\Entity\ActorTranslations;
+use App\Actors\Repository\ActorRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
@@ -28,16 +29,18 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     private $normalizer;
     private $logger;
     private $movieRepository;
+    private $actorRepository;
     private $searchService;
     private $locales = [];
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository, TmdbSearchService $searchService, LocaleService $localeService)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository, ActorRepository $actorRepository, TmdbSearchService $searchService, LocaleService $localeService)
     {
         $this->em = $em;
         $this->producer = $producer;
         $this->normalizer = $normalizer;
         $this->logger = $logger;
         $this->movieRepository = $movieRepository;
+        $this->actorRepository = $actorRepository;
         $this->searchService = $searchService;
         $this->locales = $localeService->getLocales();
     }
@@ -57,11 +60,13 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $translations = $this->searchService->findActorTranslationsById($actor->getTmdb()->getId());
 
         $locales = $this->locales;
+        /** @var $actorRef Actor */
+        $actorRef = $this->em->getReference(Actor::class, $actor->getId());
 
-        $addTranslation = function(array $trans) use ($actor, $locales) {
+        $addTranslation = function(array $trans) use ($actor, $locales, $actorRef) {
             if (in_array($trans['iso_639_1'], $locales) === false) { return; }
             $data = $trans['data'];
-            $translation = new ActorTranslations($actor, $trans['iso_639_1'], $actor->getOriginalName());
+            $translation = new ActorTranslations($actorRef, $trans['iso_639_1'], $actor->getOriginalName());
             $translation->setBiography($data['biography'] ?? '');
             $actor->addTranslation($translation);
         };
@@ -83,12 +88,6 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         }
         $this->em->clear();
         return self::ACK;
-    }
-
-    private function loadTranslations(int $actorId)
-    {
-        $message = new Message(json_encode($actorId));
-        $this->producer->sendEvent(AddSimilarMoviesProcessor::ADD_SIMILAR_MOVIES, $message);
     }
 
     public static function getSubscribedTopics()

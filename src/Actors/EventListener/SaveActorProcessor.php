@@ -3,6 +3,7 @@
 namespace App\Actors\EventListener;
 
 use App\Actors\Entity\Actor;
+use App\Actors\Repository\ActorRepository;
 use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
@@ -28,15 +29,17 @@ class SaveActorProcessor implements PsrProcessor, TopicSubscriberInterface
     private $normalizer;
     private $logger;
     private $movieRepository;
+    private $actorRepository;
     private $searchService;
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository, TmdbSearchService $searchService)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository, ActorRepository $actorRepository, TmdbSearchService $searchService)
     {
         $this->em = $em;
         $this->producer = $producer;
         $this->normalizer = $normalizer;
         $this->logger = $logger;
         $this->movieRepository = $movieRepository;
+        $this->actorRepository = $actorRepository;
         $this->searchService = $searchService;
     }
 
