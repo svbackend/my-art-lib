@@ -56,7 +56,9 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             throw new \ErrorException('em is closed');
         }
 
-        $movie = $this->movieRepository->find($movieId);
+        if (null === $movie = $this->movieRepository->find($movieId)) {
+            return self::REJECT;
+        }
 
         if ($this->isAllTranslationsSaved($movie) === true) {
             return self::ACK;

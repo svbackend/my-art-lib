@@ -2,6 +2,7 @@
 
 namespace App\Movies\EventListener;
 
+use App\Actors\EventListener\ActorSyncProcessor;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -108,7 +109,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     private function loadActors(int $movieId)
     {
         $message = new Message(json_encode($movieId));
-        $this->producer->sendEvent(MoviePostersProcessor::LOAD_POSTERS, $message);
+        $this->producer->sendEvent(ActorSyncProcessor::ADD_ACTOR, $message);
     }
 
     public static function getSubscribedTopics()

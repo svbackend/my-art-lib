@@ -5,6 +5,8 @@ namespace App\Actors\EventListener;
 use App\Actors\Entity\Actor;
 use App\Actors\Entity\ActorTranslations;
 use App\Actors\Repository\ActorRepository;
+use App\Movies\Exception\TmdbMovieNotFoundException;
+use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
@@ -57,8 +59,16 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         }
 
         /** @var $actor Actor */
-        $translations = $this->searchService->findActorTranslationsById($actor->getTmdb()->getId());
+        try {
+            $translations = $this->searchService->findActorTranslationsById($actor->getTmdb()->getId());
+            $translations = $translations['translations'];
+        } catch (TmdbRequestLimitException $requestLimitException) {
+            sleep(5);
 
+            return self::REQUEUE;
+        } catch (TmdbMovieNotFoundException $notFoundException) {
+            return self::REJECT;
+        }
         $locales = $this->locales;
         /** @var $actorRef Actor */
         $actorRef = $this->em->getReference(Actor::class, $actor->getId());
@@ -77,7 +87,7 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             $oldTranslation->setBiography($data['biography'] ?? $oldTranslation->getBiography());
         };
 
-        $actor->updateTranslations($translations, $addTranslation, $updateTranslation);
+        $actor->updateTranslations($translations, $addTranslation, $updateTranslation, 'iso_639_1');
 
         $this->em->persist($actor);
 

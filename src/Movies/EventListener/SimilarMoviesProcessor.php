@@ -41,6 +41,11 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
         $movieId = json_decode($movieId, true);
 
         $movies = $this->movieRepository->findAllByIdsWithSimilarMovies([$movieId]);
+
+        if (count($movies) === 0) {
+            return self::REJECT;
+        }
+
         $allSimilarMoviesTable = [];
         $movie = reset($movies);
 

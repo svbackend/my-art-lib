@@ -31,3 +31,19 @@ services:
     App\Movies\EventListener\MoviePostersProcessor:
         tags:
             - { name: enqueue.client.processor }
+
+    App\Actors\EventListener\ActorSyncProcessor:
+        tags:
+            - { name: enqueue.client.processor }
+
+    App\Actors\EventListener\ActorAddToMovieProcessor:
+        tags:
+            - { name: enqueue.client.processor }
+
+    App\Actors\EventListener\ActorTranslationsProcessor:
+        tags:
+            - { name: enqueue.client.processor }
+
+    App\Actors\EventListener\SaveActorProcessor:
+        tags:
+            - { name: enqueue.client.processor }

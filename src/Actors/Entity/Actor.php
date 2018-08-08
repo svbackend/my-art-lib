@@ -63,7 +63,7 @@ class Actor implements TranslatableInterface
     private $photo;
 
     /**
-     * @ORM\Embedded(class="App\Movies\Entity\ActorTMDB", columnPrefix="tmdb_")
+     * @ORM\Embedded(class="App\Actors\Entity\ActorTMDB", columnPrefix="tmdb_")
      * @Assert\Valid(traverse=true)
      * @Groups({"list", "view"})
      */

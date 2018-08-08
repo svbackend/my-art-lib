@@ -72,12 +72,6 @@ class ActorAddToMovieProcessor implements PsrProcessor, TopicSubscriberInterface
         return self::ACK;
     }
 
-    private function loadTranslations(int $actorId)
-    {
-        $message = new Message(json_encode($actorId));
-        $this->producer->sendEvent(ActorTranslationsProcessor::LOAD_TRANSLATIONS, $message);
-    }
-
     public static function getSubscribedTopics()
     {
         return [self::ADD_TO_MOVIE];

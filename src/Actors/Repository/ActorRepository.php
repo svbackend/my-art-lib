@@ -28,12 +28,8 @@ class ActorRepository extends ServiceEntityRepository
 
     public function findByTmdbId(int $tmdbId): ?Actor
     {
-        return $this->createQueryBuilder('a')
-            ->where('a.tmdb.id = :id')
-            ->setParameter('id', $tmdbId)
-            ->getQuery()
-            ->getResult();
-
-        return $result;
+        return $this->findOneBy([
+            'tmdb.id' => $tmdbId
+        ]);
     }
 }
