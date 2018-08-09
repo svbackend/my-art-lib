@@ -68,12 +68,14 @@ class SaveActorProcessor implements PsrProcessor, TopicSubscriberInterface
             $this->em->flush();
         } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
             $this->em->clear();
+
             return self::ACK;
         }
 
         $this->loadTranslations($actor->getId());
 
         $this->em->clear();
+
         return self::ACK;
     }
 

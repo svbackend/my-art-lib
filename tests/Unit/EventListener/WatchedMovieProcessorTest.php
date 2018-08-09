@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\EventListener;
@@ -74,6 +75,7 @@ class WatchedMovieProcessorTest extends KernelTestCase
         $persistedEntities = [];
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
             $persistedEntities[] = $entity;
+
             return true;
         }));
 
@@ -81,7 +83,7 @@ class WatchedMovieProcessorTest extends KernelTestCase
         $this->watchedMovieProcessor->process($this->psrMessage, $this->psrContext);
 
         $persistedEntitiesCount = count($persistedEntities);
-        self::assertEquals(2, $persistedEntitiesCount); // UserWatchedMovie & Movie
+        self::assertSame(2, $persistedEntitiesCount); // UserWatchedMovie & Movie
 
         $incorrectEntities = array_filter($persistedEntities, function ($entity) {
             // We should persist only Movie and UserWatchedMovie so any other entities are incorrect
@@ -97,9 +99,9 @@ class WatchedMovieProcessorTest extends KernelTestCase
             return $entity instanceof UserWatchedMovie;
         });
         $newUserWatchedMovie = reset($newUserWatchedMovieArray);
-        self::assertEquals(1, $newUserWatchedMovie->getUser()->getId());
-        self::assertEquals(5.5, $newUserWatchedMovie->getVote());
-        self::assertEquals($watchedAt->getTimestamp(), $newUserWatchedMovie->getWatchedAt()->getTimestamp());
+        self::assertSame(1, $newUserWatchedMovie->getUser()->getId());
+        self::assertSame(5.5, $newUserWatchedMovie->getVote());
+        self::assertSame($watchedAt->getTimestamp(), $newUserWatchedMovie->getWatchedAt()->getTimestamp());
 
         /** @var $newMovie Movie */
         $movieArray = array_filter($persistedEntities, function ($entity) {
@@ -109,8 +111,8 @@ class WatchedMovieProcessorTest extends KernelTestCase
         $genresReferences = $newMovie->getGenres();
         $genreReference = reset($genresReferences);
 
-        self::assertEquals($genre->getId(), $genreReference->getId());
-        self::assertEquals(5.5, $newUserWatchedMovie->getVote());
-        self::assertEquals($watchedAt->getTimestamp(), $newUserWatchedMovie->getWatchedAt()->getTimestamp());
+        self::assertSame($genre->getId(), $genreReference->getId());
+        self::assertSame(5.5, $newUserWatchedMovie->getVote());
+        self::assertSame($watchedAt->getTimestamp(), $newUserWatchedMovie->getWatchedAt()->getTimestamp());
     }
 }

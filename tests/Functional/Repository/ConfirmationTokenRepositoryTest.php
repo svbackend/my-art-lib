@@ -4,8 +4,6 @@ namespace App\Tests\Functional\Repository;
 
 use App\Users\Entity\ConfirmationToken;
 use App\Users\Entity\User;
-use App\Users\Repository\UserRepository;
-use Doctrine\ORM\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -27,7 +25,7 @@ class ConfirmationTokenRepositoryTest extends KernelTestCase
     protected $passwordEncoder;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {
@@ -48,6 +46,7 @@ class ConfirmationTokenRepositoryTest extends KernelTestCase
     {
         $token = new ConfirmationToken($user, ConfirmationToken::TYPE_CONFIRM_EMAIL, $expires_at);
         $this->entityManager->persist($token);
+
         return $token;
     }
 
@@ -95,7 +94,7 @@ class ConfirmationTokenRepositoryTest extends KernelTestCase
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function tearDown()
     {

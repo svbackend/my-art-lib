@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\EventListener\Actor;
@@ -8,16 +9,9 @@ use App\Actors\Entity\ActorTMDB;
 use App\Actors\Entity\ActorTranslations;
 use App\Actors\EventListener\ActorSyncProcessor;
 use App\Actors\EventListener\ActorTranslationsProcessor;
-use App\Actors\EventListener\SaveActorProcessor;
 use App\Actors\Repository\ActorRepository;
-use App\Genres\Entity\Genre;
-use App\Movies\DTO\MovieDTO;
-use App\Movies\Entity\Movie;
-use App\Movies\Entity\MovieTMDB;
-use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Exception\TmdbRequestLimitException;
-use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
 use App\Service\LocaleService;
@@ -77,20 +71,12 @@ class ActorTranslationsProcessorTest extends KernelTestCase
         $this->psrContext = $this->createMock(PsrContext::class);
         $this->psrMessage = $this->createMock(PsrMessage::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->producer = $this->createMock(ProducerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repository = $this->createMock(ActorRepository::class);
         $this->searchService = $this->createMock(TmdbSearchService::class);
-        $this->searchService = $this->createMock(TmdbSearchService::class);
-        $this->normalizer = $this->createMock(TmdbNormalizerService::class);
         $this->locale = $this->createMock(LocaleService::class);
         $this->locale->method('getLocales')->willReturn(['en', 'uk', 'ru', 'pl']);
         $this->processor = new ActorTranslationsProcessor($this->em, $this->logger, $this->repository, $this->searchService, $this->locale);
-    }
-
-    private function getActorsIterator(Actor $actor): \Iterator
-    {
-        yield $actor;
     }
 
     public function testThatAllActorTranslationsWillBeSaved()
@@ -118,22 +104,22 @@ class ActorTranslationsProcessorTest extends KernelTestCase
                 [
                     'iso_639_1' => 'en',
                     'data' => [
-                        'biography' => 'en biography'
+                        'biography' => 'en biography',
                     ],
                 ],
                 [
                     'iso_639_1' => 'uk',
                     'data' => [
-                        'biography' => 'uk biography'
+                        'biography' => 'uk biography',
                     ],
                 ],
                 [
                     'iso_639_1' => 'ru',
                     'data' => [
-                        'biography' => 'ru biography'
+                        'biography' => 'ru biography',
                     ],
                 ],
-            ]
+            ],
         ]);
 
         $this->em->method('getReference')->willReturn($actor);
@@ -150,13 +136,13 @@ class ActorTranslationsProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::ACK, $result);
-        $this->assertEquals(2, count($persistedEntities));
+        $this->assertSame($this->processor::ACK, $result);
+        $this->assertSame(2, count($persistedEntities));
         $this->assertContainsOnlyInstancesOf(ActorTranslations::class, $persistedEntities);
-        $this->assertEquals('uk biography', $persistedEntities['uk']->getBiography());
-        $this->assertEquals('ru biography', $persistedEntities['ru']->getBiography());
-        $this->assertEquals('Original Name', $persistedEntities['uk']->getName());
-        $this->assertEquals('Original Name', $persistedEntities['ru']->getName());
+        $this->assertSame('uk biography', $persistedEntities['uk']->getBiography());
+        $this->assertSame('ru biography', $persistedEntities['ru']->getBiography());
+        $this->assertSame('Original Name', $persistedEntities['uk']->getName());
+        $this->assertSame('Original Name', $persistedEntities['ru']->getName());
     }
 
     public function testWithNotFoundActor()
@@ -168,7 +154,7 @@ class ActorTranslationsProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::REJECT, $result);
+        $this->assertSame($this->processor::REJECT, $result);
     }
 
     public function testThatTmdbRequestLimitIsNotAProblem()
@@ -187,7 +173,7 @@ class ActorTranslationsProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::REQUEUE, $result);
+        $this->assertSame($this->processor::REQUEUE, $result);
     }
 
     public function testThatTmdbActorNotFoundIsNotAProblem()
@@ -206,7 +192,7 @@ class ActorTranslationsProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::REJECT, $result);
+        $this->assertSame($this->processor::REJECT, $result);
     }
 
     public function testThatUniqueConstraintIsNotAProblem()
@@ -233,16 +219,16 @@ class ActorTranslationsProcessorTest extends KernelTestCase
                 [
                     'iso_639_1' => 'en',
                     'data' => [
-                        'biography' => 'en biography'
+                        'biography' => 'en biography',
                     ],
                 ],
                 [
                     'iso_639_1' => 'uk',
                     'data' => [
-                        'biography' => 'uk biography'
+                        'biography' => 'uk biography',
                     ],
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $this->em->method('getReference')->willReturn($actor);
@@ -256,6 +242,6 @@ class ActorTranslationsProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::ACK, $result);
+        $this->assertSame($this->processor::ACK, $result);
     }
 }

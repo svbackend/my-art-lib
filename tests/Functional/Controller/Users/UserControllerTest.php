@@ -22,6 +22,7 @@ class UserControllerTest extends WebTestCase
         $client = self::$client;
         $client->request('GET', "/api/users/me?api_token={$token}");
         $user = json_decode($client->getResponse()->getContent(), true);
+
         return $user;
     }
 
@@ -32,7 +33,7 @@ class UserControllerTest extends WebTestCase
         $client->request('GET', "/api/users/me?api_token={$token}");
         $result = json_decode($client->getResponse()->getContent(), true);
 
-        $this->assertEquals(UsersFixtures::TESTER_USERNAME, $result['username']);
+        $this->assertSame(UsersFixtures::TESTER_USERNAME, $result['username']);
     }
 
     public function testEditOwnProfileSuccess()
@@ -48,16 +49,16 @@ class UserControllerTest extends WebTestCase
                 'birth_date' => '2000-10-01',
                 'about' => 'about',
                 'public_email' => 'public@email.com',
-            ]
+            ],
         ]);
-        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+        $this->assertSame(202, $client->getResponse()->getStatusCode());
         $user = $this->getUser($token);
         $profile = $user['profile'];
-        $this->assertEquals($profile['first_name'], 'New first name');
-        $this->assertEquals($profile['last_name'], 'New last name');
-        $this->assertEquals(strtotime($profile['birth_date']), strtotime('2000-10-01'));
-        $this->assertEquals($profile['about'], 'about');
-        $this->assertEquals($profile['public_email'], 'public@email.com');
+        $this->assertSame($profile['first_name'], 'New first name');
+        $this->assertSame($profile['last_name'], 'New last name');
+        $this->assertSame(strtotime($profile['birth_date']), strtotime('2000-10-01'));
+        $this->assertSame($profile['about'], 'about');
+        $this->assertSame($profile['public_email'], 'public@email.com');
     }
 
     public function testEditOwnProfileNotLoggedIn()
@@ -73,9 +74,9 @@ class UserControllerTest extends WebTestCase
                 'birth_date' => '2000-10-01',
                 'about' => 'about',
                 'public_email' => 'public@email.com',
-            ]
+            ],
         ]);
-        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $this->assertSame(401, $client->getResponse()->getStatusCode());
     }
 
     public function testEditProfileOfAnotherUserWithoutPermissions()
@@ -91,9 +92,9 @@ class UserControllerTest extends WebTestCase
                 'birth_date' => '2000-10-01',
                 'about' => 'about',
                 'public_email' => 'public@email.com',
-            ]
+            ],
         ]);
-        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+        $this->assertSame(403, $client->getResponse()->getStatusCode());
     }
 
     public function testEditProfileOfAnotherUserSuccess()
@@ -109,15 +110,15 @@ class UserControllerTest extends WebTestCase
                 'birth_date' => '2000-10-01',
                 'about' => 'about',
                 'public_email' => 'public@email.com',
-            ]
+            ],
         ]);
-        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+        $this->assertSame(202, $client->getResponse()->getStatusCode());
         $user = $this->getUser(UsersFixtures::TESTER_API_TOKEN);
         $profile = $user['profile'];
-        $this->assertEquals($profile['first_name'], 'New first name');
-        $this->assertEquals($profile['last_name'], 'New last name');
-        $this->assertEquals(strtotime($profile['birth_date']), strtotime('2000-10-01'));
-        $this->assertEquals($profile['about'], 'about');
-        $this->assertEquals($profile['public_email'], 'public@email.com');
+        $this->assertSame($profile['first_name'], 'New first name');
+        $this->assertSame($profile['last_name'], 'New last name');
+        $this->assertSame(strtotime($profile['birth_date']), strtotime('2000-10-01'));
+        $this->assertSame($profile['about'], 'about');
+        $this->assertSame($profile['public_email'], 'public@email.com');
     }
 }

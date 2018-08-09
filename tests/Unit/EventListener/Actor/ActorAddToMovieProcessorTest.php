@@ -1,28 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\EventListener\Actor;
 
 use App\Actors\Entity\Actor;
-use App\Actors\Entity\ActorTMDB;
 use App\Actors\EventListener\ActorAddToMovieProcessor;
 use App\Actors\EventListener\ActorSyncProcessor;
-use App\Actors\EventListener\SaveActorProcessor;
 use App\Actors\Repository\ActorRepository;
-use App\Genres\Entity\Genre;
-use App\Movies\DTO\MovieDTO;
 use App\Movies\Entity\Movie;
-use App\Movies\Entity\MovieTMDB;
-use App\Movies\EventListener\MovieSyncProcessor;
-use App\Movies\Exception\TmdbMovieNotFoundException;
-use App\Movies\Exception\TmdbRequestLimitException;
 use App\Movies\Repository\MovieRepository;
-use App\Movies\Service\TmdbNormalizerService;
-use App\Movies\Service\TmdbSearchService;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Enqueue\Client\ProducerInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -40,18 +29,10 @@ class ActorAddToMovieProcessorTest extends KernelTestCase
     /** @var PsrMessage|MockObject */
     private $psrMessage;
 
-    /** @var MockObject|ProducerInterface */
-    private $producer;
-
     /**
      * @var LoggerInterface|MockObject
      */
     private $logger;
-
-    /**
-     * @var TmdbNormalizerService|MockObject
-     */
-    private $normalizer;
 
     /**
      * @var MockObject|ActorRepository
@@ -62,11 +43,6 @@ class ActorAddToMovieProcessorTest extends KernelTestCase
      * @var MockObject|MovieRepository
      */
     private $movieRepository;
-
-    /**
-     * @var MockObject|TmdbSearchService
-     */
-    private $searchService;
 
     /**
      * @var ActorSyncProcessor
@@ -110,8 +86,8 @@ class ActorAddToMovieProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::ACK, $result);
-        $this->assertEquals(10, $addedActor->getId());
+        $this->assertSame($this->processor::ACK, $result);
+        $this->assertSame(10, $addedActor->getId());
     }
 
     public function testWhenMovieNotFound()
@@ -126,7 +102,7 @@ class ActorAddToMovieProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::REJECT, $result);
+        $this->assertSame($this->processor::REJECT, $result);
     }
 
     public function testWhenActorNotFound()
@@ -143,6 +119,6 @@ class ActorAddToMovieProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::REJECT, $result);
+        $this->assertSame($this->processor::REJECT, $result);
     }
 }

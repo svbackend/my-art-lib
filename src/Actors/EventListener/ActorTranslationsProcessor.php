@@ -39,9 +39,11 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     /**
      * @param PsrMessage $message
      * @param PsrContext $session
-     * @return string
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
+     *
+     * @return string
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
@@ -54,7 +56,7 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             return self::REJECT;
         }
 
-        /** @var $actor Actor */
+        /* @var $actor Actor */
         try {
             $translations = $this->searchService->findActorTranslationsById($actor->getTmdb()->getId());
             $translations = $translations['translations'];
@@ -74,6 +76,7 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             // its ok
         }
         $this->em->clear();
+
         return self::ACK;
     }
 
@@ -85,7 +88,7 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     /**
      * @param Actor $actor
      * @param array $translations
-     * @return void
+     *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
      */
@@ -96,7 +99,7 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
         foreach ($translations as $translation) {
             $translationLocale = $translation['iso_639_1'];
-            if (in_array($translationLocale, $this->locales) === false) {
+            if (in_array($translationLocale, $this->locales, true) === false) {
                 continue;
             }
             if ($actor->getTranslation($translationLocale, false) !== null) {

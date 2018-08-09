@@ -205,6 +205,7 @@ class Movie implements TranslatableInterface
     public function getActors(): array
     {
         $movieActors = $this->actors->toArray();
+
         return array_map(function (MovieActor $movieActor) {
             return $movieActor->getActor();
         }, $movieActors);

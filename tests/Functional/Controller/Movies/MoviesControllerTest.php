@@ -6,7 +6,6 @@ use App\Genres\DataFixtures\GenresFixtures;
 use App\Movies\DataFixtures\MoviesFixtures;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\MovieSyncProcessor;
-use App\Tests\Functional\Controller\WatchedMovieControllerTest;
 use App\Users\DataFixtures\UsersFixtures;
 use Enqueue\Client\TraceableProducer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -33,7 +32,7 @@ class MoviesControllerTest extends WebTestCase
 
         $client = self::$client;
 
-        $client->request('GET', "/api/genres");
+        $client->request('GET', '/api/genres');
         $genres = json_decode($client->getResponse()->getContent(), true);
         $genresIds = [];
         foreach ($genres as $genre) {
@@ -41,6 +40,7 @@ class MoviesControllerTest extends WebTestCase
         }
 
         self::$genresIds = $genresIds;
+
         return $genresIds;
     }
 
@@ -48,16 +48,16 @@ class MoviesControllerTest extends WebTestCase
     {
         $client = self::$client;
         $client->request('get', '/api/movies');
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
 
     public function testCreateMovieWithInvalidData()
     {
         $client = self::$client;
 
-        $client->request('POST', "/api/movies", [
+        $client->request('POST', '/api/movies', [
             'movie' => [
-                #'originalTitle' => 'Original Title',
+                //'originalTitle' => 'Original Title',
                 'originalTitle' => null,
                 'originalPosterUrl' => '//placehold.it/480x340',
                 'imdbId' => 'qwe', // not valid
@@ -84,10 +84,10 @@ class MoviesControllerTest extends WebTestCase
                     'voteCount' => 500,
                 ],
                 'genres' => self::getGenresIds(),
-            ]
+            ],
         ]);
 
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertSame(400, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
         self::assertArrayHasKey('message', $response);
         self::assertArrayHasKey('errors', $response);
@@ -97,7 +97,7 @@ class MoviesControllerTest extends WebTestCase
     {
         $client = self::$client;
 
-        $client->request('POST', "/api/movies", [
+        $client->request('POST', '/api/movies', [
             'movie' => [
                 'originalTitle' => 'Original Title',
                 'originalPosterUrl' => '//placehold.it/480x340',
@@ -125,10 +125,10 @@ class MoviesControllerTest extends WebTestCase
                     'voteCount' => 500,
                 ],
                 'genres' => self::getGenresIds(),
-            ]
+            ],
         ]);
 
-        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $this->assertSame(401, $client->getResponse()->getStatusCode());
     }
 
     public function testCreateMovieSuccess()
@@ -164,10 +164,10 @@ class MoviesControllerTest extends WebTestCase
                     'voteCount' => 500,
                 ],
                 'genres' => self::getGenresIds(),
-            ]
+            ],
         ]);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         // because entity should be already translated and merged with translation based on user preferred locale:
@@ -197,10 +197,10 @@ class MoviesControllerTest extends WebTestCase
             'recommendation' => [
                 'movie_id' => $recommendedMovie['id'],
                 'tmdb_id' => 0,
-            ]
+            ],
         ]);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
 
     public function testEditMovieSuccess()
@@ -225,20 +225,20 @@ class MoviesControllerTest extends WebTestCase
                     ['locale' => 'ru', 'title' => 'new translated title (ru)', 'overview' => 'new translated overview (ru)'],
                     ['locale' => 'uk', 'title' => 'new translated title (uk)', 'overview' => 'new translated overview (uk)'],
                     ['locale' => 'pl', 'title' => 'new translated title (pl)', 'overview' => 'new translated overview (pl)'],
-                ]
-            ]
+                ],
+            ],
         ]);
 
-        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+        $this->assertSame(202, $client->getResponse()->getStatusCode());
         $client->request('GET', "/api/movies/{$movie['id']}?language=pl");
         $updatedMovie = json_decode($client->getResponse()->getContent(), true);
-        $this->assertEquals('new original title', $updatedMovie['originalTitle']);
-        $this->assertEquals('newImdbId', $updatedMovie['imdbId']);
-        $this->assertEquals(90, $updatedMovie['runtime']);
-        $this->assertEquals(123456, $updatedMovie['budget']);
-        $this->assertEquals(strtotime('2018-12-20'), strtotime($updatedMovie['releaseDate']));
-        $this->assertEquals('new translated title (pl)', $updatedMovie['title']);
-        $this->assertEquals('new translated overview (pl)', $updatedMovie['overview']);
+        $this->assertSame('new original title', $updatedMovie['originalTitle']);
+        $this->assertSame('newImdbId', $updatedMovie['imdbId']);
+        $this->assertSame(90, $updatedMovie['runtime']);
+        $this->assertSame(123456, $updatedMovie['budget']);
+        $this->assertSame(strtotime('2018-12-20'), strtotime($updatedMovie['releaseDate']));
+        $this->assertSame('new translated title (pl)', $updatedMovie['title']);
+        $this->assertSame('new translated overview (pl)', $updatedMovie['overview']);
     }
 
     public function testEditMovieWithoutAccess()
@@ -263,11 +263,11 @@ class MoviesControllerTest extends WebTestCase
                     ['locale' => 'ru', 'title' => 'new translated title (ru)', 'overview' => 'new translated overview (ru)'],
                     ['locale' => 'uk', 'title' => 'new translated title (uk)', 'overview' => 'new translated overview (uk)'],
                     ['locale' => 'pl', 'title' => 'new translated title (pl)', 'overview' => 'new translated overview (pl)'],
-                ]
-            ]
+                ],
+            ],
         ]);
 
-        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+        $this->assertSame(403, $client->getResponse()->getStatusCode());
     }
 
     public function testFindExistingMovieInOurDatabase()
@@ -275,11 +275,11 @@ class MoviesControllerTest extends WebTestCase
         $this->checkIsApiKeyProvided();
 
         $client = self::$client;
-        $client->request('POST', "/api/movies/search", [
+        $client->request('POST', '/api/movies/search', [
             'query' => MoviesFixtures::MOVIE_TITLE, // Title of created movie
         ]);
 
-        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $movies = $response['data'];
@@ -308,11 +308,11 @@ class MoviesControllerTest extends WebTestCase
 
         $movieTitle = 'The 15:17 to Paris'; // Name of movie https://www.themoviedb.org/movie/453201-the-15-17-to-paris
         $client = self::$client;
-        $client->request('POST', "/api/movies/search?language=ru", [
+        $client->request('POST', '/api/movies/search?language=ru', [
             'query' => $movieTitle,
         ]);
 
-        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true)['data'];
         self::assertTrue(count($response) > 0);
         $movie = reset($response);
@@ -326,18 +326,19 @@ class MoviesControllerTest extends WebTestCase
         self::assertNotEmpty($movie['tmdb']['id']); // use this id to open movie details page
 
         self::assertEmpty($movie['id']); // because movie should not be saved instantly
-        self::assertEquals('ru', $movie['locale']);
-        self::assertEquals($movieTitle, $movie['originalTitle']);
+        self::assertSame('ru', $movie['locale']);
+        self::assertSame($movieTitle, $movie['originalTitle']);
 
         // Test that movies will be saved in background
         $traces = $this->getProducer($client)->getTopicTraces(MovieSyncProcessor::ADD_MOVIES_TMDB);
         $this->assertCount(1, $traces);
         $processedMovie = json_decode($traces[0]['body'], true);
-        $this->assertEquals($movie['tmdb']['id'], $processedMovie['id']);
+        $this->assertSame($movie['tmdb']['id'], $processedMovie['id']);
     }
 
     /**
      * @param $client
+     *
      * @return TraceableProducer
      */
     private function getProducer($client)

@@ -5,9 +5,7 @@ namespace App\Tests\Functional\Controller\Guests;
 use App\Guests\DataFixtures\GuestsFixtures;
 use App\Guests\Entity\GuestWatchedMovie;
 use App\Movies\DataFixtures\MoviesFixtures;
-use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\EventListener\WatchedMovieProcessor;
-use App\Users\DataFixtures\UsersFixtures;
 use Enqueue\Client\TraceableProducer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -26,12 +24,15 @@ class WatchedMovieControllerTest extends WebTestCase
 
     public static function getMovies()
     {
-        if (self::$movies) return self::$movies;
+        if (self::$movies) {
+            return self::$movies;
+        }
 
         $client = self::$client;
 
         $client->request('GET', '/api/movies');
         self::$movies = json_decode($client->getResponse()->getContent(), true)['data'];
+
         return self::$movies;
     }
 
@@ -43,13 +44,13 @@ class WatchedMovieControllerTest extends WebTestCase
         $client->request('POST', "/api/guests/{$guestSessionToken}/watchedMovies", [
             'movie' => [
                 'id' => null,
-                'tmdbId' => (int)MoviesFixtures::MOVIE_TMDB_ID,
+                'tmdbId' => (int) MoviesFixtures::MOVIE_TMDB_ID,
                 'vote' => null,
                 'watchedAt' => null,
-            ]
+            ],
         ]);
 
-        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+        $this->assertSame(202, $client->getResponse()->getStatusCode());
     }
 
     public function testAddWatchedMovieWithTmdbIdWhichIsNotSavedYet()
@@ -64,20 +65,20 @@ class WatchedMovieControllerTest extends WebTestCase
                 'tmdbId' => $tmdbId,
                 'vote' => null,
                 'watchedAt' => null,
-            ]
+            ],
         ]);
 
-        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+        $this->assertSame(202, $client->getResponse()->getStatusCode());
 
         // Test that movie will be saved in background
         $traces = $this->getProducer($client)->getTopicTraces(WatchedMovieProcessor::ADD_WATCHED_MOVIE_TMDB);
         $this->assertCount(1, $traces);
         $movies = unserialize($traces[0]['body']);
         $movie = reset($movies);
-        /** @var $movie GuestWatchedMovie */
+        /* @var $movie GuestWatchedMovie */
         self::assertInstanceOf(GuestWatchedMovie::class, $movie);
-        self::assertEquals($tmdbId, $movie->getMovie()->getTmdb()->getId());
-        self::assertEquals($guestSessionToken, $movie->getGuestSession()->getToken());
+        self::assertSame($tmdbId, $movie->getMovie()->getTmdb()->getId());
+        self::assertSame($guestSessionToken, $movie->getGuestSession()->getToken());
     }
 
     public function testAddWatchedMovieWithId()
@@ -89,18 +90,19 @@ class WatchedMovieControllerTest extends WebTestCase
 
         $client->request('POST', "/api/guests/{$guestSessionToken}/watchedMovies", [
             'movie' => [
-                'id' => (int)$movie['id'],
+                'id' => (int) $movie['id'],
                 'tmdbId' => null,
                 'vote' => null,
                 'watchedAt' => null,
-            ]
+            ],
         ]);
 
-        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+        $this->assertSame(202, $client->getResponse()->getStatusCode());
     }
 
     /**
      * @param $client
+     *
      * @return TraceableProducer
      */
     private function getProducer($client)

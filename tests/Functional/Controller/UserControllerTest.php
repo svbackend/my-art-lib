@@ -30,6 +30,7 @@ class UserControllerTest extends WebTestCase
         $client->request('GET', "/api/users?api_token={$api_token}");
         $allUsersResponse = json_decode($client->getResponse()->getContent(), true);
         self::$user = reset($allUsersResponse);
+
         return self::$user;
     }
 
@@ -39,7 +40,7 @@ class UserControllerTest extends WebTestCase
 
         $client->request('GET', '/api/users');
 
-        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $this->assertSame(401, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('error', $response);
@@ -55,10 +56,10 @@ class UserControllerTest extends WebTestCase
                 'username' => 'ControllerTester',
                 'password' => 'ControllerTester',
                 'email' => 'Controller@Tester.com',
-            ]
+            ],
         ]);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayNotHasKey('errors', $response);
@@ -71,10 +72,10 @@ class UserControllerTest extends WebTestCase
         $client = self::$client;
 
         $client->request('POST', '/api/confirmEmail', [
-            'token' => UsersFixtures::TESTER_EMAIL_CONFIRMATION_TOKEN
+            'token' => UsersFixtures::TESTER_EMAIL_CONFIRMATION_TOKEN,
         ]);
 
-        $this->assertEquals(202, $client->getResponse()->getStatusCode());
+        $this->assertSame(202, $client->getResponse()->getStatusCode());
     }
 
     public function testConfirmEmailWithWrongToken()
@@ -82,10 +83,10 @@ class UserControllerTest extends WebTestCase
         $client = self::$client;
 
         $client->request('POST', '/api/confirmEmail', [
-            'token' => str_repeat('t', 32)
+            'token' => str_repeat('t', 32),
         ]);
 
-        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $this->assertSame(401, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('error', $response);
@@ -97,10 +98,10 @@ class UserControllerTest extends WebTestCase
         $client = self::$client;
 
         $client->request('POST', '/api/confirmEmail', [
-            'token' => '_invalidToken_'
+            'token' => '_invalidToken_',
         ]);
 
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertSame(400, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('errors', $response);
@@ -117,7 +118,7 @@ class UserControllerTest extends WebTestCase
                 'username' => 'RegistrationTester',
                 'password' => 'RegistrationTester',
                 'email' => 'Registration@Tester.com',
-            ]
+            ],
         ]);
 
         $mailCollector = $client->getProfile()->getCollector('swiftmailer');
@@ -127,13 +128,13 @@ class UserControllerTest extends WebTestCase
 
         $collectedMessages = $mailCollector->getMessages();
         /**
-         * @var $message \Swift_Message
+         * @var \Swift_Message
          */
         $message = $collectedMessages[0];
 
         // Asserting e-mail data
         $this->assertInstanceOf(\Swift_Message::class, $message);
-        $this->assertEquals('Registration@Tester.com', key($message->getTo()));
+        $this->assertSame('Registration@Tester.com', key($message->getTo()));
         $this->assertContains('?token', $message->getBody());
     }
 
@@ -146,10 +147,10 @@ class UserControllerTest extends WebTestCase
                 'username' => '_',
                 'password' => '_',
                 'email' => 'InvalidEmail',
-            ]
+            ],
         ]);
 
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertSame(400, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('errors', $response);
@@ -167,10 +168,10 @@ class UserControllerTest extends WebTestCase
                 'username' => $username,
                 'password' => '123456789',
                 'email' => UsersFixtures::TESTER_EMAIL,
-            ]
+            ],
         ]);
 
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertSame(400, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('errors', $response);
@@ -184,7 +185,7 @@ class UserControllerTest extends WebTestCase
 
         $api_token = UsersFixtures::TESTER_API_TOKEN;
         $client->request('GET', "/api/users?api_token={$api_token}");
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
         $this->assertTrue(count($response) > 0);
     }
@@ -193,8 +194,8 @@ class UserControllerTest extends WebTestCase
     {
         $client = self::$client;
 
-        $client->request('GET', "/api/users?api_token=WRONG_API_TOKEN");
-        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $client->request('GET', '/api/users?api_token=WRONG_API_TOKEN');
+        $this->assertSame(401, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('error', $response);
@@ -208,7 +209,7 @@ class UserControllerTest extends WebTestCase
         $api_token = UsersFixtures::TESTER_API_TOKEN;
 
         $client->request('GET', "/api/users/{$user['id']}?api_token={$api_token}");
-        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertSame(200, $client->getResponse()->getStatusCode());
         $user = json_decode($client->getResponse()->getContent(), true);
         self::assertArrayHasKey('id', $user);
         self::assertArrayHasKey('profile', $user);
@@ -220,7 +221,7 @@ class UserControllerTest extends WebTestCase
         $client = self::$client;
         $user = $this->getUser();
         $client->request('GET', "/api/users/{$user['id']}");
-        self::assertEquals(401, $client->getResponse()->getStatusCode());
+        self::assertSame(401, $client->getResponse()->getStatusCode());
     }
 
     public function testGetUserNotFound()
@@ -228,6 +229,6 @@ class UserControllerTest extends WebTestCase
         $api_token = UsersFixtures::TESTER_API_TOKEN;
         $client = self::$client;
         $client->request('GET', "/api/users/0?api_token={$api_token}");
-        self::assertEquals(404, $client->getResponse()->getStatusCode());
+        self::assertSame(404, $client->getResponse()->getStatusCode());
     }
 }

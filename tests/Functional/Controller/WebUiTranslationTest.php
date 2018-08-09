@@ -20,6 +20,6 @@ class WebUiTranslationTest extends WebTestCase
     {
         $client = self::$client;
         $client->request('get', '/admin/_trans');
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
 }

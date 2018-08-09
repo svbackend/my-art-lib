@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Security;
@@ -9,11 +10,10 @@ use App\Users\Repository\ApiTokenRepository;
 use App\Users\Repository\UserRepository;
 use App\Users\Security\UserProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Translation\Translator;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class UserProviderTest extends KernelTestCase
 {
@@ -88,7 +88,7 @@ class UserProviderTest extends KernelTestCase
     public function testRefreshUserWithUnsupportedClass()
     {
         /**
-         * @var $unsupportedUserClass UserInterface
+         * @var UserInterface
          */
         $unsupportedUserClass = $this->createMock(UserInterface::class);
         $this->userProvider->refreshUser($unsupportedUserClass);
@@ -108,7 +108,7 @@ class UserProviderTest extends KernelTestCase
     {
         $user = new User('tester@tester.com', 'tester', 'tester');
         $this->userRepositoryMock->method('find')->willReturn($user);
-        $result =  $this->userProvider->refreshUser($user);
+        $result = $this->userProvider->refreshUser($user);
         self::assertInstanceOf(User::class, $result);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Tests\Functional\Controller\Guests;
 
-use App\Users\DataFixtures\UsersFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GuestSessionControllerTest extends WebTestCase
@@ -22,7 +21,7 @@ class GuestSessionControllerTest extends WebTestCase
         $client = self::$client;
         $client->request('POST', '/api/guests');
 
-        self::assertEquals(200, $client->getResponse()->getStatusCode());
+        self::assertSame(200, $client->getResponse()->getStatusCode());
         $guestSession = json_decode($client->getResponse()->getContent(), true);
         self::assertArrayHasKey('token', $guestSession);
         self::assertNotEmpty($guestSession['token']);

@@ -1,16 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Security;
 
+use App\Users\Security\TokenAuthenticator;
 use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Translation\Translator;
-use App\Users\Security\TokenAuthenticator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class TokenAuthenticatorTest extends KernelTestCase
 {
@@ -68,7 +69,7 @@ class TokenAuthenticatorTest extends KernelTestCase
         $result = $this->tokenAuthenticator->getCredentials($this->requestMock);
 
         self::assertTrue(is_string($result));
-        self::assertEquals('{token}', $result);
+        self::assertSame('{token}', $result);
     }
 
     /**
@@ -83,6 +84,6 @@ class TokenAuthenticatorTest extends KernelTestCase
     public function testSupportsRememberMe()
     {
         $result = $this->tokenAuthenticator->supportsRememberMe();
-        self::assertEquals(false, $result);
+        self::assertFalse($result);
     }
 }

@@ -24,7 +24,7 @@ class PasswordRecoveryTest extends WebTestCase
         $client->request('POST', '/api/passwordLostRequest', [
             'email' => UsersFixtures::TESTER_EMAIL,
         ]);
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
 
         $mailCollector = $client->getProfile()->getCollector('swiftmailer');
 
@@ -35,17 +35,17 @@ class PasswordRecoveryTest extends WebTestCase
         $message = reset($collectedMessages);
 
         $this->assertInstanceOf(\Swift_Message::class, $message);
-        $this->assertEquals(UsersFixtures::TESTER_EMAIL, key($message->getTo()));
+        $this->assertSame(UsersFixtures::TESTER_EMAIL, key($message->getTo()));
         $this->assertContains('?token', $message->getBody());
     }
 
     public function testPasswordLostRequestWithoutAccess()
     {
         $client = self::$client;
-        $client->request('POST', '/api/passwordLostRequest?api_token=' . UsersFixtures::TESTER_API_TOKEN, [
+        $client->request('POST', '/api/passwordLostRequest?api_token='.UsersFixtures::TESTER_API_TOKEN, [
             'email' => UsersFixtures::TESTER_EMAIL,
         ]);
-        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+        $this->assertSame(403, $client->getResponse()->getStatusCode());
     }
 
     public function testPasswordLostRequestNotFoundUser()
@@ -54,7 +54,7 @@ class PasswordRecoveryTest extends WebTestCase
         $client->request('POST', '/api/passwordLostRequest', [
             'email' => 'not@existing.email',
         ]);
-        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertSame(404, $client->getResponse()->getStatusCode());
     }
 
     public function testPasswordRecoverySuccess()
@@ -64,16 +64,16 @@ class PasswordRecoveryTest extends WebTestCase
             'token' => UsersFixtures::TESTER_PASSWORD_RECOVERY_TOKEN,
             'password' => 'newPassword123',
         ]);
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
 
         // lets check that we can sign-in with new password
         $client->request('POST', '/api/auth/login', [
             'credentials' => [
                 'username' => UsersFixtures::TESTER_USERNAME,
                 'password' => 'newPassword123',
-            ]
+            ],
         ]);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
 }

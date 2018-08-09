@@ -1,21 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\EventListener\Actor;
 
 use App\Actors\Entity\Actor;
-use App\Actors\Entity\ActorTMDB;
 use App\Actors\EventListener\ActorSyncProcessor;
 use App\Actors\EventListener\SaveActorProcessor;
 use App\Actors\Repository\ActorRepository;
-use App\Genres\Entity\Genre;
-use App\Movies\DTO\MovieDTO;
-use App\Movies\Entity\Movie;
-use App\Movies\Entity\MovieTMDB;
-use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Exception\TmdbRequestLimitException;
-use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -27,7 +21,6 @@ use Interop\Queue\PsrMessage;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Stopwatch\Stopwatch;
 
 class SaveActorProcessorTest extends KernelTestCase
 {
@@ -105,7 +98,7 @@ class SaveActorProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::ACK, $result);
+        $this->assertSame($this->processor::ACK, $result);
     }
 
     public function testWhenActorAlreadySaved()
@@ -117,12 +110,11 @@ class SaveActorProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::REJECT, $result);
+        $this->assertSame($this->processor::REJECT, $result);
     }
 
     public function testThatTmdbLimitIsNotAProblem()
     {
-
         $actorTmdbId = json_encode(1);
         $this->psrMessage->method('getBody')->willReturn($actorTmdbId);
         $this->repository->method('findByTmdbId')->with(1)->willReturn(null);
@@ -130,7 +122,7 @@ class SaveActorProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::REQUEUE, $result);
+        $this->assertSame($this->processor::REQUEUE, $result);
     }
 
     public function testThatTmdbNotFoundIsNotAProblem()
@@ -142,7 +134,7 @@ class SaveActorProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::REJECT, $result);
+        $this->assertSame($this->processor::REJECT, $result);
     }
 
     public function testThatUniqueConstraintIsNotAProblem()
@@ -165,6 +157,6 @@ class SaveActorProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::ACK, $result);
+        $this->assertSame($this->processor::ACK, $result);
     }
 }

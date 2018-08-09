@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
 use App\Users\Entity\User;
-use App\Users\Entity\UserProfile;
 use App\Users\Entity\UserProfileContacts;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -42,7 +42,7 @@ class UserProfileContactsTest extends KernelTestCase
 
     public function testGetProfile()
     {
-        $this->assertEquals($this->profile, $this->contacts->getProfile());
+        $this->assertSame($this->profile, $this->contacts->getProfile());
     }
 
     public function testGetId()
@@ -52,7 +52,7 @@ class UserProfileContactsTest extends KernelTestCase
 
     public function testGetContactsData()
     {
-        $this->assertEquals('Instagram', $this->contacts->getProvider());
-        $this->assertEquals('https://instagram.com/tester', $this->contacts->getUrl());
+        $this->assertSame('Instagram', $this->contacts->getProvider());
+        $this->assertSame('https://instagram.com/tester', $this->contacts->getUrl());
     }
 }

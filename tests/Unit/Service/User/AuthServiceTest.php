@@ -6,12 +6,11 @@ use App\Users\DataFixtures\UsersFixtures;
 use App\Users\Entity\ApiToken;
 use App\Users\Entity\User;
 use App\Users\Repository\UserRepository;
-use App\Users\Request\AuthUserRequest;
 use App\Users\Service\AuthService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class AuthServiceTest extends KernelTestCase
@@ -29,7 +28,7 @@ class AuthServiceTest extends KernelTestCase
     private $entityManager;
 
     /**
-     * @var $userRepository \App\Users\Repository\UserRepository|MockObject
+     * @var \App\Users\Repository\UserRepository|MockObject
      */
     private $userRepository;
 
@@ -64,7 +63,7 @@ class AuthServiceTest extends KernelTestCase
     {
         $credentials = [
             'username' => 'InvalidUsername',
-            'password' => '123456'
+            'password' => '123456',
         ];
 
         $this->userRepository->method('loadUserByUsername')->willReturn(null);
@@ -80,7 +79,7 @@ class AuthServiceTest extends KernelTestCase
     {
         $credentials = [
             'username' => UsersFixtures::TESTER_USERNAME,
-            'password' => 'WrongPassword'
+            'password' => 'WrongPassword',
         ];
 
         $this->passwordEncoder->method('isPasswordValid')->willReturn(false);
@@ -98,7 +97,7 @@ class AuthServiceTest extends KernelTestCase
     {
         $credentials = [
             'username' => UsersFixtures::TESTER_USERNAME,
-            'password' => UsersFixtures::TESTER_PASSWORD
+            'password' => UsersFixtures::TESTER_PASSWORD,
         ];
 
         $this->passwordEncoder->method('isPasswordValid')->willReturn(true);
@@ -113,6 +112,6 @@ class AuthServiceTest extends KernelTestCase
 
         $this->assertInstanceOf(ApiToken::class, $apiToken);
         $this->assertNotEmpty($apiToken->getToken());
-        $this->assertTrue(strlen($apiToken->getToken()) === 256); // not more than 256 symbols due ApiToken entity field limit
+        $this->assertTrue(mb_strlen($apiToken->getToken()) === 256); // not more than 256 symbols due ApiToken entity field limit
     }
 }

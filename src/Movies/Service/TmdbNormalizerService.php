@@ -59,7 +59,7 @@ class TmdbNormalizerService
             $actorObject->setImdbId($actor['imdb_id'] ?? '');
             $actorObject->setBirthday(new \DateTimeImmutable($actor['birthday'] ?? ''));
             $actorObject->setGender($actor['gender'] ?? $actorObject::GENDER_MALE);
-            $photoUrl = isset($actor['profile_path']) ? self::IMAGE_HOST . $actor['profile_path'] : '';
+            $photoUrl = isset($actor['profile_path']) ? self::IMAGE_HOST.$actor['profile_path'] : '';
             $actorObject->setPhoto($photoUrl);
 
             $actorTranslationObject = new ActorTranslations($actorObject, $locale, $actorObject->getOriginalName());

@@ -7,9 +7,9 @@ use App\Users\Entity\ConfirmationToken;
 use App\Users\Entity\User;
 use App\Users\Repository\ConfirmationTokenRepository;
 use App\Users\Service\ConfirmationTokenService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Doctrine\ORM\EntityManagerInterface;
 
 class ConfirmationTokenServiceTest extends KernelTestCase
 {
@@ -24,7 +24,7 @@ class ConfirmationTokenServiceTest extends KernelTestCase
     private $entityManager;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {
@@ -40,7 +40,7 @@ class ConfirmationTokenServiceTest extends KernelTestCase
         $emailConfirmationToken = $confirmationTokenService->getEmailConfirmationToken($user);
 
         /**
-         * @var $confirmationTokenRepository ConfirmationTokenRepository
+         * @var ConfirmationTokenRepository
          */
         $confirmationTokenRepository = $this->entityManager->getRepository(ConfirmationToken::class);
         $savedToken = $confirmationTokenRepository->findByToken($emailConfirmationToken->getToken());
@@ -50,7 +50,7 @@ class ConfirmationTokenServiceTest extends KernelTestCase
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function tearDown()
     {

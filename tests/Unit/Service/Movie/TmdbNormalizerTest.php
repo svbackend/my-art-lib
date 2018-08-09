@@ -6,19 +6,10 @@ use App\Actors\Entity\Actor;
 use App\Genres\Repository\GenreRepository;
 use App\Movies\Service\MovieManageService;
 use App\Movies\Service\TmdbNormalizerService;
-use App\Users\DataFixtures\UsersFixtures;
-use App\Users\Entity\ApiToken;
-use App\Users\Entity\User;
-use App\Users\Repository\UserRepository;
-use App\Users\Request\AuthUserRequest;
-use App\Users\Service\AuthService;
-use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Translation\TranslatorInterface;
 
-class AuthServiceTest extends KernelTestCase
+class TmdbNormalizerTest extends KernelTestCase
 {
     /**
      * @var MovieManageService|MockObject
@@ -56,16 +47,15 @@ class AuthServiceTest extends KernelTestCase
 
         /** @var $actor Actor */
         $actor = $this->normalizer->normalizeActorsToObjects([$actor])->current();
-        $this->assertEquals('Test Actor', $actor->getOriginalName());
-        $this->assertEquals(strtotime('1980-12-28'), $actor->getBirthday()->getTimestamp());
-        $this->assertEquals(1, $actor->getTmdb()->getId());
-        $this->assertEquals('test_imdb_id', $actor->getImdbId());
-        $this->assertEquals(1, $actor->getGender());
+        $this->assertSame('Test Actor', $actor->getOriginalName());
+        $this->assertSame(strtotime('1980-12-28'), $actor->getBirthday()->getTimestamp());
+        $this->assertSame(1, $actor->getTmdb()->getId());
+        $this->assertSame('test_imdb_id', $actor->getImdbId());
+        $this->assertSame(1, $actor->getGender());
         $imageFilename = explode('/', $actor->getPhoto());
-        $this->assertEquals('photo.jpg', end($imageFilename));
-        $this->assertEquals('Test Actor', $actor->getTranslation('en', false)->getName());
-        $this->assertEquals('test biography', $actor->getTranslation('en', false)->getBiography());
-
+        $this->assertSame('photo.jpg', end($imageFilename));
+        $this->assertSame('Test Actor', $actor->getTranslation('en', false)->getName());
+        $this->assertSame('test biography', $actor->getTranslation('en', false)->getBiography());
     }
 
     public function testActorNormalizationWithoutSomeData()
@@ -77,13 +67,12 @@ class AuthServiceTest extends KernelTestCase
 
         /** @var $actor Actor */
         $actor = $this->normalizer->normalizeActorsToObjects([$actor])->current();
-        $this->assertEquals('Test Actor', $actor->getOriginalName());
-        $this->assertEquals(1, $actor->getTmdb()->getId());
-        $this->assertEquals('', $actor->getImdbId());
-        $this->assertEquals($actor::GENDER_MALE, $actor->getGender());
-        $this->assertEquals('', $actor->getPhoto());
-        $this->assertEquals('Test Actor', $actor->getTranslation('en', false)->getName());
-        $this->assertEquals('', $actor->getTranslation('en', false)->getBiography());
-
+        $this->assertSame('Test Actor', $actor->getOriginalName());
+        $this->assertSame(1, $actor->getTmdb()->getId());
+        $this->assertSame('', $actor->getImdbId());
+        $this->assertSame($actor::GENDER_MALE, $actor->getGender());
+        $this->assertSame('', $actor->getPhoto());
+        $this->assertSame('Test Actor', $actor->getTranslation('en', false)->getName());
+        $this->assertSame('', $actor->getTranslation('en', false)->getBiography());
     }
 }

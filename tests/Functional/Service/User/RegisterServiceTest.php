@@ -3,19 +3,19 @@
 namespace App\Tests\Functional\Service\User;
 
 use App\Users\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\Users\Request\RegisterUserRequest;
-use PHPUnit\Framework\MockObject\MockObject;
 use App\Users\Service\RegisterService;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class RegisterServiceTest extends KernelTestCase
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    /** @var  RegisterUserRequest|MockObject */
+    /** @var RegisterUserRequest|MockObject */
     private $registerUserRequest;
 
     /**
@@ -29,7 +29,7 @@ class RegisterServiceTest extends KernelTestCase
     private $entityManager;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {
@@ -51,12 +51,12 @@ class RegisterServiceTest extends KernelTestCase
         $this->assertInstanceOf(User::class, $registeredUser);
         $this->assertNotEmpty($registeredUser->getUsername(), 'Username not provided.');
         $this->assertNotEmpty($registeredUser->getEmail(), 'Email not provided.');
-        $this->assertEquals('registerServiceTester', $registeredUser->getUsername());
-        $this->assertEquals('register@Service.Tester', $registeredUser->getEmail());
+        $this->assertSame('registerServiceTester', $registeredUser->getUsername());
+        $this->assertSame('register@Service.Tester', $registeredUser->getEmail());
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function tearDown()
     {

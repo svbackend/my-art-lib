@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
@@ -21,7 +22,7 @@ class UserTest extends KernelTestCase
     protected $passwordEncoder;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {
@@ -30,7 +31,7 @@ class UserTest extends KernelTestCase
         $this->user = new User('tester@tester.com', 'tester', 'tester');
         $this->passwordEncoder = $kernel->getContainer()->get('security.password_encoder');
     }
-    
+
     public function testGetId()
     {
         $this->assertEmpty($this->user->getId());
@@ -38,13 +39,13 @@ class UserTest extends KernelTestCase
 
     public function testGetRoles()
     {
-        $this->assertEquals([UserRoles::ROLE_USER], $this->user->getRoles());
+        $this->assertSame([UserRoles::ROLE_USER], $this->user->getRoles());
     }
 
     public function testAddRole()
     {
         $this->user->getRolesObject()->addRole(UserRoles::ROLE_MODERATOR);
-        $this->assertEquals([UserRoles::ROLE_USER, UserRoles::ROLE_MODERATOR], $this->user->getRoles());
+        $this->assertSame([UserRoles::ROLE_USER, UserRoles::ROLE_MODERATOR], $this->user->getRoles());
     }
 
     /**
@@ -58,21 +59,21 @@ class UserTest extends KernelTestCase
     public function testRemoveRole()
     {
         $this->user->getRolesObject()->removeRole(UserRoles::ROLE_USER);
-        $this->assertEquals([UserRoles::ROLE_USER], $this->user->getRoles());
+        $this->assertSame([UserRoles::ROLE_USER], $this->user->getRoles());
 
         $this->user->getRolesObject()->addRole(UserRoles::ROLE_MODERATOR);
         $this->user->getRolesObject()->removeRole(UserRoles::ROLE_USER);
-        $this->assertEquals([UserRoles::ROLE_MODERATOR], $this->user->getRoles());
+        $this->assertSame([UserRoles::ROLE_MODERATOR], $this->user->getRoles());
 
         $this->user->getRolesObject()->removeRole(UserRoles::ROLE_MODERATOR);
-        $this->assertEquals([UserRoles::ROLE_USER], $this->user->getRoles());
+        $this->assertSame([UserRoles::ROLE_USER], $this->user->getRoles());
     }
 
     public function testIsPasswordValid()
     {
         $this->user->setPassword('123456', $this->passwordEncoder);
-        $this->assertEquals(false, $this->user->isPasswordValid('wrongPassword', $this->passwordEncoder));
-        $this->assertEquals(true, $this->user->isPasswordValid('123456', $this->passwordEncoder));
+        $this->assertFalse($this->user->isPasswordValid('wrongPassword', $this->passwordEncoder));
+        $this->assertTrue($this->user->isPasswordValid('123456', $this->passwordEncoder));
     }
 
     public function testDefaultRoles()

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
@@ -21,7 +22,7 @@ class UserProfileTest extends KernelTestCase
     protected $profile;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {
@@ -50,13 +51,13 @@ class UserProfileTest extends KernelTestCase
     {
         $birthDate = (new \DateTime())->modify('-20 years');
         $this->profile->setBirthDate($birthDate);
-        $this->assertEquals($birthDate, $this->profile->getBirthDate());
+        $this->assertSame($birthDate, $this->profile->getBirthDate());
     }
 
     public function testGetContacts()
     {
         $contacts = $this->profile->getContacts();
-        $this->assertEquals(0, count($contacts));
+        $this->assertSame(0, count($contacts));
     }
 
     public function testAddContacts()
@@ -67,8 +68,8 @@ class UserProfileTest extends KernelTestCase
         $result = $this->profile->addContacts($contacts_name, $contacts_url);
         $contacts = $this->profile->getContacts();
 
-        $this->assertEquals($this->profile, $result);
-        $this->assertEquals(1, count($contacts));
+        $this->assertSame($this->profile, $result);
+        $this->assertSame(1, count($contacts));
         $this->assertTrue($contacts[0] instanceof UserProfileContacts);
     }
 }

@@ -55,6 +55,7 @@ class ActorAddToMovieProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         $this->em->clear();
+
         return self::ACK;
     }
 

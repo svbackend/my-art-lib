@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\EventListener;
@@ -89,6 +90,7 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $persistedEntities = [];
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
             $persistedEntities[] = $entity;
+
             return true;
         }));
 
@@ -96,8 +98,8 @@ class MovieTranslationsProcessorTest extends KernelTestCase
 
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->movieTranslationsProcessor::ACK, $result);
-        $this->assertEquals(3, count($persistedEntities)); // 3 locales
+        $this->assertSame($this->movieTranslationsProcessor::ACK, $result);
+        $this->assertSame(3, count($persistedEntities)); // 3 locales
         $this->assertContainsOnlyInstancesOf(MovieTranslations::class, $persistedEntities);
     }
 
@@ -127,6 +129,7 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $persistedEntities = [];
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
             $persistedEntities[] = $entity;
+
             return true;
         }));
 
@@ -134,8 +137,8 @@ class MovieTranslationsProcessorTest extends KernelTestCase
 
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->movieTranslationsProcessor::REJECT, $result);
-        $this->assertEquals(0, count($persistedEntities));
+        $this->assertSame($this->movieTranslationsProcessor::REJECT, $result);
+        $this->assertSame(0, count($persistedEntities));
     }
 
     /**
@@ -164,6 +167,7 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $persistedEntities = [];
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
             $persistedEntities[] = $entity;
+
             return true;
         }));
 
@@ -171,7 +175,7 @@ class MovieTranslationsProcessorTest extends KernelTestCase
 
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->movieTranslationsProcessor::REQUEUE, $result);
-        $this->assertEquals(0, count($persistedEntities));
+        $this->assertSame($this->movieTranslationsProcessor::REQUEUE, $result);
+        $this->assertSame(0, count($persistedEntities));
     }
 }

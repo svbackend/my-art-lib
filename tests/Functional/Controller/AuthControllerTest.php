@@ -16,7 +16,7 @@ class AuthControllerTest extends WebTestCase
     {
         self::$client = static::createClient();
     }
-    
+
     public function testGetAuthTokenWithIncorrectCredentials()
     {
         $client = self::$client;
@@ -25,10 +25,10 @@ class AuthControllerTest extends WebTestCase
             'credentials' => [
                 'username' => 'IncorrectUsername',
                 'password' => 'IncorrectPassword',
-            ]
+            ],
         ]);
 
-        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $this->assertSame(401, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('error', $response);
@@ -43,10 +43,10 @@ class AuthControllerTest extends WebTestCase
             'credentials' => [
                 'username' => UsersFixtures::TESTER_USERNAME,
                 'password' => 'IncorrectPassword',
-            ]
+            ],
         ]);
 
-        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $this->assertSame(401, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('error', $response);
@@ -61,10 +61,10 @@ class AuthControllerTest extends WebTestCase
             'credentials' => [
                 'username' => UsersFixtures::TESTER_USERNAME,
                 'password' => UsersFixtures::TESTER_PASSWORD,
-            ]
+            ],
         ]);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('api_token', $response);

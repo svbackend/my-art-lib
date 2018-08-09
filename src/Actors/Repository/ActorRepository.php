@@ -24,7 +24,7 @@ class ActorRepository extends ServiceEntityRepository
     public function findByTmdbId(int $tmdbId): ?Actor
     {
         return $this->findOneBy([
-            'tmdb.id' => $tmdbId
+            'tmdb.id' => $tmdbId,
         ]);
     }
 }

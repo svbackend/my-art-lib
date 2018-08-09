@@ -26,7 +26,7 @@ class UserRepositoryTest extends KernelTestCase
     protected $passwordEncoder;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {
@@ -51,7 +51,7 @@ class UserRepositoryTest extends KernelTestCase
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ];
-            $this->fail('User not saved, error: ' . var_export($debugData));
+            $this->fail('User not saved, error: '.var_export($debugData));
         }
 
         return $this->user;
@@ -70,7 +70,7 @@ class UserRepositoryTest extends KernelTestCase
     public function testLoadByUsernameExistedUser()
     {
         /**
-         * @var $userRepository UserRepository
+         * @var UserRepository
          */
         $userRepository = $this->entityManager->getRepository(User::class);
         $user = $userRepository->loadUserByUsername('tester_fixture');
@@ -83,7 +83,7 @@ class UserRepositoryTest extends KernelTestCase
     public function testLoadByUsernameNonExistedUser()
     {
         /**
-         * @var $userRepository UserRepository
+         * @var UserRepository
          */
         $userRepository = $this->entityManager->getRepository(User::class);
         $user = $userRepository->loadUserByUsername('NotExistedUser');
@@ -92,7 +92,7 @@ class UserRepositoryTest extends KernelTestCase
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function tearDown()
     {

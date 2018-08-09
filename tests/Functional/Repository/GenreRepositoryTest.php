@@ -5,9 +5,6 @@ namespace App\Tests\Functional\Repository;
 use App\Genres\Entity\Genre;
 use App\Genres\Entity\GenreTranslations;
 use App\Genres\Repository\GenreRepository;
-use App\Users\Repository\UserRepository;
-use Doctrine\ORM\ORMException;
-use function PHPSTORM_META\type;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class GenreRepositoryTest extends KernelTestCase
@@ -28,7 +25,7 @@ class GenreRepositoryTest extends KernelTestCase
     private $genreRepository;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {
@@ -57,14 +54,14 @@ class GenreRepositoryTest extends KernelTestCase
 
         $genre = $this->genreRepository->find($testGenreId);
 
-        self::assertEquals('TestGenre', $genre->getTranslation('en')->getName());
-        self::assertEquals('Тестовый жанр', $genre->getTranslation('ru')->getName());
-        self::assertEquals('Тестовий жанр', $genre->getTranslation('uk')->getName());
-        self::assertEquals('TestGenre', $genre->getTranslation('WRONG_LOCALE')->getName());
+        self::assertSame('TestGenre', $genre->getTranslation('en')->getName());
+        self::assertSame('Тестовый жанр', $genre->getTranslation('ru')->getName());
+        self::assertSame('Тестовий жанр', $genre->getTranslation('uk')->getName());
+        self::assertSame('TestGenre', $genre->getTranslation('WRONG_LOCALE')->getName());
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function tearDown()
     {

@@ -8,24 +8,18 @@ use App\Users\Entity\User;
 use App\Users\Repository\UserRepository;
 use App\Users\Request\AuthUserRequest;
 use App\Users\Service\AuthService;
-use Doctrine\DBAL\Schema\Constraint;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use App\Users\Request\RegisterUserRequest;
-use PHPUnit\Framework\MockObject\MockObject;
-use App\Users\Service\RegisterService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class AuthServiceTest extends KernelTestCase
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    /** @var  AuthUserRequest|MockObject */
+    /** @var AuthUserRequest|MockObject */
     private $authUserRequest;
 
     /**
@@ -48,9 +42,8 @@ class AuthServiceTest extends KernelTestCase
      */
     private $userRepository;
 
-
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function setUp()
     {
@@ -79,7 +72,7 @@ class AuthServiceTest extends KernelTestCase
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function tearDown()
     {

@@ -1,12 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\EventListener;
 
-use App\Genres\Entity\Genre;
-use App\Movies\DTO\MovieDTO;
 use App\Movies\Entity\Movie;
-use App\Movies\Entity\MovieTMDB;
 use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
@@ -58,7 +56,8 @@ class MovieSyncProcessorTest extends KernelTestCase
         $this->repository = $this->createMock(MovieRepository::class);
     }
 
-    private function getMoviesIterator($movie) {
+    private function getMoviesIterator($movie)
+    {
         yield $movie;
     }
 
@@ -80,6 +79,7 @@ class MovieSyncProcessorTest extends KernelTestCase
         $persistedEntity = null;
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntity) {
             $persistedEntity = $entity;
+
             return true;
         }));
 
@@ -91,8 +91,8 @@ class MovieSyncProcessorTest extends KernelTestCase
         $this->movieSyncProcessor = new MovieSyncProcessor($this->em, $this->producer, $this->tmdbNormalizer, $this->logger, $this->repository);
         $result = $this->movieSyncProcessor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals(123, $persistedEntity->getId());
-        $this->assertEquals($this->movieSyncProcessor::ACK, $result);
+        $this->assertSame(123, $persistedEntity->getId());
+        $this->assertSame($this->movieSyncProcessor::ACK, $result);
     }
 
     public function testThatAllMoviesWillBeSavedWithoutSimilar()
@@ -113,6 +113,7 @@ class MovieSyncProcessorTest extends KernelTestCase
         $persistedEntity = null;
         $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntity) {
             $persistedEntity = $entity;
+
             return true;
         }));
 
@@ -124,7 +125,7 @@ class MovieSyncProcessorTest extends KernelTestCase
         $this->movieSyncProcessor = new MovieSyncProcessor($this->em, $this->producer, $this->tmdbNormalizer, $this->logger, $this->repository);
         $result = $this->movieSyncProcessor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals(123, $persistedEntity->getId());
-        $this->assertEquals($this->movieSyncProcessor::ACK, $result);
+        $this->assertSame(123, $persistedEntity->getId());
+        $this->assertSame($this->movieSyncProcessor::ACK, $result);
     }
 }

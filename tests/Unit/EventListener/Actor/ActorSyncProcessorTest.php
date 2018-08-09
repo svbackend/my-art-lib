@@ -1,19 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\EventListener\Actor;
 
 use App\Actors\EventListener\ActorSyncProcessor;
-use App\Genres\Entity\Genre;
-use App\Movies\DTO\MovieDTO;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTMDB;
-use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\Repository\MovieRepository;
-use App\Movies\Service\TmdbNormalizerService;
 use App\Movies\Service\TmdbSearchService;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
@@ -23,9 +18,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ActorSyncProcessorTest extends KernelTestCase
 {
-    /** @var EntityManager|MockObject */
-    private $em;
-
     /** @var PsrContext */
     private $psrContext;
 
@@ -79,7 +71,7 @@ class ActorSyncProcessorTest extends KernelTestCase
         $this->searchService->method('findActorsByMovieId')->with(2)->willReturn([
             'cast' => [
                 ['id' => 1], ['id' => 2], ['id' => 3], ['id' => 4], ['id' => 5], ['id' => 6], ['id' => 7], ['id' => 8], ['id' => 9], ['id' => 10], ['id' => 11],
-            ]
+            ],
         ]);
 
         // 2 events should be fired for each actor: saveActor + addActorToMovie
@@ -87,7 +79,7 @@ class ActorSyncProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::ACK, $result);
+        $this->assertSame($this->processor::ACK, $result);
     }
 
     public function testWhenMovieNotFound()
@@ -101,6 +93,6 @@ class ActorSyncProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
-        $this->assertEquals($this->processor::REJECT, $result);
+        $this->assertSame($this->processor::REJECT, $result);
     }
 }

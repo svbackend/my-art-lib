@@ -22,7 +22,7 @@ class UserCheckControllerTest extends WebTestCase
         $client = self::$client;
         $username = UsersFixtures::TESTER_USERNAME;
         $client->request('get', "/api/users/username/{$username}");
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
 
     public function testIsUsernameExistsShouldBeFalse()
@@ -30,7 +30,7 @@ class UserCheckControllerTest extends WebTestCase
         $client = self::$client;
         $username = 'NotExistingUsername_p9qZsIu';
         $client->request('get', "/api/users/username/{$username}");
-        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertSame(404, $client->getResponse()->getStatusCode());
     }
 
     public function testIsEmailExistsShouldBeTrue()
@@ -38,7 +38,7 @@ class UserCheckControllerTest extends WebTestCase
         $client = self::$client;
         $email = UsersFixtures::TESTER_EMAIL;
         $client->request('get', "/api/users/email/{$email}");
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
 
     public function testIsEmailExistsShouldBeFalse()
@@ -46,6 +46,6 @@ class UserCheckControllerTest extends WebTestCase
         $client = self::$client;
         $email = 'NotExistingEmail_p9qZsIu@domain.xyz';
         $client->request('get', "/api/users/email/{$email}");
-        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+        $this->assertSame(404, $client->getResponse()->getStatusCode());
     }
 }

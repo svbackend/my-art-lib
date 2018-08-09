@@ -21,9 +21,9 @@ class GenresControllerTest extends WebTestCase
     {
         $client = self::$client;
 
-        $client->request('GET', "/api/genres?language=ru");
+        $client->request('GET', '/api/genres?language=ru');
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         self::assertTrue(is_array($response) && count($response) > 0);
@@ -32,17 +32,16 @@ class GenresControllerTest extends WebTestCase
         self::assertArrayHasKey('id', $genre);
         self::assertArrayHasKey('locale', $genre);
         self::assertArrayHasKey('name', $genre);
-        self::assertEquals('ru', $genre['locale']);
-
+        self::assertSame('ru', $genre['locale']);
     }
 
     public function testGetAllGenresWithWrongLanguage()
     {
         $client = self::$client;
 
-        $client->request('GET', "/api/genres?language=WRONG_LANGUAGE");
+        $client->request('GET', '/api/genres?language=WRONG_LANGUAGE');
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         self::assertTrue(is_array($response) && count($response) > 0);
@@ -51,17 +50,16 @@ class GenresControllerTest extends WebTestCase
         self::assertArrayHasKey('id', $genre);
         self::assertArrayHasKey('locale', $genre);
         self::assertArrayHasKey('name', $genre);
-        self::assertEquals('en', $genre['locale']);
-
+        self::assertSame('en', $genre['locale']);
     }
 
     public function testGetAllGenresWithoutLanguage()
     {
         $client = self::$client;
 
-        $client->request('GET', "/api/genres");
+        $client->request('GET', '/api/genres');
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         self::assertTrue(is_array($response) && count($response) > 0);
@@ -70,30 +68,28 @@ class GenresControllerTest extends WebTestCase
         self::assertArrayHasKey('id', $genre);
         self::assertArrayHasKey('locale', $genre);
         self::assertArrayHasKey('name', $genre);
-        self::assertEquals('en', $genre['locale']);
-
+        self::assertSame('en', $genre['locale']);
     }
 
     public function testCreateGenreWithInvalidData()
     {
         $client = self::$client;
 
-        $client->request('POST', "/api/genres", [
+        $client->request('POST', '/api/genres', [
             'genre' => [
                 'translations' => [
                     [
                         'name' => 'TestGenreName',
                         'locale' => 'INVALID_LOCALE',
                     ],
-                ]
-            ]
+                ],
+            ],
         ]);
 
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
+        $this->assertSame(400, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
         self::assertArrayHasKey('message', $response);
         self::assertArrayHasKey('errors', $response);
-
     }
 
     public function testCreateGenreWithoutPermissions()
@@ -112,11 +108,11 @@ class GenresControllerTest extends WebTestCase
                         'name' => 'Валидное название жанра',
                         'locale' => 'ru',
                     ],
-                ]
-            ]
+                ],
+            ],
         ]);
 
-        $this->assertEquals(403, $client->getResponse()->getStatusCode());
+        $this->assertSame(403, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('error', $response);
     }
@@ -137,11 +133,11 @@ class GenresControllerTest extends WebTestCase
                         'name' => 'Валидное название жанра',
                         'locale' => 'ru',
                     ],
-                ]
-            ]
+                ],
+            ],
         ]);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         self::assertArrayHasKey('id', $response);
@@ -154,7 +150,7 @@ class GenresControllerTest extends WebTestCase
         $client = self::$client;
         $adminApiToken = UsersFixtures::ADMIN_API_TOKEN;
 
-        $client->request('GET', "/api/genres");
+        $client->request('GET', '/api/genres');
         $response = json_decode($client->getResponse()->getContent(), true);
         $firstGenre = reset($response);
 
@@ -169,16 +165,16 @@ class GenresControllerTest extends WebTestCase
                         'name' => 'Обновлённый жанр',
                         'locale' => 'ru',
                     ],
-                ]
-            ]
+                ],
+            ],
         ]);
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         self::assertArrayHasKey('id', $response);
         self::assertArrayHasKey('name', $response);
         self::assertArrayHasKey('locale', $response);
-        self::assertEquals('Updated Genre', $response['name']);
+        self::assertSame('Updated Genre', $response['name']);
     }
 }

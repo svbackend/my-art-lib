@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use App\Kernel;
@@ -7,14 +8,14 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Dotenv\Dotenv;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
-$environmentFile = __DIR__ . '/../.env.test';
+$environmentFile = __DIR__.'/../.env.test';
 
 (new Dotenv())->load($environmentFile);
 
 // Create and boot 'test' kernel
-$kernel = new Kernel(\getenv('APP_ENV'), (bool)\getenv('APP_DEBUG'));
+$kernel = new Kernel(\getenv('APP_ENV'), (bool) \getenv('APP_DEBUG'));
 $kernel->boot();
 // Create new application
 $application = new Application($kernel);
