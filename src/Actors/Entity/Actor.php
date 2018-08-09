@@ -141,7 +141,7 @@ class Actor implements TranslatableInterface
         $this->imdbId = $imdbId;
     }
 
-    public function getBirthday()
+    public function getBirthday(): \DateTimeInterface
     {
         return $this->birthday;
     }
@@ -151,7 +151,7 @@ class Actor implements TranslatableInterface
         $this->birthday = $birthday;
     }
 
-    public function getGender()
+    public function getGender(): int
     {
         return $this->gender;
     }
