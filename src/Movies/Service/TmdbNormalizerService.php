@@ -63,6 +63,7 @@ class TmdbNormalizerService
             $actorObject->setPhoto($photoUrl);
 
             $actorTranslationObject = new ActorTranslations($actorObject, $locale, $actorObject->getOriginalName());
+            $actorTranslationObject->setBiography($actor['biography'] ?? '');
             $actorObject->addTranslation($actorTranslationObject);
 
             yield $actorObject;

@@ -51,6 +51,7 @@ class AuthServiceTest extends KernelTestCase
             'imdb_id' => 'test_imdb_id',
             'gender' => 1,
             'profile_path' => '/photo.jpg',
+            'biography' => 'test biography',
         ];
 
         /** @var $actor Actor */
@@ -62,6 +63,8 @@ class AuthServiceTest extends KernelTestCase
         $this->assertEquals(1, $actor->getGender());
         $imageFilename = explode('/', $actor->getPhoto());
         $this->assertEquals('photo.jpg', end($imageFilename));
+        $this->assertEquals('Test Actor', $actor->getTranslation('en', false)->getName());
+        $this->assertEquals('test biography', $actor->getTranslation('en', false)->getBiography());
 
     }
 
@@ -79,6 +82,8 @@ class AuthServiceTest extends KernelTestCase
         $this->assertEquals('', $actor->getImdbId());
         $this->assertEquals($actor::GENDER_MALE, $actor->getGender());
         $this->assertEquals('', $actor->getPhoto());
+        $this->assertEquals('Test Actor', $actor->getTranslation('en', false)->getName());
+        $this->assertEquals('', $actor->getTranslation('en', false)->getBiography());
 
     }
 }
