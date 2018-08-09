@@ -104,7 +104,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             }
             $data = $translation['data'];
 
-            yield new MovieTranslationDTO($translation['iso_639_1'], $data['title'], $data['overview'], null);
+            yield new MovieTranslationDTO($translation['iso_639_1'], $data['title'] ?? '', $data['overview'] ?? null, null);
         }
     }
 

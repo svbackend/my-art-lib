@@ -68,8 +68,6 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
         $this->mergeTranslations($actor, $translations);
 
-        $this->em->persist($actor);
-
         try {
             $this->em->flush();
         } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
@@ -93,24 +91,24 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
      */
     private function mergeTranslations(Actor $actor, array $translations): void
     {
-        $locales = $this->locales;
         /** @var $actorRef Actor */
         $actorRef = $this->em->getReference(Actor::class, $actor->getId());
 
-        $addTranslation = function(array $trans) use ($actor, $locales, $actorRef) {
-            if (in_array($trans['iso_639_1'], $locales) === false) { return; }
-            $data = $trans['data'];
-            $translation = new ActorTranslations($actorRef, $trans['iso_639_1'], $actor->getOriginalName());
-            $translation->setBiography($data['biography'] ?? '');
-            $actor->addTranslation($translation);
-        };
+        foreach ($translations as $translation) {
+            $translationLocale = $translation['iso_639_1'];
+            if (in_array($translationLocale, $this->locales) === false) {
+                continue;
+            }
+            if ($actor->getTranslation($translationLocale, false) !== null) {
+                continue;
+            }
 
-        $updateTranslation = function(array $trans, ActorTranslations $oldTranslation) use ($actor, $locales) {
-            if (in_array($trans['iso_639_1'], $locales) === false) { return; }
-            $data = $trans['data'];
-            $oldTranslation->setBiography($data['biography'] ?? $oldTranslation->getBiography());
-        };
+            $data = $translation['data'];
 
-        $actor->updateTranslations($translations, $addTranslation, $updateTranslation, 'iso_639_1');
+            $translationObject = new ActorTranslations($actorRef, $translationLocale, $actor->getOriginalName());
+            $translationObject->setBiography($data['biography'] ?? '');
+            $actor->addTranslation($translationObject);
+            $this->em->persist($translationObject);
+        }
     }
 }
