@@ -36,6 +36,13 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $this->locales = $localeService->getLocales();
     }
 
+    /**
+     * @param PsrMessage $message
+     * @param PsrContext $session
+     * @return string
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \ErrorException
+     */
     public function process(PsrMessage $message, PsrContext $session)
     {
         $this->logger->info('ActorTranslationsProcessor start with memory usage: ', [memory_get_usage()]);
@@ -58,6 +65,34 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         } catch (TmdbMovieNotFoundException $notFoundException) {
             return self::REJECT;
         }
+
+        $this->mergeTranslations($actor, $translations);
+
+        $this->em->persist($actor);
+
+        try {
+            $this->em->flush();
+        } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
+            // its ok
+        }
+        $this->em->clear();
+        return self::ACK;
+    }
+
+    public static function getSubscribedTopics()
+    {
+        return [self::LOAD_TRANSLATIONS];
+    }
+
+    /**
+     * @param Actor $actor
+     * @param array $translations
+     * @return void
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \ErrorException
+     */
+    private function mergeTranslations(Actor $actor, array $translations): void
+    {
         $locales = $this->locales;
         /** @var $actorRef Actor */
         $actorRef = $this->em->getReference(Actor::class, $actor->getId());
@@ -77,20 +112,5 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         };
 
         $actor->updateTranslations($translations, $addTranslation, $updateTranslation, 'iso_639_1');
-
-        $this->em->persist($actor);
-
-        try {
-            $this->em->flush();
-        } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
-            //return self::ACK;
-        }
-        $this->em->clear();
-        return self::ACK;
-    }
-
-    public static function getSubscribedTopics()
-    {
-        return [self::LOAD_TRANSLATIONS];
     }
 }
