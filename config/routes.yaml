@@ -10,6 +10,9 @@ genres:
 movies:
     resource: ../src/Movies/Controller
     type: annotation
+actors:
+    resource: ../src/Actors/Controller
+    type: annotation
 images:
     resource: ../src/Images/Controller
     type: annotation
