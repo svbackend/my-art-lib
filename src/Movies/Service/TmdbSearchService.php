@@ -9,20 +9,23 @@ use App\Movies\Exception\TmdbRequestLimitException;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 
-// todo use append_to_response + cache to decrease amount of requests to external api
+// todo refactor cache usage
 class TmdbSearchService
 {
     private $apiKey;
     private $client;
     private $logger;
+    private $cache;
     private const ApiUrl = 'https://api.themoviedb.org/3';
 
-    public function __construct(LoggerInterface $logger, ClientInterface $client)
+    public function __construct(LoggerInterface $logger, ClientInterface $client, CacheInterface $cache)
     {
         $this->apiKey = \getenv('MOVIE_DB_API_KEY'); // is it ok to use \getenv() here?
         $this->client = $client;
         $this->logger = $logger;
+        $this->cache = $cache;
     }
 
     /**
@@ -51,13 +54,12 @@ class TmdbSearchService
     }
 
     /**
-     * @param int    $tmdb_id
+     * @param int $tmdb_id
      * @param string $locale
-     *
+     * @return array
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
-     *
-     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function findMovieById(int $tmdb_id, string $locale = 'en'): array
     {
@@ -65,22 +67,35 @@ class TmdbSearchService
             'query' => [
                 'api_key' => $this->apiKey,
                 'language' => $locale,
+                'append_to_response' => 'similar,translations,credits',
             ],
         ]);
+
+        $similarUrl = "/movie/{$tmdb_id}/similar";
+        $params = ['api_key' => $this->apiKey, 'page' => 1];
+        $this->cache->set($this->getCacheKeyFromParams($similarUrl, 'GET', ['query' => $params]), json_encode($movie['similar']), 1800);
+
+        $translationsUrl = "/movie/{$tmdb_id}/translations";
+        $params = ['api_key' => $this->apiKey];
+        $this->cache->set($this->getCacheKeyFromParams($translationsUrl, 'GET', ['query' => $params]), json_encode($movie['translations']), 1800);
+
+        $creditsUrl = "/movie/{$tmdb_id}/credits";
+        $params = ['api_key' => $this->apiKey, 'language' => $locale];
+        $this->cache->set($this->getCacheKeyFromParams($creditsUrl, 'GET', ['query' => $params]), json_encode($movie['credits']), 1800);
 
         return $movie;
     }
 
     /**
-     * @param int $personId
+     * @param int $movieId
      * @param string $locale
      * @return array
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
      */
-    public function findActorsByMovieId(int $personId, string $locale = 'en'): array
+    public function findActorsByMovieId(int $movieId, string $locale = 'en'): array
     {
-        $actors = $this->request("/movie/{$personId}/credits", 'GET', [
+        $actors = $this->request("/movie/{$movieId}/credits", 'GET', [
             'query' => [
                 'api_key' => $this->apiKey,
                 'language' => $locale,
@@ -96,17 +111,23 @@ class TmdbSearchService
      * @return array
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function findActorById(int $personId, string $locale = 'en'): array
     {
-        $actors = $this->request("/person/{$personId}", 'GET', [
+        $actor = $this->request("/person/{$personId}", 'GET', [
             'query' => [
                 'api_key' => $this->apiKey,
                 'language' => $locale,
+                'append_to_response' => 'translations'
             ],
         ]);
 
-        return $actors;
+        $translationsUrl = "/person/{$personId}/translations";
+        $params = ['api_key' => $this->apiKey, 'language' => $locale];
+        $this->cache->set($this->getCacheKeyFromParams($translationsUrl, 'GET', ['query' => $params]), json_encode($actor['translations']), 1800);
+
+        return $actor;
     }
 
     /**
@@ -130,11 +151,10 @@ class TmdbSearchService
 
     /**
      * @param int $tmdb_id
-     *
+     * @return array
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
-     *
-     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function findMovieTranslationsById(int $tmdb_id): array
     {
@@ -171,20 +191,25 @@ class TmdbSearchService
     /**
      * @param string $url
      * @param string $method
-     * @param array  $params
-     *
+     * @param array $params
+     * @return array
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
-     *
-     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     private function request(string $url, string $method = 'GET', array $params = []): array
     {
+        if (null !== $cachedResponse = $this->getResponseFromCache($url, $method, $params)) {
+            return $cachedResponse;
+        }
+
         $url = self::ApiUrl.$url;
 
         try {
             $response = $this->client->request($method, $url, $params);
-            $response = json_decode($response->getBody()->getContents(), true);
+            $responseJson = $response->getBody()->getContents();
+            $response = json_decode($responseJson, true);
+            $this->cache->set($this->getCacheKeyFromParams($url, $method, $params), $responseJson, 1800);
             getenv('APP_ENV') === 'dev' && $this->logger->debug('Guzzle request:', [
                 'url' => $url,
                 'method' => $method,
@@ -209,6 +234,42 @@ class TmdbSearchService
             if ($exception->getCode() === 429) {
                 throw new TmdbRequestLimitException();
             }
+        }
+
+        return $response;
+    }
+
+    private function arrayAsString(array $array): string
+    {
+        $string = '';
+
+        foreach ($array as $key => $value) {
+            if (is_array($value) === true) {
+                $value = $this->arrayAsString($value);
+            }
+            $string .= "$key-$value";
+        }
+
+        return $string;
+    }
+
+    private function getCacheKeyFromParams(string $url, string $method = 'GET', array $params = []): string
+    {
+        $key = md5($url . mb_strtolower($method) . $this->arrayAsString($params));
+        return $key;
+    }
+
+    /**
+     * @param string $url
+     * @param string $method
+     * @param array $params
+     * @return array|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    private function getResponseFromCache(string $url, string $method = 'GET', array $params = []): ?array
+    {
+        if (null !== $response = $this->cache->get($this->getCacheKeyFromParams($url, $method, $params))) {
+            return json_decode($response, true);
         }
 
         return $response;

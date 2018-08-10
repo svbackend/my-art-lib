@@ -4,6 +4,7 @@ namespace App\Movies\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Repository\MovieActorRepository;
+use App\Movies\Service\TmdbSearchService;
 use App\Pagination\PaginatedCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,5 +33,13 @@ class MovieActorController extends BaseController
         return $this->response($collection, 200, [], [
             'groups' => ['list'],
         ]);
+    }
+
+    /**
+     * @Route("/api/test", methods={"GET"})
+     */
+    public function test(TmdbSearchService $service)
+    {
+        return new JsonResponse($service->findMovieById(146));
     }
 }
