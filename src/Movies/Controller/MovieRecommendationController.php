@@ -13,6 +13,8 @@ use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Enqueue\Client\Message;
+use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,29 +44,31 @@ class MovieRecommendationController extends BaseController
         $recommendation = $request->get('recommendation');
         $user = $this->getUser();
 
-        if (!empty($recommendation['movie_id'])) {
-            $recommendedMovie = $em->getReference(Movie::class, $recommendation['movie_id']);
-
-            if ($recommendedMovie === null) {
-                throw new NotFoundHttpException();
-            }
-
-            $originalMovie->addRecommendation($user, $recommendedMovie);
-            $em->persist($originalMovie);
-            try {
-                $em->flush();
-            } catch (UniqueConstraintViolationException $exception) {
-                // It's ok..
-            }
+        if (empty($recommendation['movie_id'])) {
+            $message = new Message(json_encode([
+                'tmdb_id' => $recommendation['tmdb_id'],
+                'movie_id' => $originalMovie->getId(),
+                'user_id' => $user->getId(),
+            ]));
+            $message->setPriority(MessagePriority::VERY_LOW);
+            $producer->sendEvent(AddRecommendationProcessor::ADD_RECOMMENDATION, $message);
 
             return new JsonResponse();
         }
 
-        $producer->sendEvent(AddRecommendationProcessor::ADD_RECOMMENDATION, json_encode([
-            'tmdb_id' => $recommendation['tmdb_id'],
-            'movie_id' => $originalMovie->getId(),
-            'user_id' => $user->getId(),
-        ]));
+        $recommendedMovie = $em->getReference(Movie::class, $recommendation['movie_id']);
+
+        if ($recommendedMovie === null) {
+            throw new NotFoundHttpException();
+        }
+
+        $originalMovie->addRecommendation($user, $recommendedMovie);
+        $em->persist($originalMovie);
+        try {
+            $em->flush();
+        } catch (UniqueConstraintViolationException $exception) {
+            // It's ok..
+        }
 
         return new JsonResponse();
     }

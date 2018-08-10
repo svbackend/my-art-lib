@@ -29,43 +29,30 @@ class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterfa
         $movie = $message->getBody();
         $movie = json_decode($movie, true);
 
-        if ($this->em->isOpen() === false) {
-            throw new \ErrorException('em is closed');
-        }
-
         $originalMovie = $this->movieRepository->findOneByIdOrTmdbId($movie['movie_id']);
 
         if ($originalMovie === null) {
-            return self::ACK;
+            return self::REJECT;
         }
 
-        $movies = $this->movieRepository->findAllByTmdbIds([$movie['tmdb_id']]);
+        $recommendedMovie = $this->movieRepository->findOneByIdOrTmdbId(null, $movie['tmdb_id']);
 
-        if (!count($movies)) {
-            return self::ACK;
+        if ($recommendedMovie === null) {
+            return self::REJECT;
         }
 
-        $recommendedMovie = reset($movies);
         $user = $this->em->getReference(User::class, $movie['user_id']);
 
-        if ($user === null) {
-            return self::ACK;
-        }
-
         $originalMovie->addRecommendation($user, $recommendedMovie);
+        $this->em->persist($originalMovie);
 
         try {
-            $this->em->persist($originalMovie);
             $this->em->flush();
         } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
-            echo $uniqueConstraintViolationException->getMessage();
             // do nothing, it's ok
-        } catch (\Exception $exception) {
-            echo $exception->getMessage();
-        } finally {
-            $this->em->clear();
         }
 
+        $this->em->clear();
         return self::ACK;
     }
 
