@@ -16,7 +16,7 @@ class UpdateActorRequest extends BaseRequest
                 'originalName' => [new Assert\NotBlank(), new Assert\Length(['min' => 2, 'max' => 100])],
                 'imdbId' => new Assert\Length(['min' => 5, 'max' => 20]),
                 'birthday' => new Assert\Date(),
-                'gender' => new Assert\Range([Actor::GENDER_MALE, Actor::GENDER_FEMALE]),
+                'gender' => new Assert\Choice([Actor::GENDER_MALE, Actor::GENDER_FEMALE]),
                 // MovieTranslations[]
                 'translations' => $this->eachItemValidation([
                     'locale' => [new Assert\NotBlank(), new Assert\Locale()],

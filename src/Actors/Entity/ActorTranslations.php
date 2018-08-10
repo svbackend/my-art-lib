@@ -52,7 +52,7 @@ class ActorTranslations implements EntityTranslationInterface
     private $placeOfBirth;
 
     /**
-     * @Groups({"list", "view"})
+     * @Groups({"view"})
      * @ORM\Column(type="text", nullable=true)
      */
     private $biography;

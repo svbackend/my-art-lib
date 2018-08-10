@@ -44,7 +44,7 @@ class Actor implements TranslatableInterface
 
     /**
      * @var ActorContacts[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="App\Actors\Entity\ActorContacts", mappedBy="profile", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Actors\Entity\ActorContacts", mappedBy="actor", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"view"})
      */
@@ -94,6 +94,7 @@ class Actor implements TranslatableInterface
 
         $this->originalName = $originalName;
         $this->tmdb = $actorTMDB;
+        $this->gender = self::GENDER_MALE;
     }
 
     public function getId(): int
@@ -111,7 +112,7 @@ class Actor implements TranslatableInterface
         $this->originalName = $originalName;
     }
 
-    public function getPhoto(): string
+    public function getPhoto(): ?string
     {
         return $this->photo;
     }
@@ -131,7 +132,7 @@ class Actor implements TranslatableInterface
         $this->tmdb = $tmdb;
     }
 
-    public function getImdbId(): string
+    public function getImdbId(): ?string
     {
         return $this->imdbId;
     }
@@ -141,7 +142,7 @@ class Actor implements TranslatableInterface
         $this->imdbId = $imdbId;
     }
 
-    public function getBirthday(): \DateTimeInterface
+    public function getBirthday(): ?\DateTimeInterface
     {
         return $this->birthday;
     }
@@ -167,5 +168,10 @@ class Actor implements TranslatableInterface
             throw new \InvalidArgumentException('Invalid gender value');
         }
         $this->gender = $gender;
+    }
+
+    public function getContacts()
+    {
+        return $this->contacts->toArray();
     }
 }
