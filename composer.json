@@ -4,6 +4,7 @@
     "require": {
         "php": "^7.2",
         "ext-iconv": "*",
+        "ext-json": "*",
         "beberlei/DoctrineExtensions": "^1.1",
         "enqueue/enqueue-bundle": "^0.8.25",
         "enqueue/redis": "^0.8.23",
@@ -39,11 +40,11 @@
     "require-dev": {
         "dama/doctrine-test-bundle": "^5.0",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
+        "friendsofphp/php-cs-fixer": "^2.12",
         "phpunit/phpunit": "^7",
         "symfony/browser-kit": "^4.0",
         "symfony/dotenv": "^4.0",
-        "symfony/profiler-pack": "^1.0",
-        "friendsofphp/php-cs-fixer": "^2.12"
+        "symfony/profiler-pack": "^1.0"
     },
     "config": {
         "preferred-install": {

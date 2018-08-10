@@ -74,4 +74,42 @@ class AddRecommendationProcessorTest extends KernelTestCase
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
         $this->assertEquals($this->processor::ACK, $result);
     }
+
+    public function testAddRecommendationWithNotFoundOriginalMovie()
+    {
+        $this->psrMessage->method('getBody')->willReturn(json_encode([
+            'movie_id' => 1,
+            'tmdb_id' => 2,
+            'user_id' => 3,
+        ]));
+
+        $recommendedMovie = $this->createMock(Movie::class);
+
+        $this->repository->method('findOneByIdOrTmdbId')->willReturnMap([
+            [1, null, null],
+            [null, 2, $recommendedMovie],
+        ]);
+
+        $result = $this->processor->process($this->psrMessage, $this->psrContext);
+        $this->assertEquals($this->processor::REJECT, $result);
+    }
+
+    public function testAddRecommendationWithNotFoundRecommendedMovie()
+    {
+        $this->psrMessage->method('getBody')->willReturn(json_encode([
+            'movie_id' => 1,
+            'tmdb_id' => 2,
+            'user_id' => 3,
+        ]));
+
+        $originalMovie = $this->createMock(Movie::class);
+
+        $this->repository->method('findOneByIdOrTmdbId')->willReturnMap([
+            [1, null, $originalMovie],
+            [null, 2, null],
+        ]);
+
+        $result = $this->processor->process($this->psrMessage, $this->psrContext);
+        $this->assertEquals($this->processor::REJECT, $result);
+    }
 }
