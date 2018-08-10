@@ -94,7 +94,7 @@ class SaveActorProcessorTest extends KernelTestCase
         $this->em->expects($this->exactly(1))->method('flush');
         $this->em->expects($this->exactly(1))->method('clear');
 
-        $this->producer->expects($this->exactly(1))->method('sendEvent');
+        $this->producer->expects($this->exactly(2))->method('sendEvent');
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 

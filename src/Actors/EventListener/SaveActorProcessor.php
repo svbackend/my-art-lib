@@ -73,6 +73,7 @@ class SaveActorProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         $this->loadTranslations($actor->getId());
+        $this->loadPhoto($actor->getId());
 
         $this->em->clear();
 
@@ -83,6 +84,12 @@ class SaveActorProcessor implements PsrProcessor, TopicSubscriberInterface
     {
         $message = new Message(json_encode($actorId));
         $this->producer->sendEvent(ActorTranslationsProcessor::LOAD_TRANSLATIONS, $message);
+    }
+
+    private function loadPhoto(int $actorId)
+    {
+        $message = new Message(json_encode($actorId));
+        $this->producer->sendEvent(ActorPhotoProcessor::LOAD_PHOTO, $message);
     }
 
     public static function getSubscribedTopics()

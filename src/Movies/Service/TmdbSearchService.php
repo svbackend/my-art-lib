@@ -71,6 +71,13 @@ class TmdbSearchService
         return $movie;
     }
 
+    /**
+     * @param int $personId
+     * @param string $locale
+     * @return array
+     * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
+     */
     public function findActorsByMovieId(int $personId, string $locale = 'en'): array
     {
         $actors = $this->request("/movie/{$personId}/credits", 'GET', [
@@ -83,6 +90,13 @@ class TmdbSearchService
         return $actors;
     }
 
+    /**
+     * @param int $personId
+     * @param string $locale
+     * @return array
+     * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
+     */
     public function findActorById(int $personId, string $locale = 'en'): array
     {
         $actors = $this->request("/person/{$personId}", 'GET', [
@@ -95,6 +109,13 @@ class TmdbSearchService
         return $actors;
     }
 
+    /**
+     * @param int $personId
+     * @param string $locale
+     * @return array
+     * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
+     */
     public function findActorTranslationsById(int $personId, string $locale = 'en'): array
     {
         $actors = $this->request("/person/{$personId}/translations", 'GET', [

@@ -47,3 +47,7 @@ services:
     App\Actors\EventListener\SaveActorProcessor:
         tags:
             - { name: enqueue.client.processor }
+
+    App\Actors\EventListener\ActorPhotoProcessor:
+        tags:
+            - { name: enqueue.client.processor }
