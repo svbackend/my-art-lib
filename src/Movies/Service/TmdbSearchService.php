@@ -35,6 +35,7 @@ class TmdbSearchService
      *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      *
      * @return array
      */
@@ -54,12 +55,14 @@ class TmdbSearchService
     }
 
     /**
-     * @param int $tmdb_id
+     * @param int    $tmdb_id
      * @param string $locale
-     * @return array
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     *
+     * @return array
      */
     public function findMovieById(int $tmdb_id, string $locale = 'en'): array
     {
@@ -87,11 +90,14 @@ class TmdbSearchService
     }
 
     /**
-     * @param int $movieId
+     * @param int    $movieId
      * @param string $locale
-     * @return array
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *
+     * @return array
      */
     public function findActorsByMovieId(int $movieId, string $locale = 'en'): array
     {
@@ -106,12 +112,14 @@ class TmdbSearchService
     }
 
     /**
-     * @param int $personId
+     * @param int    $personId
      * @param string $locale
-     * @return array
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     *
+     * @return array
      */
     public function findActorById(int $personId, string $locale = 'en'): array
     {
@@ -119,7 +127,7 @@ class TmdbSearchService
             'query' => [
                 'api_key' => $this->apiKey,
                 'language' => $locale,
-                'append_to_response' => 'translations'
+                'append_to_response' => 'translations',
             ],
         ]);
 
@@ -131,11 +139,14 @@ class TmdbSearchService
     }
 
     /**
-     * @param int $personId
+     * @param int    $personId
      * @param string $locale
-     * @return array
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *
+     * @return array
      */
     public function findActorTranslationsById(int $personId, string $locale = 'en'): array
     {
@@ -151,10 +162,12 @@ class TmdbSearchService
 
     /**
      * @param int $tmdb_id
-     * @return array
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     *
+     * @return array
      */
     public function findMovieTranslationsById(int $tmdb_id): array
     {
@@ -173,6 +186,7 @@ class TmdbSearchService
      *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      *
      * @return array
      */
@@ -191,11 +205,13 @@ class TmdbSearchService
     /**
      * @param string $url
      * @param string $method
-     * @param array $params
-     * @return array
+     * @param array  $params
+     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     *
+     * @return array
      */
     private function request(string $url, string $method = 'GET', array $params = []): array
     {
@@ -255,16 +271,19 @@ class TmdbSearchService
 
     private function getCacheKeyFromParams(string $url, string $method = 'GET', array $params = []): string
     {
-        $key = md5($url . mb_strtolower($method) . $this->arrayAsString($params));
+        $key = md5($url.mb_strtolower($method).$this->arrayAsString($params));
+
         return $key;
     }
 
     /**
      * @param string $url
      * @param string $method
-     * @param array $params
-     * @return array|null
+     * @param array  $params
+     *
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     *
+     * @return array|null
      */
     private function getResponseFromCache(string $url, string $method = 'GET', array $params = []): ?array
     {

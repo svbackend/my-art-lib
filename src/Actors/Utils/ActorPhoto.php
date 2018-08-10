@@ -8,7 +8,7 @@ class ActorPhoto
 {
     const TMDB_BASE_URL = 'https://image.tmdb.org/t/p/original';
     const BASE_URL = '/f/actors/{actorId}/photo.jpg';
-    const BASE_PATH = __DIR__.'/../../../public' . self::BASE_URL;
+    const BASE_PATH = __DIR__.'/../../../public'.self::BASE_URL;
 
     public static function savePhoto(int $actorId, string $photoUrl): ?string
     {

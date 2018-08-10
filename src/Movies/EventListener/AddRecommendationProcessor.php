@@ -53,6 +53,7 @@ class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterfa
         }
 
         $this->em->clear();
+
         return self::ACK;
     }
 
