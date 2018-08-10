@@ -58,7 +58,12 @@ class TmdbNormalizerService
             $actorObject = new Actor($actor['name'], $actorTmdbObject);
             $actorObject->setImdbId($actor['imdb_id'] ?? '');
             $actorObject->setBirthday(new \DateTimeImmutable($actor['birthday'] ?? ''));
-            $actorObject->setGender($actor['gender'] ?? $actorObject::GENDER_MALE);
+
+            $gender = $actor['gender'] ?? 0;
+            if (in_array($gender, [$actorObject::GENDER_FEMALE, $actorObject::GENDER_MALE])) {
+                $actorObject->setGender($gender);
+            }
+
             $photoUrl = isset($actor['profile_path']) ? self::IMAGE_HOST.$actor['profile_path'] : '';
             $actorObject->setPhoto($photoUrl);
 
