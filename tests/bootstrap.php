@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Dotenv\Dotenv;
 
 require __DIR__.'/../vendor/autoload.php';
+require __DIR__.'/functions.php';
 
 $environmentFile = __DIR__.'/../.env.test';
 
