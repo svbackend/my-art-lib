@@ -18,7 +18,7 @@ class ActorController extends BaseController
     /**
      * @Route("/api/actors", methods={"GET"})
      *
-     * @param Request $request
+     * @param Request         $request
      * @param ActorRepository $repository
      *
      * @return JsonResponse

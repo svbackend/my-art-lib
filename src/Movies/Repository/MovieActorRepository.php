@@ -6,6 +6,7 @@ namespace App\Movies\Repository;
 
 use App\Movies\Entity\MovieActor;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -21,10 +22,13 @@ class MovieActorRepository extends ServiceEntityRepository
         parent::__construct($registry, MovieActor::class);
     }
 
-    public function findAllByMovie(int $movieId)
+    public function findAllByMovie(int $movieId): Query
     {
-        return $this->findBy([
-            'movie' => $movieId,
-        ]);
+        return $this->createQueryBuilder('ma')
+            ->leftJoin('ma.actor', 'a')
+            ->addSelect('a')
+            ->where('ma.movie = :movieId')
+            ->setParameter('movieId', $movieId)
+            ->getQuery();
     }
 }

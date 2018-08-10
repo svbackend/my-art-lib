@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Movies\Pagination;
 
+use App\Movies\Entity\Movie;
 use App\Pagination\PaginatedCollectionInterface;
 
 class MovieCollection implements PaginatedCollectionInterface
@@ -14,7 +15,9 @@ class MovieCollection implements PaginatedCollectionInterface
     private $movies;
 
     /**
-     * @param int $totalCount
+     * @param array|Movie[]|\Iterator $movies
+     * @param $totalCount
+     * @param int $offset
      */
     public function __construct($movies, $totalCount, int $offset = 0)
     {

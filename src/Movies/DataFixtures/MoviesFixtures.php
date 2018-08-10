@@ -2,6 +2,9 @@
 
 namespace App\Movies\DataFixtures;
 
+use App\Actors\Entity\Actor;
+use App\Actors\Entity\ActorTMDB;
+use App\Actors\Entity\ActorTranslations;
 use App\Genres\Entity\Genre;
 use App\Genres\Entity\GenreTranslations;
 use App\Movies\DTO\MovieDTO;
@@ -16,6 +19,7 @@ class MoviesFixtures extends Fixture
     const MOVIE_TITLE = 'zMs1Os7qwEqWxXvb';
     const MOVIE_TMDB_ID = 1;
     const MOVIE_TMDB_ID_2 = 2;
+    const MOVIE_ACTOR_TMDB_ID = 91238;
 
     private $movieManageService;
 
@@ -42,19 +46,25 @@ class MoviesFixtures extends Fixture
             ->addTranslation(new GenreTranslations($testGenre, 'uk', 'Test Genre (uk)'))
             ->addTranslation(new GenreTranslations($testGenre, 'ru', 'Test Genre (ru)'));
 
+        $actor = new Actor('Test MovieActor', new ActorTMDB(self::MOVIE_ACTOR_TMDB_ID));
+        $actor->addTranslation(new ActorTranslations($actor, 'en', 'Test MovieActor (en)'));
+
         $movie = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [$testGenre], [
             new MovieTranslationDTO('en', "$movieTitle (en)", 'Overview (en)', 'http://placehold.it/480x320'),
             new MovieTranslationDTO('uk', "$movieTitle (uk)", 'Overview (uk)', 'http://placehold.it/480x320'),
             new MovieTranslationDTO('ru', "$movieTitle (ru)", 'Overview (ru)', 'http://placehold.it/480x320'),
         ]);
+        $movie->addActor($actor);
 
         $movie2 = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb2, [$testGenre], [
             new MovieTranslationDTO('en', "$movieTitle 2 (en)", 'Overview (en)', 'http://placehold.it/480x320'),
             new MovieTranslationDTO('uk', "$movieTitle 2 (uk)", 'Overview (uk)', 'http://placehold.it/480x320'),
             new MovieTranslationDTO('ru', "$movieTitle 2 (ru)", 'Overview (ru)', 'http://placehold.it/480x320'),
         ]);
+        $movie2->addActor($actor);
 
         $manager->persist($testGenre);
+        $manager->persist($actor);
         $manager->persist($movie);
         $manager->persist($movie2);
         $manager->flush();
