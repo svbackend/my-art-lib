@@ -34,12 +34,4 @@ class MovieActorController extends BaseController
             'groups' => ['list'],
         ]);
     }
-
-    /**
-     * @Route("/api/test", methods={"GET"})
-     */
-    public function test(TmdbSearchService $service)
-    {
-        return new JsonResponse($service->findMovieById(146));
-    }
 }
