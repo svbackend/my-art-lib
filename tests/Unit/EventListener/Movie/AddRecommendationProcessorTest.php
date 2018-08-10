@@ -8,6 +8,7 @@ use App\Movies\Entity\Movie;
 use App\Movies\EventListener\AddRecommendationProcessor;
 use App\Movies\Repository\MovieRepository;
 use App\Users\Entity\User;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Interop\Queue\PsrContext;
@@ -111,5 +112,37 @@ class AddRecommendationProcessorTest extends KernelTestCase
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
         $this->assertEquals($this->processor::REJECT, $result);
+    }
+
+    public function testAddRecommendationWithUniqueConstraint()
+    {
+        $this->psrMessage->method('getBody')->willReturn(json_encode([
+            'movie_id' => 1,
+            'tmdb_id' => 2,
+            'user_id' => 3,
+        ]));
+
+        $originalMovie = $this->createMock(Movie::class);
+        $recommendedMovie = $this->createMock(Movie::class);
+
+        $this->repository->method('findOneByIdOrTmdbId')->willReturnMap([
+            [1, null, $originalMovie],
+            [null, 2, $recommendedMovie],
+        ]);
+
+        $originalMovie->expects($this->once())->method('addRecommendation');
+
+        $user = $this->createMock(User::class);
+        $this->em->method('getReference')->with(User::class, 3)->willReturn($user);
+
+        $this->em->expects($this->once())->method('persist')->with($originalMovie);
+        $this->em->expects($this->once())->method('flush');
+        $this->em->expects($this->once())->method('clear');
+
+        $exception = $this->createMock(UniqueConstraintViolationException::class);
+        $this->em->method('flush')->willThrowException($exception);
+
+        $result = $this->processor->process($this->psrMessage, $this->psrContext);
+        $this->assertEquals($this->processor::ACK, $result);
     }
 }
