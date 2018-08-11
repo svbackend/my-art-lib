@@ -157,8 +157,6 @@ class TmdbSearchService
             ],
         ]);
 
-        echo var_export($actors); exit;
-
         return $actors;
     }
 
