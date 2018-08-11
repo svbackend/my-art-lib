@@ -131,13 +131,9 @@ class TmdbSearchService
             ],
         ]);
 
-        // todo uncomment after solving: https://www.themoviedb.org/talk/5b6dc17d92514140541358bd
-        /*
-        if (count($actor['translations'])) {
-            $translationsUrl = "/person/{$personId}/translations";
-            $params = ['api_key' => $this->apiKey, 'language' => $locale];
-            $this->cache->set($this->getCacheKeyFromParams($translationsUrl, 'GET', ['query' => $params]), json_encode($actor['translations']), 1800);
-        }*/
+        $translationsUrl = "/person/{$personId}/translations";
+        $params = ['api_key' => $this->apiKey, 'language' => $locale];
+        $this->cache->set($this->getCacheKeyFromParams($translationsUrl, 'GET', ['query' => $params]), json_encode($actor['translations']), 1800);
 
         return $actor;
     }
