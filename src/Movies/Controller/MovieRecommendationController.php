@@ -4,10 +4,12 @@ namespace App\Movies\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Entity\Movie;
+use App\Movies\Entity\MovieRecommendation;
 use App\Movies\EventListener\AddRecommendationProcessor;
 use App\Movies\Repository\MovieRecommendationRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\NewMovieRecommendationRequest;
+use App\Movies\Request\RemoveMovieRecommendationRequest;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
@@ -71,6 +73,69 @@ class MovieRecommendationController extends BaseController
         }
 
         return new JsonResponse();
+    }
+
+    /**
+     * Remove recommendation.
+     *
+     * @Route("/api/movies/{id}/recommendations", methods={"DELETE"})
+     *
+     * @param RemoveMovieRecommendationRequest $request
+     * @param Movie $originalMovie
+     * @param MovieRecommendationRepository $repository
+     * @param EntityManagerInterface $em
+     *
+     * @return JsonResponse
+     */
+    public function deleteMoviesRecommendations(RemoveMovieRecommendationRequest $request, Movie $originalMovie, MovieRecommendationRepository $repository, EntityManagerInterface $em)
+    {
+        $this->denyAccessUnlessGranted(UserRoles::ROLE_USER);
+
+        $user = $this->getUser();
+
+        if (empty($request->get('movie_id'))) {
+            $recommendedMovie = $this->findRecommendedMovieByTmdbId($originalMovie, $user, $request->get('tmdb_id'));
+            if ($recommendedMovie === null) {
+                return new JsonResponse();
+            }
+
+            $em->remove($recommendedMovie);
+            $em->flush();
+
+            return new JsonResponse();
+        }
+
+        $recommendedMovie = $this->findRecommendedMovieById($originalMovie, $user, $request->get('movie_id'));
+        if ($recommendedMovie === null) {
+            return new JsonResponse();
+        }
+
+        $em->remove($recommendedMovie);
+        $em->flush();
+
+        return new JsonResponse();
+    }
+
+    private function findRecommendedMovieById(Movie $originalMovie, User $user, int $id): ?MovieRecommendation
+    {
+        foreach ($originalMovie->getRecommendations() as $recommendation) {
+            if ($recommendation->getUser()->getId() === $user->getId() && $recommendation->getRecommendedMovie()->getId() === $id) {
+                return $recommendation;
+            }
+        }
+
+        return null;
+    }
+
+    private function findRecommendedMovieByTmdbId(Movie $originalMovie, User $user, int $tmdbId): ?MovieRecommendation
+    {
+        foreach ($originalMovie->getRecommendations() as $recommendation) {
+            if ($recommendation->getUser()->getId() === $user->getId() && $recommendation->getRecommendedMovie()->getTmdb()->getId() === $tmdbId) {
+                return $recommendation;
+            }
+        }
+
+        return null;
     }
 
     /**

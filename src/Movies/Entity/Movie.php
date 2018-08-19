@@ -200,6 +200,8 @@ class Movie implements TranslatableInterface
     }
 
     /**
+     * todo return MovieActor[] because sometimes we need to remove entities like this
+     *
      * @return Actor[]|array
      */
     public function getActors(): array
@@ -227,7 +229,7 @@ class Movie implements TranslatableInterface
     }
 
     /**
-     * @return Movie[]|array
+     * @return SimilarMovie[]|array
      */
     public function getSimilarMovies()
     {
@@ -235,7 +237,7 @@ class Movie implements TranslatableInterface
     }
 
     /**
-     * @return Movie[]|array
+     * @return MovieRecommendation[]|array
      */
     public function getRecommendations()
     {
