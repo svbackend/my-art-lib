@@ -4,7 +4,6 @@ namespace App\Movies\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Repository\MovieActorRepository;
-use App\Movies\Service\TmdbSearchService;
 use App\Pagination\PaginatedCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

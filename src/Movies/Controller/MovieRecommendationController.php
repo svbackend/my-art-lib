@@ -81,9 +81,9 @@ class MovieRecommendationController extends BaseController
      * @Route("/api/movies/{id}/recommendations", methods={"DELETE"})
      *
      * @param RemoveMovieRecommendationRequest $request
-     * @param Movie $originalMovie
-     * @param MovieRecommendationRepository $repository
-     * @param EntityManagerInterface $em
+     * @param Movie                            $originalMovie
+     * @param MovieRecommendationRepository    $repository
+     * @param EntityManagerInterface           $em
      *
      * @return JsonResponse
      */

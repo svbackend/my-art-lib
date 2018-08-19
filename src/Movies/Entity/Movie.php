@@ -200,7 +200,7 @@ class Movie implements TranslatableInterface
     }
 
     /**
-     * todo return MovieActor[] because sometimes we need to remove entities like this
+     * todo return MovieActor[] because sometimes we need to remove entities like this.
      *
      * @return Actor[]|array
      */
