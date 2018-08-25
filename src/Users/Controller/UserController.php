@@ -93,6 +93,7 @@ class UserController extends BaseController
     }
 
     /**
+     * todo use param converter?
      * Get single user.
      *
      * @Route("/api/users/{id}", methods={"GET"}, requirements={"id"="\d+"})
@@ -104,8 +105,6 @@ class UserController extends BaseController
      */
     public function getUsers($id, TranslatorInterface $translator)
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         /** @var $userRepository \App\Users\Repository\UserRepository */
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         $user = $userRepository->find($id);
@@ -116,6 +115,22 @@ class UserController extends BaseController
             ], 'users'));
         }
 
+        return $this->response($user, 200, [], [
+            'groups' => ['view'],
+        ]);
+    }
+
+    /**
+     * Get single user by username.
+     *
+     * @Route("/api/users/{username}", methods={"GET"})
+     *
+     * @param User $user
+     *
+     * @return JsonResponse
+     */
+    public function getUsersByUsername(User $user)
+    {
         return $this->response($user, 200, [], [
             'groups' => ['view'],
         ]);
