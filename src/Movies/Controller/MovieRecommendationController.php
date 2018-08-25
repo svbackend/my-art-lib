@@ -174,29 +174,4 @@ class MovieRecommendationController extends BaseController
             'groups' => ['list'],
         ]);
     }
-
-    /**
-     * @Route("/api/recommendations", methods={"GET"})
-     *
-     * @param Request                       $request
-     * @param MovieRecommendationRepository $repository
-     *
-     * @return JsonResponse
-     */
-    public function getAllRecommendations(Request $request, MovieRecommendationRepository $repository)
-    {
-        $this->denyAccessUnlessGranted(UserRoles::ROLE_USER);
-        $user = $this->getUser();
-
-        $offset = (int) $request->get('offset', 0);
-        $limit = $request->get('limit', null);
-        $minRating = $request->get('minRating', 7);
-
-        $query = $repository->findAllByUser($user->getId(), abs((int) $minRating));
-        $movies = new PaginatedCollection($query, $offset, $limit, false);
-
-        return $this->response($movies, 200, [], [
-            'groups' => ['list'],
-        ]);
-    }
 }
