@@ -105,6 +105,7 @@ class UserController extends BaseController
      */
     public function getUsers($id, TranslatorInterface $translator)
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         /** @var $userRepository \App\Users\Repository\UserRepository */
         $userRepository = $this->getDoctrine()->getRepository(User::class);
         $user = $userRepository->find($id);
@@ -123,7 +124,7 @@ class UserController extends BaseController
     /**
      * Get single user by username.
      *
-     * @Route("/api/users/{username}", methods={"GET"})
+     * @Route("/api/users/byUsername/{username}", methods={"GET"})
      *
      * @param User $user
      *
