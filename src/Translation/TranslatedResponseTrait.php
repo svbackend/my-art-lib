@@ -81,6 +81,10 @@ trait TranslatedResponseTrait
             $preferredLocale = $locale;
         }
 
+        if ($request->query->get('locale') !== null && $locale === $request->getDefaultLocale()) {
+            $preferredLocale = $locale;
+        }
+
         return $preferredLocale;
     }
 }
