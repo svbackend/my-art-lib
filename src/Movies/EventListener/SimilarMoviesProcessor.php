@@ -81,7 +81,8 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
      * @param int $tmdbId
      *
      * @throws TmdbRequestLimitException
-     * @throws \App\Movies\Exception\TmdbMovieNotFoundException
+     * @throws TmdbMovieNotFoundException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      *
      * @return array
      */
