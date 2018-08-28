@@ -37,11 +37,13 @@ class MovieRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param int $id
+     * @param int       $id
      * @param User|null $user
-     * @return Movie|null
+     *
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return Movie|null
      */
     public function findOneForMoviePage(int $id, ?User $user = null): ?Movie
     {

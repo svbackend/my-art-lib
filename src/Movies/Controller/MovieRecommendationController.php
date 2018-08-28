@@ -10,7 +10,6 @@ use App\Movies\Repository\MovieRecommendationRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\NewMovieRecommendationRequest;
 use App\Movies\Request\RemoveMovieRecommendationRequest;
-use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;

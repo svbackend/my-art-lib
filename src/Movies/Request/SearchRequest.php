@@ -5,6 +5,7 @@ namespace App\Movies\Request;
 use App\Request\BaseRequest;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// todo fix userRecommendedMovie
 class SearchRequest extends BaseRequest
 {
     public function rules()

@@ -63,8 +63,8 @@ class MovieController extends BaseController
      *
      * @Route("/api/movies/{id}", methods={"GET"})
      *
-     * @param int $id
-     * @param MovieRepository $repository
+     * @param int               $id
+     * @param MovieRepository   $repository
      * @param ProducerInterface $producer
      *
      * @throws \Doctrine\ORM\NoResultException
