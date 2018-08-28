@@ -19,6 +19,7 @@ use App\Users\Entity\UserRoles;
 use Enqueue\Client\ProducerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -62,13 +63,21 @@ class MovieController extends BaseController
      *
      * @Route("/api/movies/{id}", methods={"GET"})
      *
-     * @param Movie             $movie
+     * @param int $id
+     * @param MovieRepository $repository
      * @param ProducerInterface $producer
      *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return JsonResponse
      */
-    public function getMovies(Movie $movie, ProducerInterface $producer)
+    public function getMovies(int $id, MovieRepository $repository, ProducerInterface $producer)
     {
+        if (null === $movie = $repository->findOneForMoviePage($id, $this->getUser())) {
+            throw new NotFoundHttpException();
+        }
+
         if (count($movie->getSimilarMovies()) === 0) {
             $producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, json_encode($movie->getId()));
         }

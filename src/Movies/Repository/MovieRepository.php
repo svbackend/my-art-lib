@@ -36,8 +36,35 @@ class MovieRepository extends ServiceEntityRepository
             ->addSelect('mgt');
     }
 
-    public function getAllRecommendations(int $userId)
+    /**
+     * @param int $id
+     * @param User|null $user
+     * @return Movie|null
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findOneForMoviePage(int $id, ?User $user = null): ?Movie
     {
+        if ($user === null) {
+            return $this->getBaseQuery()
+                ->where('m.id = :id')
+                ->setParameter('id', $id)
+                ->getQuery()
+                ->getSingleResult();
+        }
+
+        $result = $this->getBaseQuery()
+            ->where('m.id = :id')
+            ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id')
+            ->addSelect('uwm')
+            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user_id AND urm.originalMovie = :id')
+            ->addSelect('urm')
+            ->setParameter('user_id', $user->getId())
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getSingleResult();
+
+        return $result;
     }
 
     public function findAllByIdsWithFlags(array $ids, int $userId)
@@ -45,7 +72,7 @@ class MovieRepository extends ServiceEntityRepository
         $result = $this->getBaseQuery()
             ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id') // if this relation exists then user has already watched this movie
             ->addSelect('uwm')
-            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user_id')
+            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user_id AND urm.originalMovie IN (:ids)')
             ->addSelect('urm')
             ->where('m.id IN (:ids)')
             ->setParameter('user_id', $userId)
