@@ -69,15 +69,16 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function findAllByIdsWithFlags(array $ids, int $userId)
+    public function findAllByIdsWithFlags(array $ids, int $userId, int $originalMovieId)
     {
         $result = $this->getBaseQuery()
             ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id') // if this relation exists then user has already watched this movie
             ->addSelect('uwm')
-            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user_id AND urm.originalMovie IN (:ids)')
+            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user_id AND urm.originalMovie = :original_movie_id')
             ->addSelect('urm')
             ->where('m.id IN (:ids)')
             ->setParameter('user_id', $userId)
+            ->setParameter('original_movie_id', $originalMovieId)
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
@@ -227,6 +228,21 @@ class MovieRepository extends ServiceEntityRepository
         $result = $this->getBaseQuery()
             ->andWhere('LOWER(m.originalTitle) LIKE :title OR LOWER(mt.title) LIKE :title')
             ->setParameter('title', "%{$query}%")
+            ->getQuery();
+
+        return $result;
+    }
+
+    public function findByTitleWithUserRecommendedMovieQuery(string $query, int $userId, int $originalMovieId)
+    {
+        $query = mb_strtolower($query);
+        $result = $this->getBaseQuery()
+            ->andWhere('LOWER(m.originalTitle) LIKE :title OR LOWER(mt.title) LIKE :title')
+            ->setParameter('title', "%{$query}%")
+            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user_id AND urm.originalMovie = :movie_id')
+            ->addSelect('urm')
+            ->setParameter('user_id', $userId)
+            ->setParameter('movie_id', $originalMovieId)
             ->getQuery();
 
         return $result;

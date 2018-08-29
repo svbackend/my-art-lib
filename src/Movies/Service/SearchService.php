@@ -34,13 +34,65 @@ class SearchService
      * @param int      $offset
      * @param int|null $limit
      *
-     * @throws \Exception
+     * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
+     * @throws \ErrorException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      *
      * @return PaginatedCollectionInterface
      */
     public function findByQuery(string $query, string $locale, int $offset = 0, ?int $limit = null): PaginatedCollectionInterface
     {
         $moviesQuery = $this->repository->findByTitleQuery($query);
+        $movies = new PaginatedCollection($moviesQuery, $offset, $limit);
+        if ($movies->getTotal() > 0) {
+            return $movies;
+        }
+
+        $movies = $this->tmdb->findMoviesByQuery($query, $locale);
+        $totalResults = (int) $movies['total_results'];
+
+        if ($totalResults === 0) {
+            return new MovieCollection([], 0, $offset);
+        }
+
+        $moviesObjects = $this->normalizer->normalizeMoviesToObjects($movies['results'], $locale);
+        $this->sync->syncMovies($movies['results']);
+
+        // If we have a lot of movies then save it all
+        if (isset($movies['total_pages']) && $movies['total_pages'] > 1) {
+            // $i = 2 because $movies currently already has movies from page 1
+            for ($i = 2; $i <= $movies['total_pages']; ++$i) {
+                try {
+                    $moviesOnPage = $this->tmdb->findMoviesByQuery($query, $locale, [
+                        'page' => $i,
+                    ]);
+                } catch (TmdbRequestLimitException $requestLimitException) {
+                    continue;
+                }
+                $this->sync->syncMovies($moviesOnPage['results']);
+            }
+        }
+
+        return new MovieCollection($moviesObjects, $totalResults, $offset);
+    }
+
+    /**
+     * @param string   $query
+     * @param string   $locale
+     * @param int      $offset
+     * @param int|null $limit
+     *
+     * @throws TmdbMovieNotFoundException
+     * @throws TmdbRequestLimitException
+     * @throws \ErrorException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *
+     * @return PaginatedCollectionInterface
+     */
+    public function findByQueryWithUserRecommendedMovie(string $query, int $originalMovieId, int $userId, string $locale, int $offset = 0, ?int $limit = null): PaginatedCollectionInterface
+    {
+        $moviesQuery = $this->repository->findByTitleWithUserRecommendedMovieQuery($query, $userId, $originalMovieId);
         $movies = new PaginatedCollection($moviesQuery, $offset, $limit);
         if ($movies->getTotal() > 0) {
             return $movies;

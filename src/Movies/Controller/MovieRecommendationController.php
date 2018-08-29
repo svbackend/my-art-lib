@@ -10,6 +10,8 @@ use App\Movies\Repository\MovieRecommendationRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\NewMovieRecommendationRequest;
 use App\Movies\Request\RemoveMovieRecommendationRequest;
+use App\Movies\Request\SearchRequest;
+use App\Movies\Service\SearchService;
 use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -160,7 +162,7 @@ class MovieRecommendationController extends BaseController
             usort($recommendedMoviesIds, $sortRecommendedMovies);
             $recommendedMovies = $movieRepository->findAllByIdsWithFlags(array_map(function (array $recommendedMovie) {
                 return $recommendedMovie['movie_id'];
-            }, $recommendedMoviesIds), $user->getId());
+            }, $recommendedMoviesIds), $user->getId(), $movie->getId());
         } else {
             $recommendedMoviesIds = $repository->findAllByMovie($movie->getId());
             usort($recommendedMoviesIds, $sortRecommendedMovies);
@@ -170,6 +172,41 @@ class MovieRecommendationController extends BaseController
         }
 
         return $this->response($recommendedMovies, 200, [], [
+            'groups' => ['list'],
+        ]);
+    }
+
+    /**
+     * Get movies by title.
+     *
+     * @Route("/api/movies/{id}/recommendations/search", methods={"POST"})
+     *
+     * @param int           $id
+     * @param SearchRequest $request
+     * @param SearchService $searchService
+     * @param Request       $currentRequest
+     *
+     * @throws \App\Movies\Exception\TmdbMovieNotFoundException
+     * @throws \App\Movies\Exception\TmdbRequestLimitException
+     * @throws \ErrorException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function getSearch(int $id, SearchRequest $request, SearchService $searchService, Request $currentRequest)
+    {
+        $offset = (int) $request->get('offset', 0);
+        $limit = $request->get('limit', null);
+
+        $query = $request->get('query');
+
+        if (null === $user = $this->getUser()) {
+            $movies = $searchService->findByQuery($query, $currentRequest->getLocale(), $offset, $limit);
+        } else {
+            $movies = $searchService->findByQueryWithUserRecommendedMovie($query, $id, $user->getId(), $currentRequest->getLocale(), $offset, $limit);
+        }
+
+        return $this->response($movies, 200, [], [
             'groups' => ['list'],
         ]);
     }
