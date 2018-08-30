@@ -31,4 +31,14 @@ class MovieActorRepository extends ServiceEntityRepository
             ->setParameter('movieId', $movieId)
             ->getQuery();
     }
+
+    public function findAllByActor(int $actorId): Query
+    {
+        return $this->createQueryBuilder('ma')
+            ->leftJoin('ma.movie', 'm')
+            ->addSelect('m')
+            ->where('ma.actor = :actorId')
+            ->setParameter('actorId', $actorId)
+            ->getQuery();
+    }
 }
