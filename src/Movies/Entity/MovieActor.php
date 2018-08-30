@@ -28,14 +28,14 @@ class MovieActor
     /**
      * @ORM\ManyToOne(targetEntity="App\Movies\Entity\Movie")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"view"})
+     * @Groups({"list", "view"})
      */
     private $movie;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Actors\Entity\Actor")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"list"})
+     * @Groups({"list", "view"})
      */
     private $actor;
 

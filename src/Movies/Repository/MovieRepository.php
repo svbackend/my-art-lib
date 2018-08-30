@@ -93,6 +93,19 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
+    public function findAllByIdsWithIsWatchedFlag(array $ids, int $userId)
+    {
+        $result = $this->getBaseQuery()
+            ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id')
+            ->addSelect('uwm')
+            ->where('m.id IN (:ids)')
+            ->setParameter('user_id', $userId)
+            ->setParameter('ids', $ids)
+            ->getQuery();
+
+        return $result;
+    }
+
     public function findAllByIdsWithoutFlags(array $ids)
     {
         $result = $this->findAllByIds($ids);
@@ -145,6 +158,16 @@ class MovieRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
+
+        return $result;
+    }
+
+    public function findAllByIdsQuery(array $ids): Query
+    {
+        $result = $this->getBaseQuery()
+            ->where('m.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery();
 
         return $result;
     }
