@@ -45,7 +45,7 @@ after('deploy:failed', 'deploy:unlock');
 
 task('deploy:docker', function () {
     run('cd {{release_path}} && docker-compose down');
-    run('cd {{release_path}} && docker-compose up -d');
+    run('cd {{release_path}} && docker-compose up -d -f docker-compose.prod.yml');
 });
 before('deploy:symlink', 'deploy:docker');
 
