@@ -12,12 +12,10 @@ set('repository', 'git@github.com:svbackend/my-art-lib.git');
 // [Optional] Allocate tty for git clone. Default value is false.
 set('git_tty', true);
 
-// Shared files/dirs between deploys 
-add('shared_files', ['docker-compose.prod.yml']);
-add('shared_dirs', []);
-
-// Writable dirs by web server 
-add('writable_dirs', []);
+// Shared files/dirs between deploys
+set('shared_files', ['docker-compose.prod.yml']);
+set('shared_dirs', []);
+set('writable_dirs', ['var']);
 
 // Hosts
 host('159.89.14.82')
@@ -32,6 +30,21 @@ task('build', function () {
     run('cd {{release_path}} && build');
 });
 
+task('deploy:env', function () {
+    run('rm -f {{release_path}}/.env');
+    run('cp {{deploy_path}}/shared/.env {{release_path}}/.env');
+    run('cd {{release_path}} && chmod 755 -R var');
+});
+after('deploy:writable', 'deploy:env');
+
+task('deploy:var_dir', function () {
+    run('cd {{deploy_path}}/current && docker-compose down');
+    run('rm -f {{release_path}}/.env');
+    run('cp {{deploy_path}}/shared/.env {{release_path}}/.env');
+    run('cd {{release_path}} && chmod 755 -R var');
+});
+after('deploy:cache:warmup', 'deploy:var_dir');
+
 task('deploy:cache:clear', function () {
     run('{{bin/console}} cache:clear --no-warmup --env=prod');
 });
@@ -44,15 +57,14 @@ task('deploy:cache:warmup', function () {
 after('deploy:failed', 'deploy:unlock');
 
 task('deploy:docker', function () {
-    run('cd {{release_path}} && docker-compose down');
-    run('cd {{release_path}} && docker-compose up -d -f docker-compose.prod.yml');
+    run('cd {{release_path}} && docker-compose -f docker-compose.prod.yml up -d');
 });
-before('deploy:symlink', 'deploy:docker');
+after('deploy:symlink', 'deploy:docker');
 
 task('deploy:db', function () {
-    run('cd {{release_path}} && docker-compose exec app php bin/console doctrine:migrations:migrate');
+    run('cd {{deploy_path}}/current && docker exec -i $(docker-compose ps -q app) php ./bin/console doctrine:migrations:migrate -n');
 });
-after('deploy:docker', 'deploy:db');
+after('deploy:symlink', 'deploy:db');
 
 // Migrate database before symlink new release.
 

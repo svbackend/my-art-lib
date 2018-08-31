@@ -6,13 +6,12 @@ services:
       dockerfile: .docker/Dockerfile
     image: svbackend/my-art-lib
     ports:
-      - 80
-      - 443
+      - 80:80
+      - 443:443
     volumes:
       - .:/srv/app
     links:
       - postgres
-      - pgadmin
       - redis
     environment:
       DB_HOST: postgres
