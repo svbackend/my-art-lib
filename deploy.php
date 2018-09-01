@@ -5,6 +5,8 @@ require 'recipe/symfony4.php';
 
 // Project name
 set('application', 'mykino.top');
+set('default_timeout', 86400);
+set('timeout', 86200);
 
 // Project repository
 set('repository', 'git@github.com:svbackend/my-art-lib.git');
