@@ -46,6 +46,7 @@ class Poster
         $fp = fopen($saveTo, 'x');
         fwrite($fp, $raw);
         fclose($fp);
+        chmod($saveTo, 0777);
 
         return $saveTo;
     }
