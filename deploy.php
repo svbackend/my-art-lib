@@ -65,7 +65,7 @@ after('deploy:symlink', 'deploy:docker');
 task('deploy:db', function () {
     run('cd {{deploy_path}}/current && docker exec -i $(docker-compose ps -q app) php ./bin/console doctrine:migrations:migrate -n');
 });
-after('deploy:symlink', 'deploy:db');
+after('deploy:docker', 'deploy:db');
 
 task('deploy:production', function () {
     run('cd {{deploy_path}}/current && docker-compose down');
