@@ -47,6 +47,11 @@ class AuthService
         $this->passwordEncoder = $passwordEncoder;
     }
 
+    /**
+     * @param AuthUserRequest $request
+     * @return ApiToken
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getTokenByRequest(AuthUserRequest $request): ApiToken
     {
         $credentials = $request->get('credentials');
@@ -54,6 +59,12 @@ class AuthService
         return $this->getTokenByCredentials($credentials['username'], $credentials['password']);
     }
 
+    /**
+     * @param string $username
+     * @param string $password
+     * @return ApiToken
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function getTokenByCredentials(string $username, string $password): ApiToken
     {
         $user = $this->findUserByCredentials($username, $password);
@@ -72,6 +83,12 @@ class AuthService
         return $apiToken;
     }
 
+    /**
+     * @param string $username
+     * @param string $password
+     * @return User
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     private function findUserByCredentials(string $username, string $password): User
     {
         $user = $this->userRepository->loadUserByUsername($username);
@@ -84,7 +101,7 @@ class AuthService
             );
         }
 
-        if ($this->passwordEncoder->isPasswordValid($user, $password) === false) {
+        if ($user->isPasswordValid($password, $this->passwordEncoder) === false) {
             throw new BadCredentialsException(
                 $this->translator->trans('wrong_password', [], 'users')
             );
