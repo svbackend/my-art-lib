@@ -58,7 +58,7 @@ task('deploy:cache:warmup', function () {
 after('deploy:failed', 'deploy:unlock');
 
 task('deploy:docker', function () {
-    run('cd {{release_path}} && docker-compose -f docker-compose.deploy.yml up -d');
+    run('cd {{deploy_path}}/current && docker-compose -f docker-compose.deploy.yml up -d');
 });
 after('deploy:symlink', 'deploy:docker');
 
@@ -69,6 +69,7 @@ after('deploy:docker', 'deploy:db');
 
 task('deploy:production', function () {
     run('cd {{deploy_path}}/current && docker-compose down');
+    run('cd {{deploy_path}}/current && ls -a');
     run('cd {{deploy_path}}/current && docker-compose -f docker-compose.prod.yml up -d');
 });
 after('deploy:db', 'deploy:production');
