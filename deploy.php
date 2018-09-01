@@ -11,6 +11,7 @@ set('repository', 'git@github.com:svbackend/my-art-lib.git');
 
 // [Optional] Allocate tty for git clone. Default value is false.
 set('git_tty', true);
+set('http_user', 'www-data');
 
 // Shared files/dirs between deploys
 set('shared_files', ['docker-compose.prod.yml']);
@@ -57,7 +58,7 @@ task('deploy:cache:warmup', function () {
 after('deploy:failed', 'deploy:unlock');
 
 task('deploy:docker', function () {
-    run('cd {{release_path}} && docker-compose -f docker-compose.prod.yml up -d');
+    run('cd {{release_path}} && docker-compose -f docker-compose.deploy.yml up -d');
 });
 after('deploy:symlink', 'deploy:docker');
 
@@ -65,6 +66,12 @@ task('deploy:db', function () {
     run('cd {{deploy_path}}/current && docker exec -i $(docker-compose ps -q app) php ./bin/console doctrine:migrations:migrate -n');
 });
 after('deploy:symlink', 'deploy:db');
+
+task('deploy:production', function () {
+    run('cd {{deploy_path}}/current && docker-compose down');
+    run('cd {{deploy_path}}/current && docker-compose -f docker-compose.prod.yml up -d');
+});
+after('deploy:db', 'deploy:production');
 
 // Migrate database before symlink new release.
 

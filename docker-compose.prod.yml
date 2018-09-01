@@ -5,11 +5,10 @@ services:
       context: .
       dockerfile: .docker/Dockerfile
     image: svbackend/my-art-lib
+    restart: always
     ports:
       - 80:80
       - 443:443
-    volumes:
-      - .:/srv/app
     links:
       - postgres
       - redis
@@ -24,14 +23,17 @@ services:
     command: [".docker/entrypoint.sh"]
   postgres:
     image: postgres:9.6
+    restart: always
     ports:
       - 5432
     environment:
       POSTGRES_DB: my_art_lib
       POSTGRES_USER: my_art_lib
       POSTGRES_PASSWORD: my_art_lib
-      PGDATA: /tmp
+    volumes:
+      - /postgres-data:/var/lib/postgresql/data
   redis:
     image: redis:4.0-alpine
+    restart: always
     ports:
       - 6379
