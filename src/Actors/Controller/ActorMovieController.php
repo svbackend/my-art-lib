@@ -4,6 +4,7 @@ namespace App\Actors\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Entity\MovieActor;
+use App\Movies\Pagination\MovieCollection;
 use App\Movies\Repository\MovieActorRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Pagination\PaginatedCollection;
@@ -25,21 +26,13 @@ class ActorMovieController extends BaseController
      */
     public function getActorsMovies(Request $request, int $id, MovieActorRepository $repository, MovieRepository $movieRepository)
     {
-        $movieActors = $repository->findAllByActor($id);
-        $moviesIds = array_map(function (MovieActor $movieActor) {
-            return $movieActor->getMovie()->getId();
-        }, $movieActors->getResult());
-
-        if (null === $user = $this->getUser()) {
-            $actors = $movieRepository->findAllByIdsQuery($moviesIds);
-        } else {
-            $actors = $movieRepository->findAllByIdsWithIsWatchedFlag($moviesIds, $user->getId());
-        }
+        $movieActors = $repository->findAllByActor($id, $this->getUser())->getResult();
 
         $offset = (int) $request->get('offset', 0);
-        $limit = $request->get('limit', null);
 
-        $collection = new PaginatedCollection($actors, $offset, $limit);
+        $collection = new MovieCollection(array_map(function (MovieActor $movieActor) {
+            return $movieActor->getMovie();
+        }, $movieActors), count($movieActors), $offset);
 
         return $this->response($collection, 200, [], [
             'groups' => ['list'],

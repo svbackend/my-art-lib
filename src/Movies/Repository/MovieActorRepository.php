@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Movies\Repository;
 
 use App\Movies\Entity\MovieActor;
+use App\Users\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -32,12 +33,25 @@ class MovieActorRepository extends ServiceEntityRepository
             ->getQuery();
     }
 
-    public function findAllByActor(int $actorId): Query
+    public function findAllByActor(int $actorId, ?User $user = null): Query
     {
-        return $this->createQueryBuilder('ma')
+        $qb = $this->createQueryBuilder('ma')
             ->leftJoin('ma.movie', 'm')
             ->addSelect('m')
-            ->where('ma.actor = :actorId')
+            ->leftJoin('m.translations', 'mt')
+            ->addSelect('mt')
+            ->leftJoin('m.genres', 'mg')
+            ->addSelect('mg')
+            ->leftJoin('mg.translations', 'mgt')
+            ->addSelect('mgt');
+
+        if ($user !== null) {
+            $qb->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.movie = ma.movie AND uwm.user = :user_id')
+                ->addSelect('uwm')
+                ->setParameter('user_id', $user->getId());
+        }
+
+        return $qb->where('ma.actor = :actorId')
             ->setParameter('actorId', $actorId)
             ->getQuery();
     }
