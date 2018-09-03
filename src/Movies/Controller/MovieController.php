@@ -11,8 +11,10 @@ use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\CreateMovieRequest;
 use App\Movies\Request\SearchRequest;
 use App\Movies\Request\UpdateMovieRequest;
+use App\Movies\Request\UpdatePosterRequest;
 use App\Movies\Service\MovieManageService;
 use App\Movies\Service\SearchService;
+use App\Movies\Utils\Poster;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
@@ -61,7 +63,7 @@ class MovieController extends BaseController
     /**
      * Get movie resource.
      *
-     * @Route("/api/movies/{id}", methods={"GET"})
+     * @Route("/api/movies/{id}", methods={"GET"}, requirements={"id"="\d+"})
      *
      * @param int               $id
      * @param MovieRepository   $repository
@@ -85,6 +87,18 @@ class MovieController extends BaseController
         return $this->response($movie, 200, [], [
             'groups' => ['view'],
         ]);
+    }
+
+    /**
+     * @Route("/api/movies/{id}/updatePoster", methods={"POST"}, requirements={"id"="\d+"})
+     */
+    public function getMoviesUpdatePoster(int $id, UpdatePosterRequest $request)
+    {
+        if (null === $result = Poster::savePoster($id, $request->get('url'))) {
+            return $this->json([], 400);
+        }
+
+        return $this->json([]);
     }
 
     /**

@@ -41,7 +41,7 @@ class Poster
         curl_close($ch);
 
         if (file_exists($saveTo)) {
-            unlink($saveTo);
+            self::removePoster($movieId);
         }
         $fp = fopen($saveTo, 'x');
         fwrite($fp, $raw);
@@ -50,6 +50,19 @@ class Poster
         chmod($destinationDir, 0777);
 
         return $saveTo;
+    }
+
+    public static function removePoster(int $movieId): void
+    {
+        $saveTo = \str_replace('{movieId}', $movieId, self::BASE_PATH);
+        $dir = \dirname($saveTo);
+        $files = \scandir($dir);
+        foreach ($files as $file) {
+            if (substr($file, 0, 6) === 'poster' && strpos($file, '.') !== false) {
+                // if its file like poster.jpg or poster.260x380.jpg - remove it
+                unlink($dir . DIRECTORY_SEPARATOR . $file);
+            }
+        }
     }
 
     /**
