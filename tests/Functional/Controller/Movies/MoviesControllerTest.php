@@ -6,6 +6,7 @@ use App\Genres\DataFixtures\GenresFixtures;
 use App\Movies\DataFixtures\MoviesFixtures;
 use App\Movies\Entity\Movie;
 use App\Movies\EventListener\MovieSyncProcessor;
+use App\Movies\Utils\Poster;
 use App\Users\DataFixtures\UsersFixtures;
 use Enqueue\Client\TraceableProducer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -334,6 +335,27 @@ class MoviesControllerTest extends WebTestCase
         $this->assertCount(1, $traces);
         $processedMovie = json_decode($traces[0]['body'], true);
         $this->assertSame($movie['tmdb']['id'], $processedMovie['id']);
+    }
+
+    public function testChangeMoviePosterSuccess()
+    {
+        $client = self::$client;
+        $apiToken = UsersFixtures::ADMIN_API_TOKEN;
+
+        $client->request('GET', '/api/movies');
+        $movies = json_decode($client->getResponse()->getContent(), true)['data'];
+
+        $movie = reset($movies);
+
+        $client->request('POST', "/api/movies/{$movie['id']}/updatePoster?api_token={$apiToken}", [
+            'url' => 'http://placehold.it/1x1',
+        ]);
+
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
+        $client->request('GET', "/api/movies/{$movie['id']}");
+        $updatedMovie = json_decode($client->getResponse()->getContent(), true);
+        $this->assertSame("/f/movies/{$movie['id']}/poster.jpg", $updatedMovie['originalPosterUrl']);
+        $this->assertTrue(is_file(Poster::getPath($movie['id'])));
     }
 
     /**

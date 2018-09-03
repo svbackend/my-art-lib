@@ -74,4 +74,14 @@ class Poster
     {
         return str_replace('{movieId}', $movieId, self::BASE_URL);
     }
+
+    /**
+     * @param int $movieId
+     *
+     * @return string
+     */
+    public static function getPath(int $movieId): string
+    {
+        return str_replace('{movieId}', $movieId, self::BASE_PATH);
+    }
 }

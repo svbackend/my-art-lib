@@ -91,12 +91,22 @@ class MovieController extends BaseController
 
     /**
      * @Route("/api/movies/{id}/updatePoster", methods={"POST"}, requirements={"id"="\d+"})
+     *
+     * @param Movie $movie
+     * @param UpdatePosterRequest $request
+     *
+     * @return JsonResponse
      */
-    public function postMoviesUpdatePoster(int $id, UpdatePosterRequest $request)
+    public function postMoviesUpdatePoster(Movie $movie, UpdatePosterRequest $request)
     {
-        if (null === $result = Poster::savePoster($id, $request->get('url'))) {
+        $this->denyAccessUnlessGranted(UserRoles::ROLE_ADMIN);
+
+        if (null === $posterPath = Poster::savePoster($movie->getId(), $request->get('url'))) {
             return $this->json([], 400);
         }
+
+        $movie->setOriginalPosterUrl(Poster::getUrl($movie->getId()));
+        $this->getDoctrine()->getManager()->flush();
 
         return $this->json([]);
     }
