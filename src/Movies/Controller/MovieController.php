@@ -92,7 +92,7 @@ class MovieController extends BaseController
     /**
      * @Route("/api/movies/{id}/updatePoster", methods={"POST"}, requirements={"id"="\d+"})
      */
-    public function getMoviesUpdatePoster(int $id, UpdatePosterRequest $request)
+    public function postMoviesUpdatePoster(int $id, UpdatePosterRequest $request)
     {
         if (null === $result = Poster::savePoster($id, $request->get('url'))) {
             return $this->json([], 400);
