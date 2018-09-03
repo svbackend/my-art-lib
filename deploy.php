@@ -14,15 +14,10 @@ set('repository', 'git@github.com:svbackend/my-art-lib.git');
 
 // [Optional] Allocate tty for git clone. Default value is false.
 set('git_tty', true);
-set('http_user', 'www-data');
+//set('http_user', 'www-data');
 
 // Shared files/dirs between deploys
 add('shared_dirs', [
-    'public/f/movies',
-    'public/f/actors',
-]);
-add('writable_dirs', [
-    'public/f',
     'public/f/movies',
     'public/f/actors',
 ]);

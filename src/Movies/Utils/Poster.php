@@ -49,6 +49,10 @@ class Poster
         chmod($saveTo, 0777);
         chmod($destinationDir, 0777);
 
+        if (file_exists($saveTo) === false) {
+            return null;
+        }
+
         return $saveTo;
     }
 
