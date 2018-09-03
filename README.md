@@ -1,10 +1,10 @@
 ## my-art-lib / [frontend](https://github.com/svbackend/my-art-lib-spa)
 
+[mykino.top](https://mykino.top): Collect your own library of watched movies and get recommendation from other people
+
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/svbackend/my-art-lib/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/svbackend/my-art-lib/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/svbackend/my-art-lib/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/svbackend/my-art-lib/?branch=master)
 [![Build Status](https://travis-ci.org/svbackend/my-art-lib.svg?branch=master)](https://travis-ci.org/svbackend/my-art-lib)
-
-Project where users can fill own library of watched movies and share it. (dev stage)
 
 Pre-requirements:
 
