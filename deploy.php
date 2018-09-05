@@ -30,7 +30,14 @@ host('142.93.109.174')
 
 // [Optional] if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
+after('deploy:failed', 'supervisord:restart');
 
 // Migrate database before symlink new release.
 before('deploy:symlink', 'database:migrate');
 
+after('deploy:symlink', 'supervisord:restart');
+
+task('supervisord:restart', function() {
+    run('kill -15 $(cat /tmp/supervisord.pid)');
+    run('cd /etc && supervisord');
+});
