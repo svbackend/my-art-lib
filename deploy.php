@@ -14,7 +14,7 @@ set('repository', 'git@github.com:svbackend/my-art-lib.git');
 
 // [Optional] Allocate tty for git clone. Default value is false.
 set('git_tty', true);
-//set('http_user', 'www-data');
+set('http_user', 'deployer');
 
 // Shared files/dirs between deploys
 add('shared_dirs', [
