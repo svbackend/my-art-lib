@@ -27,9 +27,18 @@ class UsersFixtures extends Fixture
      * @param ObjectManager $manager
      *
      * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\ORM\ORMException
      */
     public function load(ObjectManager $manager): void
     {
+        if ($manager instanceof EntityManager === false) {
+            throw new \InvalidArgumentException('UsersFixtures $manager should be instance of EntityManager');
+        }
+        /* @var $manager EntityManager */
+
+        // user will get id = 1, and admin id = 2
+        $manager->getConnection()->exec("ALTER SEQUENCE users_id_seq RESTART WITH 1; UPDATE users SET id=nextval('users_id_seq');");
+
         $user = $this->createUser();
         $admin = $this->createAdmin();
 
@@ -37,11 +46,6 @@ class UsersFixtures extends Fixture
         $manager->persist($admin);
         $manager->flush();
 
-        if ($manager instanceof EntityManager === false) {
-            throw new \InvalidArgumentException('UsersFixtures $manager should be instance of EntityManager');
-        }
-
-        /* @var $manager EntityManager */
         // Tester
         $this->createTestApiToken($user, self::TESTER_API_TOKEN, $manager);
         $this->createEmailConfirmationToken($user, self::TESTER_EMAIL_CONFIRMATION_TOKEN, $manager);

@@ -40,14 +40,26 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
 
         $originalMoviesIds = array_keys($moviesTable);
         $movies = $this->movieRepository->findAllByIds($originalMoviesIds);
+        $supportAcc = $this->em->getReference(User::class, 1);
 
+        //todo add tests
         foreach ($movies as $movie) {
             $similarMovies = $this->movieRepository->findAllIdsByTmdbIds($moviesTable[$movie->getId()]);
             foreach ($similarMovies as $similarMovie) {
                 $similarMovieRef = $this->em->getReference(Movie::class, $similarMovie['id']);
                 $movie->addSimilarMovie($similarMovieRef);
                 if (is_numeric($similarMovie['tmdb.voteAverage']) && $similarMovie['tmdb.voteAverage'] >= 7) {
-                    $supportAcc = $this->em->getReference(User::class, 1);
+                    if ($similarMovie['releaseDate'] !== null) {
+                        $releaseDate = new \DateTimeImmutable($similarMovie['releaseDate']);
+                        // some kind of discrimination of old movies
+                        if ($releaseDate->format('Y') <= 1980 && $similarMovie['tmdb.voteAverage'] <= 8) {
+                            continue;
+                        }
+                        if ($releaseDate->format('Y') <= 1990 && $similarMovie['tmdb.voteAverage'] <= 7) {
+                            continue;
+                        }
+                    }
+
                     $movie->addRecommendation($supportAcc, $similarMovieRef);
                 }
             }

@@ -191,7 +191,7 @@ class MovieRepository extends ServiceEntityRepository
     public function findAllIdsByTmdbIds(array $ids)
     {
         $result = $this->createQueryBuilder('m')
-            ->select('m.id, m.tmdb.voteAverage')
+            ->select('m.id, m.tmdb.voteAverage, m.releaseDate')
             ->where('m.tmdb.id IN (:ids)')
             ->setParameter('ids', $ids)
             ->getQuery()
