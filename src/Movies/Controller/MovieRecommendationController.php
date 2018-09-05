@@ -12,6 +12,7 @@ use App\Movies\Request\NewMovieRecommendationRequest;
 use App\Movies\Request\RemoveMovieRecommendationRequest;
 use App\Movies\Request\SearchRequest;
 use App\Movies\Service\SearchService;
+use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -150,26 +151,20 @@ class MovieRecommendationController extends BaseController
      *
      * @return JsonResponse
      */
-    public function getMoviesRecommendations(Movie $movie, MovieRepository $movieRepository, MovieRecommendationRepository $repository)
+    public function getMoviesRecommendations(Request $request, Movie $movie, MovieRecommendationRepository $repository)
     {
         $user = $this->getUser();
-        $sortRecommendedMovies = function (array $movie1, array $movie2) {
-            return $movie2['rate'] <=> $movie1['rate'];
-        };
+
+        $offset = (int) $request->get('offset', 0);
+        $limit = $request->get('limit', null);
 
         if ($user instanceof User) {
-            $recommendedMoviesIds = $repository->findAllByMovieAndUser($movie->getId(), $user->getId());
-            usort($recommendedMoviesIds, $sortRecommendedMovies);
-            $recommendedMovies = $movieRepository->findAllByIdsWithFlags(array_map(function (array $recommendedMovie) {
-                return $recommendedMovie['movie_id'];
-            }, $recommendedMoviesIds), $user->getId(), $movie->getId());
+            $recommendedMovies = $repository->findAllByMovieAndUser($movie->getId(), $user->getId());
         } else {
-            $recommendedMoviesIds = $repository->findAllByMovie($movie->getId());
-            usort($recommendedMoviesIds, $sortRecommendedMovies);
-            $recommendedMovies = $movieRepository->findAllByIdsWithoutFlags(array_map(function (array $recommendedMovie) {
-                return $recommendedMovie['movie_id'];
-            }, $recommendedMoviesIds));
+            $recommendedMovies = $repository->findAllByMovie($movie->getId());
         }
+
+        $recommendedMovies = new PaginatedCollection($recommendedMovies, $offset, $limit, false);
 
         return $this->response($recommendedMovies, 200, [], [
             'groups' => ['list'],

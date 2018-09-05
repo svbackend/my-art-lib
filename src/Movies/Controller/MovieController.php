@@ -92,7 +92,7 @@ class MovieController extends BaseController
     /**
      * @Route("/api/movies/{id}/updatePoster", methods={"POST"}, requirements={"id"="\d+"})
      *
-     * @param Movie $movie
+     * @param Movie               $movie
      * @param UpdatePosterRequest $request
      *
      * @return JsonResponse

@@ -7,7 +7,6 @@ use App\Movies\Entity\MovieActor;
 use App\Movies\Pagination\MovieCollection;
 use App\Movies\Repository\MovieActorRepository;
 use App\Movies\Repository\MovieRepository;
-use App\Pagination\PaginatedCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;

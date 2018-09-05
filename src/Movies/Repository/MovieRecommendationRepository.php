@@ -44,63 +44,41 @@ class MovieRecommendationRepository extends ServiceEntityRepository
         return $query;
     }
 
-    /**
-     * @param int $movieId
-     * @param int $userId
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     *
-     * @return array [...[movie_id: int, rate: int, user_id: ?int]}
-     */
-    public function findAllByMovieAndUser(int $movieId, int $userId): array
+    public function findAllByMovieAndUser(int $movieId, int $userId): Query
     {
-        $connection = $this->getEntityManager()->getConnection();
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('m, COUNT(mr.recommendedMovie) HIDDEN rate')
+            ->from(MovieRecommendation::class, 'mr')
+            ->leftJoin(Movie::class, 'm', 'WITH', 'mr.recommendedMovie = m')
+            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user AND urm.recommendedMovie = mr.recommendedMovie')
+            ->addSelect('urm')
+            ->where('mr.originalMovie = :movie')
+            ->setParameter('user', $userId)
+            ->setParameter('movie', $movieId)
+            ->groupBy('mr.recommendedMovie, m.id, urm.id')
+            ->orderBy('rate', 'DESC')
+            ->addOrderBy('MAX(mr.id)', 'DESC')
+            ->getQuery();
 
-        $sql = 'SELECT DISTINCT ON(mr.recommended_movie_id) mr.recommended_movie_id movie_id, mr.rate, umr.user_id
-            FROM (
-                SELECT mr.recommended_movie_id, COUNT(mr.recommended_movie_id) rate
-                FROM movies_recommendations mr
-                WHERE mr.original_movie_id = :movie_id
-                GROUP BY mr.recommended_movie_id
-                ORDER BY rate
-            ) mr 
-			LEFT JOIN movies_recommendations umr ON umr.recommended_movie_id = mr.recommended_movie_id AND umr.user_id = :user_id';
-
-        $statement = $connection->prepare($sql);
-        $statement->bindValue('movie_id', $movieId);
-        $statement->bindValue('user_id', $userId);
-
-        $statement->execute();
-
-        return $statement->fetchAll();
+        return $query;
     }
 
-    /**
-     * @param int $movieId
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     *
-     * @return array [...[movie_id: int, rate: int]}
-     */
-    public function findAllByMovie(int $movieId): array
+    public function findAllByMovie(int $movieId): Query
     {
-        $connection = $this->getEntityManager()->getConnection();
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('m, COUNT(mr.recommendedMovie) HIDDEN rate')
+            ->from(MovieRecommendation::class, 'mr')
+            ->leftJoin(Movie::class, 'm', 'WITH', 'mr.recommendedMovie = m')
+            //->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user AND urm.recommendedMovie = mr.recommendedMovie')
+            //->addSelect('urm')
+            ->where('mr.originalMovie = :movie')
+            //->setParameter('user', $userId)
+            ->setParameter('movie', $movieId)
+            ->groupBy('mr.recommendedMovie, m.id')
+            ->orderBy('rate', 'DESC')
+            ->addOrderBy('MAX(mr.id)', 'DESC')
+            ->getQuery();
 
-        $sql = 'SELECT DISTINCT ON(mr.recommended_movie_id) mr.recommended_movie_id movie_id, mr.rate
-            FROM (
-                SELECT mr.recommended_movie_id, COUNT(mr.recommended_movie_id) rate
-                FROM movies_recommendations mr
-                WHERE mr.original_movie_id = :movie_id
-                GROUP BY mr.recommended_movie_id
-                ORDER BY rate
-            ) mr
-            ';
-
-        $statement = $connection->prepare($sql);
-        $statement->bindValue('movie_id', $movieId);
-
-        $statement->execute();
-
-        return $statement->fetchAll();
+        return $query;
     }
 }

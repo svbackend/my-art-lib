@@ -62,9 +62,9 @@ class Poster
         $dir = \dirname($saveTo);
         $files = \scandir($dir);
         foreach ($files as $file) {
-            if (substr($file, 0, 6) === 'poster' && strpos($file, '.') !== false) {
+            if (mb_substr($file, 0, 6) === 'poster' && mb_strpos($file, '.') !== false) {
                 // if its file like poster.jpg or poster.260x380.jpg - remove it
-                unlink($dir . DIRECTORY_SEPARATOR . $file);
+                unlink($dir.\DIRECTORY_SEPARATOR.$file);
             }
         }
     }

@@ -49,8 +49,10 @@ class AuthService
 
     /**
      * @param AuthUserRequest $request
-     * @return ApiToken
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return ApiToken
      */
     public function getTokenByRequest(AuthUserRequest $request): ApiToken
     {
@@ -62,8 +64,10 @@ class AuthService
     /**
      * @param string $username
      * @param string $password
-     * @return ApiToken
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return ApiToken
      */
     public function getTokenByCredentials(string $username, string $password): ApiToken
     {
@@ -86,8 +90,10 @@ class AuthService
     /**
      * @param string $username
      * @param string $password
-     * @return User
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return User
      */
     private function findUserByCredentials(string $username, string $password): User
     {
