@@ -38,6 +38,7 @@ class MovieRecommendationRepository extends ServiceEntityRepository
             ->setParameter('vote', $minVote)
             ->groupBy('mr.recommendedMovie, m.id')
             ->orderBy('rate', 'DESC')
+            ->addOrderBy('MAX(mr.id)', 'DESC')
             ->getQuery();
 
         return $query;
