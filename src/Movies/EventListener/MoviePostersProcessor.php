@@ -5,6 +5,7 @@ namespace App\Movies\EventListener;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Utils\Poster;
 use Doctrine\ORM\EntityManagerInterface;
+use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
 use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
@@ -16,11 +17,13 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
 
     private $em;
     private $movieRepository;
+    private $producer;
 
-    public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository)
+    public function __construct(EntityManagerInterface $em, MovieRepository $movieRepository, ProducerInterface $producer)
     {
         $this->em = $em;
         $this->movieRepository = $movieRepository;
+        $this->producer = $producer;
     }
 
     public function process(PsrMessage $message, PsrContext $session)
@@ -45,6 +48,7 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
             return self::REJECT;
         }
 
+        $this->producer->sendEvent(PosterResizerProcessor::RESIZE_POSTERS, json_encode($movieId));
         $movie->setOriginalPosterUrl(Poster::getUrl($movie->getId()));
 
         $this->em->flush();

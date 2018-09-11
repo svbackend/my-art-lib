@@ -32,6 +32,10 @@ services:
         tags:
             - { name: enqueue.client.processor }
 
+    App\Movies\EventListener\PosterResizerProcessor:
+        tags:
+            - { name: enqueue.client.processor }
+
     App\Actors\EventListener\ActorSyncProcessor:
         tags:
             - { name: enqueue.client.processor }

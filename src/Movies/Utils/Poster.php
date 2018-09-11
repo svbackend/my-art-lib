@@ -88,4 +88,12 @@ class Poster
     {
         return str_replace('{movieId}', $movieId, self::BASE_PATH);
     }
+
+    public static function getPredefinedSizes(): array
+    {
+        return [
+            ['width' => 320, 'height' => 480],
+            ['width' => 420, 'height' => 620],
+        ];
+    }
 }
