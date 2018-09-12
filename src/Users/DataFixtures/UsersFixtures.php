@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManager;
 
 class UsersFixtures extends Fixture
 {
+    const TESTER_ID = 1;
     const TESTER_EMAIL = 'tester@fixture.com';
     const TESTER_USERNAME = 'tester_fixture';
     const TESTER_PASSWORD = '123456';
@@ -18,6 +19,7 @@ class UsersFixtures extends Fixture
     const TESTER_EMAIL_CONFIRMATION_TOKEN = '11kYJ3ut7aOISPQN0RSqceYDasNnb690';
     const TESTER_PASSWORD_RECOVERY_TOKEN = '11kYJ3ut7aOISPQN0RSqceYDasNnb691';
 
+    const ADMIN_ID = 2;
     const ADMIN_EMAIL = 'admin@fixture.com';
     const ADMIN_USERNAME = 'admin_fixture';
     const ADMIN_PASSWORD = '12345678';

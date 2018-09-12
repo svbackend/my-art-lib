@@ -213,6 +213,19 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
+    public function getAllInterestedMoviesByUserId(int $userId): Query
+    {
+        $result = $this->getBaseQuery()
+            ->leftJoin('m.userInterestedMovie', 'uim', 'WITH', 'uim.user = :user_id')
+            ->addSelect('uim')
+            ->setParameter('user_id', $userId)
+            ->andWhere('uim.id != 0')
+            ->orderBy('uim.id', 'DESC')
+            ->getQuery();
+
+        return $result;
+    }
+
     public function findAllQuery()
     {
         $result = $this->getBaseQuery()

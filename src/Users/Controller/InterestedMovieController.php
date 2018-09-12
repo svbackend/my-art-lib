@@ -4,11 +4,13 @@ namespace App\Users\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Entity\Movie;
+use App\Movies\Repository\MovieRepository;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
 use App\Users\Entity\UserInterestedMovie;
 use App\Users\Repository\InterestedMovieRepository;
 use App\Users\Request\AddInterestedMovieRequest;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,15 +27,16 @@ class InterestedMovieController extends BaseController
      *
      * @return JsonResponse
      */
-    public function getAll(Request $request, User $user, InterestedMovieRepository $repository)
+    public function getAll(Request $request, User $user, MovieRepository $repository)
     {
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
         $interestedMovies = new PaginatedCollection(
-            $repository->findAllByUser($user->getId()),
+            $repository->getAllInterestedMoviesByUserId($user->getId()),
             $offset,
-            $limit ? (int) $limit : null
+            $limit ? (int) $limit : null,
+            false
         );
 
         return $this->response($interestedMovies, 200, [], [
@@ -57,7 +60,12 @@ class InterestedMovieController extends BaseController
         $movie = $em->getReference(Movie::class, $request->get('movie_id'));
         $interestedMovie = new UserInterestedMovie($this->getUser(), $movie);
         $em->persist($interestedMovie);
-        $em->flush();
+
+        try {
+            $em->flush();
+        } catch (UniqueConstraintViolationException $exception) {
+            // it's ok
+        }
 
         return new JsonResponse(null, 202);
     }

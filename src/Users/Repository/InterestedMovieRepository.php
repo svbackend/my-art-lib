@@ -23,27 +23,6 @@ class InterestedMovieRepository extends ServiceEntityRepository
         parent::__construct($registry, UserInterestedMovie::class);
     }
 
-    public function findAllByUser(int $userId)
-    {
-        return $this->getEntityManager()->createQueryBuilder()
-            ->select('m')
-            ->from(UserInterestedMovie::class, 'im')
-            ->leftJoin(Movie::class, 'm', 'WITH', 'm.id = im.movie')
-            ->leftJoin('m.translations', 'mt')
-            ->addSelect('mt')
-            ->leftJoin('m.genres', 'mg')
-            ->addSelect('mg')
-            ->leftJoin('mg.translations', 'mgt')
-            ->addSelect('mgt')
-            ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'm.id = uwm.movie AND uwm.user = :user')
-            ->addSelect('uwm')
-            ->leftJoin('m.userInterestedMovie', 'uim', 'WITH', 'm.id = uim.movie AND uim.user = :user')
-            ->addSelect('uim')
-            ->where('im.user = :user')
-            ->setParameter('user', $userId)
-            ->getQuery();
-    }
-
     public function findOneById(int $interestedMovieId, int $userId): ?UserInterestedMovie
     {
         return $this->findOneBy([

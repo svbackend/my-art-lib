@@ -34,7 +34,6 @@ class UserInterestedMovie
     /**
      * @ORM\ManyToOne(targetEntity="App\Movies\Entity\Movie")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"list"})
      */
     protected $movie;
 
