@@ -67,7 +67,7 @@ class InterestedMovieController extends BaseController
             // it's ok
         }
 
-        return new JsonResponse(null, 202);
+        return new JsonResponse(['id' => $interestedMovie->getId()], 202);
     }
 
     /**

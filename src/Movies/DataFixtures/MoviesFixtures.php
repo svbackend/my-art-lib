@@ -50,16 +50,16 @@ class MoviesFixtures extends Fixture
         $actor->addTranslation(new ActorTranslations($actor, 'en', 'Test MovieActor (en)'));
 
         $movie = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [$testGenre], [
-            new MovieTranslationDTO('en', "$movieTitle (en)", 'Overview (en)', 'http://placehold.it/480x320'),
-            new MovieTranslationDTO('uk', "$movieTitle (uk)", 'Overview (uk)', 'http://placehold.it/480x320'),
-            new MovieTranslationDTO('ru', "$movieTitle (ru)", 'Overview (ru)', 'http://placehold.it/480x320'),
+            new MovieTranslationDTO('en', "$movieTitle (en)", 'Overview (en)', 'http://placehold.it/320x480'),
+            new MovieTranslationDTO('uk', "$movieTitle (uk)", 'Overview (uk)', 'http://placehold.it/320x480'),
+            new MovieTranslationDTO('ru', "$movieTitle (ru)", 'Overview (ru)', 'http://placehold.it/320x480'),
         ]);
         $movie->addActor($actor);
 
         $movie2 = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb2, [$testGenre], [
-            new MovieTranslationDTO('en', "$movieTitle 2 (en)", 'Overview (en)', 'http://placehold.it/480x320'),
-            new MovieTranslationDTO('uk', "$movieTitle 2 (uk)", 'Overview (uk)', 'http://placehold.it/480x320'),
-            new MovieTranslationDTO('ru', "$movieTitle 2 (ru)", 'Overview (ru)', 'http://placehold.it/480x320'),
+            new MovieTranslationDTO('en', "$movieTitle 2 (en)", 'Overview (en)', 'http://placehold.it/320x480'),
+            new MovieTranslationDTO('uk', "$movieTitle 2 (uk)", 'Overview (uk)', 'http://placehold.it/320x480'),
+            new MovieTranslationDTO('ru', "$movieTitle 2 (ru)", 'Overview (ru)', 'http://placehold.it/320x480'),
         ]);
         $movie2->addActor($actor);
 

@@ -61,6 +61,8 @@ class MovieRepository extends ServiceEntityRepository
             ->addSelect('uwm')
             ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user_id AND urm.originalMovie = :id')
             ->addSelect('urm')
+            ->leftJoin('m.userInterestedMovie', 'uim', 'WITH', 'uim.user = :user_id AND uim.movie = :id')
+            ->addSelect('uim')
             ->setParameter('user_id', $user->getId())
             ->setParameter('id', $id)
             ->getQuery()

@@ -59,7 +59,7 @@ class MovieRecommendationRepository extends ServiceEntityRepository
             ->where('mr.originalMovie = :movie')
             ->setParameter('user', $userId)
             ->setParameter('movie', $movieId)
-            ->groupBy('mr.recommendedMovie, m.id, urm.id')
+            ->groupBy('mr.recommendedMovie, m.id, urm.id, uim.id')
             ->orderBy('rate', 'DESC')
             ->addOrderBy('MAX(mr.id)', 'DESC')
             ->getQuery();

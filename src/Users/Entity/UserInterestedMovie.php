@@ -21,7 +21,7 @@ class UserInterestedMovie
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"list"})
+     * @Groups({"list", "view"})
      */
     private $id;
 
