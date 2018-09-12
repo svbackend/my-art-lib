@@ -170,16 +170,12 @@ class WatchedMovieController extends BaseController
         /** @var $currentUser User */
         $currentUser = $this->getUser();
 
-        if (null === $watchedMovie = $repository->find($watchedMovieId)) {
+        if (null === $watchedMovie = $repository->findOneById($watchedMovieId, $currentUser->getId())) {
             $watchedMovie = $repository->findOneByMovieId($watchedMovieId, $currentUser->getId());
         }
 
         if (null === $watchedMovie) {
             throw new NotFoundHttpException();
-        }
-
-        if ($watchedMovie->getUser()->getId() !== $currentUser->getId()) {
-            throw new AccessDeniedHttpException();
         }
 
         $this->getDoctrine()->getManager()->remove($watchedMovie);

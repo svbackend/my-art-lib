@@ -7,6 +7,7 @@ namespace App\Movies\Repository;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieRecommendation;
 use App\Users\Entity\User;
+use App\Users\Entity\UserInterestedMovie;
 use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
@@ -33,6 +34,7 @@ class MovieRecommendationRepository extends ServiceEntityRepository
             ->leftJoin(MovieRecommendation::class, 'mr', 'WITH', 'uwm.movie = mr.originalMovie')
             ->leftJoin(Movie::class, 'm', 'WITH', 'mr.recommendedMovie = m')
             ->leftJoin(UserWatchedMovie::class, 'uwmj', 'WITH', 'uwmj.movie = mr.recommendedMovie AND uwmj.user = :user')
+            ->leftJoin(UserInterestedMovie::class, 'uimj', 'WITH', 'uimj.movie = mr.recommendedMovie AND uimj.user = :user')
             ->where('uwmj.id IS NULL AND uwm.user = :user AND uwm.vote >= :vote')
             ->setParameter('user', $userId)
             ->setParameter('vote', $minVote)
@@ -52,6 +54,8 @@ class MovieRecommendationRepository extends ServiceEntityRepository
             ->leftJoin(Movie::class, 'm', 'WITH', 'mr.recommendedMovie = m')
             ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user AND urm.recommendedMovie = mr.recommendedMovie')
             ->addSelect('urm')
+            ->leftJoin('m.userInterestedMovie', 'uim', 'WITH', 'uim.user = :user AND uim.movie = mr.recommendedMovie')
+            ->addSelect('uim')
             ->where('mr.originalMovie = :movie')
             ->setParameter('user', $userId)
             ->setParameter('movie', $movieId)

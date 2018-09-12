@@ -11,6 +11,7 @@ use App\Movies\DTO\MovieDTO;
 use App\Translation\TranslatableInterface;
 use App\Translation\TranslatableTrait;
 use App\Users\Entity\User;
+use App\Users\Entity\UserInterestedMovie;
 use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -124,6 +125,13 @@ class Movie implements TranslatableInterface
      * @Groups({"ROLE_USER"})
      */
     private $userWatchedMovie;
+
+    /**
+     * @var UserInterestedMovie
+     * @ORM\OneToOne(targetEntity="App\Users\Entity\UserInterestedMovie", mappedBy="movie")
+     * @Groups({"ROLE_USER"})
+     */
+    private $userInterestedMovie;
 
     /**
      * @Groups({"list", "view"})
@@ -400,6 +408,11 @@ class Movie implements TranslatableInterface
         $this->isWatched = ($this->userWatchedMovie || $this->guestWatchedMovie) ? true : false;
 
         return $this->isWatched;
+    }
+
+    public function getUserInterestedMovie()
+    {
+        return $this->userInterestedMovie;
     }
 
     public function getUserRecommendedMovie()
