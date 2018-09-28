@@ -17,17 +17,16 @@ Install:
 * `bin/composer update`
 * `cp .env.dist .env`
 * `cp .env.dist .env.test`
-* Open .env.test and change db name: `DATABASE_URL="pgsql://my_art_lib:my_art_lib@postgres/test_my_art_lib"`
+* Change test db name: `sed -i 's/postgres\/my_art_lib/postgres\/my_art_lib_test/g' .env.test` 
 * `docker-compose exec app bash`
 * `php bin/console doctrine:migr:migr`
-* Not required, but recommended: `php bin/console doctrine:fixtures:load --purge-with-truncate`
-* `php bin/phpunit`
+* Optional - fixtures (you will be able to sign in as tester_fixture with pass 123456 and some other useful stuff): `php bin/console doctrine:fixtures:load --purge-with-truncate`
+* Open .env + .env.test and set MOVIE_DB_API_KEY
+* And finally to be sure that all is fine - run tests: `php bin/phpunit`
 
 If all tests passed then you'r ready!
 
 To run project again simply type `docker-compose up` (without `--build` at this time)
-
-To setup queue daemon run: `bin/console enqueue:consume --setup-broker -vvv`
 
 More information for developers can be found in [project docs](docs/current.md).
 
