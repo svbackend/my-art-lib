@@ -23,7 +23,7 @@ class InterestedMovieController extends BaseController
      *
      * @param Request         $request
      * @param User            $user
-     * @param InterestedMovieRepository $repository
+     * @param MovieRepository $repository
      *
      * @return JsonResponse
      */

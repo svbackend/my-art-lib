@@ -57,4 +57,38 @@ class InterestedMovieControllerTest extends WebTestCase
 
         return json_decode($client->getResponse()->getContent(), true);
     }
+
+    public function testDeleteInterestedMovieByMovieId()
+    {
+        $client = self::$client;
+        $apiToken = UsersFixtures::TESTER_API_TOKEN;
+
+        $movies = $this->getMovies();
+        $movie = reset($movies);
+        $client->request('POST', "/api/users/interestedMovies?api_token={$apiToken}", [
+            'movie_id' => $movie['id'],
+        ]);
+
+        $client->request('DELETE', "/api/users/interestedMovies/{$movie['id']}?api_token={$apiToken}");
+        $interestedMovies = $this->getInterestedMoviesList(UsersFixtures::TESTER_ID, $apiToken);
+        $this->assertSame(0, $interestedMovies['paging']['total']);
+    }
+
+    public function testDeleteInterestedMovieByInterestedMovieId()
+    {
+        $client = self::$client;
+        $apiToken = UsersFixtures::TESTER_API_TOKEN;
+
+        $movies = $this->getMovies();
+        $movie = reset($movies);
+        $client->request('POST', "/api/users/interestedMovies?api_token={$apiToken}", [
+            'movie_id' => $movie['id'],
+        ]);
+        $interestedMovies = $this->getInterestedMoviesList(UsersFixtures::TESTER_ID, $apiToken);
+        $addedMovie = reset($interestedMovies['data']);
+
+        $client->request('DELETE', "/api/users/interestedMovies/{$addedMovie['id']}?api_token={$apiToken}");
+        $interestedMovies = $this->getInterestedMoviesList(UsersFixtures::TESTER_ID, $apiToken);
+        $this->assertSame(0, $interestedMovies['paging']['total']);
+    }
 }
