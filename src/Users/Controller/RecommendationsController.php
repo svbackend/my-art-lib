@@ -24,13 +24,13 @@ class RecommendationsController extends BaseController
      */
     public function getUserRecommendations(User $user, Request $request, MovieRecommendationRepository $repository)
     {
-        $this->denyAccessUnlessGranted(UserRoles::ROLE_USER);
-
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
         $minRating = $request->get('minRating', 7);
 
-        $query = $repository->findAllByUser($user->getId(), abs((int) $minRating));
+        $currentUser = $this->getUser();
+
+        $query = $repository->findAllByUser($user->getId(), abs((int) $minRating), $currentUser);
         $movies = new PaginatedCollection($query, $offset, $limit, false);
 
         return $this->response($movies, 200, [], [

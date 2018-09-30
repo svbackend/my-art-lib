@@ -26,24 +26,35 @@ class MovieRecommendationRepository extends ServiceEntityRepository
         parent::__construct($registry, MovieRecommendation::class);
     }
 
-    public function findAllByUser(int $userId, int $minVote = 7): Query
+    public function findAllByUser(int $userId, int $minVote = 7, ?User $currentUser = null): Query
     {
-        $query = $this->getEntityManager()->createQueryBuilder()
+        $result = $this->getEntityManager()->createQueryBuilder()
             ->select('m, COUNT(mr.recommendedMovie) HIDDEN rate')
             ->from(UserWatchedMovie::class, 'uwm')
             ->leftJoin(MovieRecommendation::class, 'mr', 'WITH', 'uwm.movie = mr.originalMovie')
             ->leftJoin(Movie::class, 'm', 'WITH', 'mr.recommendedMovie = m')
-            ->leftJoin(UserWatchedMovie::class, 'uwmj', 'WITH', 'uwmj.movie = mr.recommendedMovie AND uwmj.user = :user')
-            ->leftJoin(UserInterestedMovie::class, 'uimj', 'WITH', 'uimj.movie = mr.recommendedMovie AND uimj.user = :user')
-            ->where('uwmj.id IS NULL AND uwm.user = :user AND uwm.vote >= :vote')
+            ->where('uwm.user = :user AND uwm.vote >= :vote')
             ->setParameter('user', $userId)
             ->setParameter('vote', $minVote)
             ->groupBy('mr.recommendedMovie, m.id')
-            ->orderBy('rate', 'DESC')
-            ->addOrderBy('MAX(mr.id)', 'DESC')
-            ->getQuery();
+            ->orderBy('MAX(mr.id), rate', 'DESC');
 
-        return $query;
+        if ($currentUser !== null) {
+            if ($currentUser->getId() === $userId) {
+                // todo WHY THE FUCK m.userWatchedMovie attached from other users?
+                $result = $result
+                    ->leftJoin('m.userWatchedMovie', 'uwmj', 'WITH', 'uwmj.user = :user')
+                    ->leftJoin(UserInterestedMovie::class, 'uimj', 'WITH', 'uimj.user = :user')
+                    ->andWhere('uwmj IS NULL');
+            } else {
+                $result = $result
+                    ->leftJoin('m.userWatchedMovie', 'uwmj', 'WITH', 'uwmj.user = :currentUser')
+                    ->leftJoin(UserInterestedMovie::class, 'uimj', 'WITH', 'uimj.user = :currentUser')
+                    ->setParameter('currentUser', $currentUser->getId());
+            }
+        }
+
+        return $result->getQuery();
     }
 
     public function findAllByMovieAndUser(int $movieId, int $userId): Query

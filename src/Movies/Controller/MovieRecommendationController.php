@@ -143,11 +143,9 @@ class MovieRecommendationController extends BaseController
     /**
      * @Route("/api/movies/{id}/recommendations", methods={"GET"})
      *
-     * @param Movie                         $movie
-     * @param MovieRepository               $movieRepository
+     * @param Request $request
+     * @param Movie $movie
      * @param MovieRecommendationRepository $repository
-     *
-     * @throws \Doctrine\DBAL\DBALException
      *
      * @return JsonResponse
      */

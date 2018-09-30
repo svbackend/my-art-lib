@@ -29,6 +29,7 @@ class UserWatchedMovie extends WatchedMovie
     /**
      * @ORM\ManyToOne(targetEntity="App\Users\Entity\User")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"list"})
      */
     private $user;
 
