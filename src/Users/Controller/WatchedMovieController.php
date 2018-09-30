@@ -108,24 +108,32 @@ class WatchedMovieController extends BaseController
      * @Route("/api/users/{id<\d+>}/watchedMovies", methods={"GET"});
      *
      * @param Request         $request
-     * @param User            $user
+     * @param User            $profileOwner
      * @param MovieRepository $repository
      *
      * @return JsonResponse
      */
-    public function getAll(Request $request, User $user, MovieRepository $repository)
+    public function getAll(Request $request, User $profileOwner, MovieRepository $repository)
     {
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
+        $currentUser = $this->getUser();
+
         $watchedMovies = new PaginatedCollection(
-            $repository->getAllWatchedMoviesByUserId($user->getId()),
+            $repository->getAllWatchedMoviesByUserId($profileOwner->getId(), $currentUser),
             $offset,
             $limit ? (int) $limit : null
         );
 
+        $groups = ['list'];
+
+        if (!$currentUser || $currentUser->getId() !== $profileOwner->getId()) {
+            $groups[] = 'userWatchedMovies';
+        }
+
         return $this->response($watchedMovies, 200, [], [
-            'groups' => ['list'],
+            'groups' => $groups,
         ]);
     }
 
@@ -134,24 +142,32 @@ class WatchedMovieController extends BaseController
      * @ParamConverter("user", options={"mapping"={"username"="username"}})
      *
      * @param Request         $request
-     * @param User            $user
+     * @param User            $profileOwner
      * @param MovieRepository $repository
      *
      * @return JsonResponse
      */
-    public function getAllByUsername(Request $request, User $user, MovieRepository $repository)
+    public function getAllByUsername(Request $request, User $profileOwner, MovieRepository $repository)
     {
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
+        $currentUser = $this->getUser();
+
         $watchedMovies = new PaginatedCollection(
-            $repository->getAllWatchedMoviesByUserId($user->getId()),
+            $repository->getAllWatchedMoviesByUserId($profileOwner->getId(), $currentUser),
             $offset,
             $limit ? (int) $limit : null
         );
 
+        $groups = ['list'];
+
+        if (!$currentUser || $currentUser->getId() !== $profileOwner->getId()) {
+            $groups[] = 'userWatchedMovies';
+        }
+
         return $this->response($watchedMovies, 200, [], [
-            'groups' => ['list'],
+            'groups' => $groups,
         ]);
     }
 

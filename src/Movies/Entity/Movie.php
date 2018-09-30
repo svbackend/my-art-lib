@@ -127,6 +127,13 @@ class Movie implements TranslatableInterface
     private $userWatchedMovie;
 
     /**
+     * @var UserWatchedMovie
+     * @ORM\OneToOne(targetEntity="App\Users\Entity\UserWatchedMovie", mappedBy="movie")
+     * @Groups({"userWatchedMovies"})
+     */
+    private $ownerWatchedMovie;
+
+    /**
      * @var UserInterestedMovie
      * @ORM\OneToOne(targetEntity="App\Users\Entity\UserInterestedMovie", mappedBy="movie")
      * @Groups({"ROLE_USER"})
@@ -396,6 +403,11 @@ class Movie implements TranslatableInterface
     public function getUserWatchedMovie()
     {
         return $this->userWatchedMovie;
+    }
+
+    public function getOwnerWatchedMovie()
+    {
+        return $this->ownerWatchedMovie;
     }
 
     public function getGuestWatchedMovie()
