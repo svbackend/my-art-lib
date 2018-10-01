@@ -16,21 +16,21 @@ class RecommendationsController extends BaseController
     /**
      * @Route("/api/users/{id<\d+>}/recommendations", methods={"GET"})
      *
-     * @param User                          $user
+     * @param User                          $profileOwner
      * @param Request                       $request
      * @param MovieRecommendationRepository $repository
      *
      * @return JsonResponse
      */
-    public function getUserRecommendations(User $user, Request $request, MovieRecommendationRepository $repository)
+    public function getUserRecommendations(User $profileOwner, Request $request, MovieRecommendationRepository $repository)
     {
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
-        $minRating = $request->get('minRating', 7);
+        $minRating = (int) $request->get('minRating', 7);
 
         $currentUser = $this->getUser();
 
-        $query = $repository->findAllByUser($user->getId(), abs((int) $minRating), $currentUser);
+        $query = $repository->findAllByUser($profileOwner->getId(), abs($minRating), $currentUser);
         $movies = new PaginatedCollection($query, $offset, $limit, false);
 
         return $this->response($movies, 200, [], [

@@ -41,13 +41,16 @@ class MovieRecommendationRepository extends ServiceEntityRepository
 
         if ($currentUser !== null) {
             if ($currentUser->getId() === $userId) {
-                // todo WHY THE FUCK m.userWatchedMovie attached from other users?
                 $result = $result
+                    ->addSelect('uwmj')
+                    ->addGroupBy('uwmj.id')
                     ->leftJoin('m.userWatchedMovie', 'uwmj', 'WITH', 'uwmj.user = :user')
                     ->leftJoin(UserInterestedMovie::class, 'uimj', 'WITH', 'uimj.user = :user')
-                    ->andWhere('uwmj IS NULL');
+                    ->andWhere('uwmj.id IS NULL');
             } else {
                 $result = $result
+                    ->addSelect('uwmj')
+                    ->addGroupBy('uwmj.id')
                     ->leftJoin('m.userWatchedMovie', 'uwmj', 'WITH', 'uwmj.user = :currentUser')
                     ->leftJoin(UserInterestedMovie::class, 'uimj', 'WITH', 'uimj.user = :currentUser')
                     ->setParameter('currentUser', $currentUser->getId());
