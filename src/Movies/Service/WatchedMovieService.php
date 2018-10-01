@@ -19,6 +19,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 
+// todo event for new added movie and if so - remove this movie from wishlist (if its added there)
 class WatchedMovieService
 {
     private $em;
