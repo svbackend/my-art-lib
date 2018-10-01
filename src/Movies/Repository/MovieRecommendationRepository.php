@@ -26,6 +26,7 @@ class MovieRecommendationRepository extends ServiceEntityRepository
         parent::__construct($registry, MovieRecommendation::class);
     }
 
+    // todo joins for movie (genres, translations etc.)
     public function findAllByUser(int $userId, int $minVote = 7, ?User $currentUser = null): Query
     {
         $result = $this->getEntityManager()->createQueryBuilder()
@@ -37,7 +38,7 @@ class MovieRecommendationRepository extends ServiceEntityRepository
             ->setParameter('user', $userId)
             ->setParameter('vote', $minVote)
             ->groupBy('mr.recommendedMovie, m.id')
-            ->orderBy('MAX(mr.id), rate', 'DESC');
+            ->orderBy('MAX(mr.id) DESC, rate', 'DESC');
 
         if ($currentUser !== null) {
             if ($currentUser->getId() === $userId) {
