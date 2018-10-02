@@ -58,4 +58,32 @@ class MovieRecommendationControllerTest extends WebTestCase
     {
         return $client->getContainer()->get(TraceableProducer::class);
     }
+
+    public function testAddMovieRecommendation()
+    {
+        $client = self::$client;
+        $apiToken = UsersFixtures::TESTER_API_TOKEN;
+
+        $client->request('GET', '/api/movies');
+        $movies = json_decode($client->getResponse()->getContent(), true)['data'];
+
+        $originalMovie = $movies[0];
+        $recommendedMovie = $movies[1];
+
+        $client->request('POST', "/api/movies/{$originalMovie['id']}/recommendations?api_token={$apiToken}", [
+            'recommendation' => [
+                'movie_id' => $recommendedMovie['id'],
+                'tmdb_id' => null,
+            ],
+        ]);
+
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
+
+        $client->request('GET', "/api/movies/{$originalMovie['id']}/recommendations?api_token={$apiToken}");
+        $response = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertArrayHasKey('data', $response);
+        $this->assertArrayHasKey('paging', $response);
+        $this->assertTrue($response['paging']['total'] > 0);
+    }
 }

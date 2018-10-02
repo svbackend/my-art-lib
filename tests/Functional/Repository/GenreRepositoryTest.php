@@ -57,7 +57,7 @@ class GenreRepositoryTest extends KernelTestCase
         self::assertSame('TestGenre', $genre->getTranslation('en')->getName());
         self::assertSame('Тестовый жанр', $genre->getTranslation('ru')->getName());
         self::assertSame('Тестовий жанр', $genre->getTranslation('uk')->getName());
-        self::assertSame('TestGenre', $genre->getTranslation('WRONG_LOCALE')->getName());
+        self::assertInstanceOf(GenreTranslations::class, $genre->getTranslation('WRONG_LOCALE'));
     }
 
     /**

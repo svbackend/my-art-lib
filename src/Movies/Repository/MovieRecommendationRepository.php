@@ -34,7 +34,7 @@ class MovieRecommendationRepository extends ServiceEntityRepository
             ->from(UserWatchedMovie::class, 'uwm')
             ->leftJoin(MovieRecommendation::class, 'mr', 'WITH', 'uwm.movie = mr.originalMovie')
             ->leftJoin(Movie::class, 'm', 'WITH', 'mr.recommendedMovie = m')
-            ->where('uwm.user = :user AND uwm.vote >= :vote')
+            ->where('m IS NOT NULL AND uwm.user = :user AND uwm.vote >= :vote')
             ->setParameter('user', $userId)
             ->setParameter('vote', $minVote)
             ->groupBy('mr.recommendedMovie, m.id')
