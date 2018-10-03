@@ -19,7 +19,13 @@ class UsersFixtures extends Fixture
     const TESTER_EMAIL_CONFIRMATION_TOKEN = '11kYJ3ut7aOISPQN0RSqceYDasNnb690';
     const TESTER_PASSWORD_RECOVERY_TOKEN = '11kYJ3ut7aOISPQN0RSqceYDasNnb691';
 
-    const ADMIN_ID = 2;
+    const MODER_ID = 2;
+    const MODER_EMAIL = 'moder@fixture.com';
+    const MODER_USERNAME = 'moder_fixture';
+    const MODER_PASSWORD = '1234567';
+    const MODER_API_TOKEN = 'moder_api_token';
+
+    const ADMIN_ID = 3;
     const ADMIN_EMAIL = 'admin@fixture.com';
     const ADMIN_USERNAME = 'admin_fixture';
     const ADMIN_PASSWORD = '12345678';
@@ -38,13 +44,15 @@ class UsersFixtures extends Fixture
         }
         /* @var $manager EntityManager */
 
-        // user will get id = 1, and admin id = 2
+        // user will get id = 1, moderId = 2 and so on
         $manager->getConnection()->exec("ALTER SEQUENCE users_id_seq RESTART WITH 1; UPDATE users SET id=nextval('users_id_seq');");
 
         $user = $this->createUser();
+        $moder = $this->createModer();
         $admin = $this->createAdmin();
 
         $manager->persist($user);
+        $manager->persist($moder);
         $manager->persist($admin);
         $manager->flush();
 
@@ -52,6 +60,8 @@ class UsersFixtures extends Fixture
         $this->createTestApiToken($user, self::TESTER_API_TOKEN, $manager);
         $this->createEmailConfirmationToken($user, self::TESTER_EMAIL_CONFIRMATION_TOKEN, $manager);
         $this->createPasswordRecoveryToken($user, self::TESTER_PASSWORD_RECOVERY_TOKEN, $manager);
+        // Moder
+        $this->createTestApiToken($moder, self::MODER_API_TOKEN, $manager);
         // Admin
         $this->createTestApiToken($admin, self::ADMIN_API_TOKEN, $manager);
     }
@@ -65,6 +75,15 @@ class UsersFixtures extends Fixture
         for ($i = 3; $i-- > 0;) {
             $profile->addContacts("TestProvider #{$i}", "https://test.com/{$i}/info");
         }
+
+        return $user;
+    }
+
+    private function createModer()
+    {
+        $user = new User(self::MODER_EMAIL, self::MODER_USERNAME, self::MODER_PASSWORD);
+        $profile = $user->getProfile();
+        $profile->setFirstName('First')->setLastName('Last');
 
         return $user;
     }
