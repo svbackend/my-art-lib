@@ -67,7 +67,7 @@ class MovieRecommendationRepository extends ServiceEntityRepository
             ->select('m, COUNT(mr.recommendedMovie) HIDDEN rate')
             ->from(MovieRecommendation::class, 'mr')
             ->leftJoin(Movie::class, 'm', 'WITH', 'mr.recommendedMovie = m')
-            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user')
+            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.originalMovie = mr.originalMovie AND urm.user = :user')
             ->addSelect('urm')
             ->leftJoin('m.userInterestedMovie', 'uim', 'WITH', 'uim.user = :user')
             ->addSelect('uim')
