@@ -220,17 +220,22 @@ class MovieRepository extends ServiceEntityRepository
         return $result->getQuery();
     }
 
-    public function getAllInterestedMoviesByUserId(int $userId): Query
+    public function getAllInterestedMoviesByUserId(int $profileOwnerId, ?User $currentUser = null): Query
     {
         $result = $this->getBaseQuery()
-            ->leftJoin('m.userInterestedMovie', 'uim', 'WITH', 'uim.user = :user_id')
+            ->leftJoin('m.userInterestedMovie', 'uim', 'WITH', 'uim.user = :owner_id')
             ->addSelect('uim')
-            ->setParameter('user_id', $userId)
+            ->setParameter('owner_id', $profileOwnerId)
             ->andWhere('uim.id != 0')
-            ->orderBy('uim.id', 'DESC')
-            ->getQuery();
+            ->orderBy('uim.id', 'DESC');
 
-        return $result;
+        if ($currentUser !== null) {
+            $result->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :current_user_id')
+                ->addSelect('uwm')
+                ->setParameter('current_user_id', $currentUser->getId());
+        }
+
+        return $result->getQuery();
     }
 
     public function findAllQuery()

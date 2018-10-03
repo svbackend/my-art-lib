@@ -33,7 +33,7 @@ class InterestedMovieController extends BaseController
         $limit = $request->get('limit', null);
 
         $interestedMovies = new PaginatedCollection(
-            $repository->getAllInterestedMoviesByUserId($user->getId()),
+            $repository->getAllInterestedMoviesByUserId($user->getId(), $this->getUser()),
             $offset,
             $limit ? (int) $limit : null,
             false

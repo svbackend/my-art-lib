@@ -38,16 +38,25 @@ class InterestedMovieControllerTest extends WebTestCase
         $apiToken = UsersFixtures::TESTER_API_TOKEN;
 
         $movies = $this->getMovies();
-        $movie = reset($movies);
+        $movie1 = $movies[0];
+        $movie2 = $movies[1];
+
         $client->request('POST', "/api/users/interestedMovies?api_token={$apiToken}", [
-            'movie_id' => $movie['id'],
+            'movie_id' => $movie1['id'],
+        ]);
+
+        $client->request('POST', "/api/users/interestedMovies?api_token={$apiToken}", [
+            'movie_id' => $movie2['id'],
         ]);
 
         $this->assertSame(202, $client->getResponse()->getStatusCode());
 
         $interestedMovies = $this->getInterestedMoviesList(UsersFixtures::TESTER_ID, $apiToken);
-        $addedMovie = reset($interestedMovies['data']);
-        $this->assertSame($movie['id'], $addedMovie['id']);
+
+        $addedMovies = $interestedMovies['data'];
+        $this->assertCount(2, $addedMovies);
+        $this->assertSame($movie2['id'], $addedMovies[0]['id']);
+        $this->assertSame($movie1['id'], $addedMovies[1]['id']);
     }
 
     private function getInterestedMoviesList(int $userId, string $apiToken)

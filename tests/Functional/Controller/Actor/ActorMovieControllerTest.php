@@ -31,7 +31,7 @@ class ActorMovieControllerTest extends WebTestCase
         $client->request('GET', "/api/movies/{$movie['id']}/actors");
         $response = json_decode($client->getResponse()->getContent(), true);
         $actors = $response['data'];
-        $actor = reset($actors);
+        $actor = reset($actors)['actor'];
 
         $client->request('GET', "/api/actors/{$actor['id']}/movies");
         $response = json_decode($client->getResponse()->getContent(), true);
@@ -53,7 +53,7 @@ class ActorMovieControllerTest extends WebTestCase
         $client->request('GET', "/api/movies/{$movie['id']}/actors");
         $response = json_decode($client->getResponse()->getContent(), true);
         $actors = $response['data'];
-        $actor = reset($actors);
+        $actor = reset($actors)['actor'];
 
         $apiToken = UsersFixtures::TESTER_API_TOKEN;
         $client->request('GET', "/api/actors/{$actor['id']}/movies?api_token={$apiToken}");
