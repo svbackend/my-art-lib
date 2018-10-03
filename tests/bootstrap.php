@@ -12,6 +12,7 @@ require __DIR__.'/../vendor/autoload.php';
 require __DIR__.'/functions.php';
 
 $environmentFile = __DIR__.'/../.env.test';
+$isDbAlreadyCreatedFile = __DIR__.'/.db_already_created';
 
 (new Dotenv())->load($environmentFile);
 
@@ -22,8 +23,14 @@ $kernel->boot();
 $application = new Application($kernel);
 $application->setAutoExit(false);
 
+$isDbAlreadyCreated = file_exists($isDbAlreadyCreatedFile);
+
 // Add the doctrine:database:drop command to the application and run it
-$dropDatabaseDoctrineCommand = function () use ($application) {
+$dropDatabaseDoctrineCommand = function () use ($application, $isDbAlreadyCreated) {
+    if ($isDbAlreadyCreated === true) {
+        return;
+    }
+
     $input = new ArrayInput([
         'command' => 'doctrine:database:drop',
         '--force' => true,
@@ -35,7 +42,12 @@ $dropDatabaseDoctrineCommand = function () use ($application) {
 };
 
 // Add the doctrine:database:create command to the application and run it
-$createDatabaseDoctrineCommand = function () use ($application) {
+$createDatabaseDoctrineCommand = function () use ($application, $isDbAlreadyCreated, $isDbAlreadyCreatedFile) {
+    if ($isDbAlreadyCreated === true) {
+        return;
+    }
+
+    exec('touch ' . $isDbAlreadyCreatedFile);
     $input = new ArrayInput([
         'command' => 'doctrine:database:create',
     ]);
