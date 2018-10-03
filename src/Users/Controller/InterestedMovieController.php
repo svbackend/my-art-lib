@@ -35,8 +35,7 @@ class InterestedMovieController extends BaseController
         $interestedMovies = new PaginatedCollection(
             $repository->getAllInterestedMoviesByUserId($user->getId(), $this->getUser()),
             $offset,
-            $limit ? (int) $limit : null,
-            false
+            $limit ? (int) $limit : null
         );
 
         return $this->response($interestedMovies, 200, [], [
