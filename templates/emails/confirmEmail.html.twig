@@ -6,8 +6,8 @@
 </head>
 <body>
     Hello! Thanks for registration. Confirm your email please:<br>
-    <a href="{{ url('confirm_email', {'token': token}) }}">Confirm Email</a><br>
+    <a href="{{ appFrontendUrl }}/confirmEmail/{{ token }}">Confirm Email</a><br>
     or you can copy url manually:<br>
-    {{ url('confirm_email', {'token': token}) }}<br>
+    {{ appFrontendUrl }}/confirmEmail/{{ token }}<br>
 </body>
 </html>

@@ -63,7 +63,7 @@
       </notes>
       <segment>
         <source>user_registration_email_subject</source>
-        <target></target>
+        <target>Добро пожаловать на {appName}!</target>
       </segment>
     </unit>
   </file>

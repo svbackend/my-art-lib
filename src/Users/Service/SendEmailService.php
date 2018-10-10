@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Users\Service;
 
 use App\Users\Entity\User;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class SendEmailService
@@ -29,12 +31,25 @@ class SendEmailService
      */
     private $confirmationTokenService;
 
-    public function __construct(TranslatorInterface $translator, \Swift_Mailer $mailer, \Twig_Environment $twig, ConfirmationTokenService $confirmationTokenService)
+    /**
+     * @var LoggerInterface|NullLogger
+     */
+    private $logger;
+
+    /**
+     * From email
+     * @var string
+     */
+    private $supportEmail;
+
+    public function __construct(TranslatorInterface $translator, \Swift_Mailer $mailer, \Twig_Environment $twig, ConfirmationTokenService $confirmationTokenService, LoggerInterface $logger)
     {
         $this->translator = $translator;
         $this->mailer = $mailer;
         $this->twig = $twig;
         $this->confirmationTokenService = $confirmationTokenService;
+        $this->supportEmail = \getenv('MAILER_SUPPORT_EMAIL') ?: 'support@mykino.top';
+        $this->logger = $logger ?? new NullLogger();
     }
 
     public function sendEmailConfirmation(User $user)
@@ -46,7 +61,9 @@ class SendEmailService
             ['token' => $emailConfirmationToken]
         );
 
-        $subject = $this->translator->trans('user_registration_email_subject', [], 'users');
+        $subject = $this->translator->trans('user_registration_email_subject', [
+            'appName' => \getenv('APP_NAME'),
+        ], 'users');
 
         $this->sendEmail($user->getEmail(), $subject, $body);
     }
@@ -67,12 +84,20 @@ class SendEmailService
 
     private function sendEmail($recipientEmail, string $subject, string $body)
     {
+        $this->logger->info("[MAILER] Trying to send email to {$recipientEmail} with next params:", [
+            'subject' => $subject,
+            'body' => $body,
+        ]);
         $message = (new \Swift_Message($subject))
-            ->setFrom('send@example.com')
+            ->setFrom($this->supportEmail)
             ->setTo($recipientEmail)
             ->setBody($body, 'text/html');
 
         // todo need to retry if any failed recipients found ($failedRecipients is array of emails)
         $this->mailer->send($message, $failedRecipients);
+
+        if (count($failedRecipients)) {
+            $this->logger->warning('[MAILER] Some of mails not sent, list of all recipients: ', $failedRecipients);
+        }
     }
 }

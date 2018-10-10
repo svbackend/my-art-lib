@@ -4,3 +4,4 @@ twig:
     strict_variables: '%kernel.debug%'
     globals:
         globalApplicationName: '%appName%'
+        appFrontendUrl: '%appFrontendUrl%'

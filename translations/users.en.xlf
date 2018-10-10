@@ -63,7 +63,7 @@
       </notes>
       <segment>
         <source>user_registration_email_subject</source>
-        <target>Welcome to MyArtLib</target>
+        <target>Welcome to {appName}!</target>
       </segment>
     </unit>
   </file>

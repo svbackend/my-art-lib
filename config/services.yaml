@@ -1,6 +1,7 @@
 # config/services.yaml
 parameters:
-    appName: 'MyArtLib'
+    appName: '%env(APP_NAME)%'
+    appFrontendUrl: '%env(APP_FRONTEND_URL)%'
     locale: 'en'
     locales: ["en", "ru", "uk", "pl"]
     router.request_context.host: 127.0.0.1/
