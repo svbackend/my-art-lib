@@ -135,7 +135,6 @@ class UserControllerTest extends WebTestCase
         // Asserting e-mail data
         $this->assertInstanceOf(\Swift_Message::class, $message);
         $this->assertSame('Registration@Tester.com', key($message->getTo()));
-        $this->assertContains('?token', $message->getBody());
     }
 
     public function testPostUsersInvalid()
