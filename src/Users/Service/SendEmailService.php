@@ -62,7 +62,7 @@ class SendEmailService
         );
 
         $subject = $this->translator->trans('user_registration_email_subject', [
-            'appName' => \getenv('APP_NAME'),
+            '{appName}' => \getenv('APP_NAME'),
         ], 'users');
 
         $this->sendEmail($user->getEmail(), $subject, $body);
