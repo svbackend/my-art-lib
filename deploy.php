@@ -36,8 +36,14 @@ after('deploy:failed', 'supervisord:restart');
 before('deploy:symlink', 'database:migrate');
 
 after('deploy:symlink', 'supervisord:restart');
+after('supervisord:restart', 'crontab:update');
 
 task('supervisord:restart', function() {
     run('kill -15 $(cat /tmp/supervisord.pid)');
     run('cd /etc && supervisord');
+});
+
+task('crontab:update', function() {
+    run('crontab /var/www/mykino.top/current/.docker/crontab');
+    run('crontab -l');
 });

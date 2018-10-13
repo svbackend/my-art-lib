@@ -94,6 +94,7 @@ class SendEmailService
             ->setBody($body, 'text/html');
 
         // todo need to retry if any failed recipients found ($failedRecipients is array of emails)
+        $failedRecipients = [];
         $this->mailer->send($message, $failedRecipients);
 
         if (count($failedRecipients)) {

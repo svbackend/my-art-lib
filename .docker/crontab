@@ -1,0 +1,1 @@
+* * * * * /var/www/mykino.top/current/bin/console swiftmailer:spool:send

@@ -160,6 +160,14 @@ todo
 * Postgres: `docker-compose exec postgres bash`
 * Redis: `docker-compose exec redis bash`
 
+### Mail (SwiftMailer)
+
+To send emails we are using SwiftMailer,
+for test/dev env mails will not be sent by default because MAILER_TRANSPORT set as null,
+but if you want to turn this ON you need to setup all MAILER_* params in your env file.
+Also you need to setup cron or manually run command to send mails:
+```bin/console swiftmailer:spool:send```
+
 ### pgAdmin
 
 If you need web interface to manage ur databases set-up new postgres server for pgAdmin:
