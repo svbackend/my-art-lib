@@ -76,7 +76,7 @@ class UserController extends BaseController
         $token = $request->get('token');
 
         if (null === $confirmationToken = $confirmationTokenRepository->findByToken($token)) {
-            throw new BadCredentialsException($translator->trans('bad_email_confirmation_token', [
+            throw new NotFoundHttpException($translator->trans('bad_email_confirmation_token', [
                 'token' => $token,
             ], 'users'));
         }
