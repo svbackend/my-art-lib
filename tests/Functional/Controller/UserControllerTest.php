@@ -86,11 +86,10 @@ class UserControllerTest extends WebTestCase
             'token' => str_repeat('t', 32),
         ]);
 
-        $this->assertSame(401, $client->getResponse()->getStatusCode());
+        $this->assertSame(404, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('error', $response);
-        $this->assertArrayHasKey('error_description', $response);
     }
 
     public function testConfirmEmailWithInvalidToken()
