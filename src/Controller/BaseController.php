@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Guests\Entity\GuestSession;
 use App\Guests\Repository\GuestRepository;
 use App\Pagination\PaginatedCollectionInterface;
+use App\Transformer\Transformer;
 use App\Translation\TranslatedResponseTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,32 +20,40 @@ abstract class BaseController extends Controller implements ControllerInterface
 {
     use TranslatedResponseTrait;
 
+    public function items($data, Transformer $transformer): JsonResponse
+    {
+        return $this->response($data, 200, [], [], $transformer);
+    }
+
     /**
      * @param $data
      * @param int   $status
      * @param array $headers
      * @param array $context
+     * @param Transformer $transformer
      *
      * @return JsonResponse
      */
-    protected function response($data, int $status = 200, array $headers = [], array $context = []): JsonResponse
+    public function response($data, int $status = 200, array $headers = [], array $context = [], ?Transformer $transformer = null): JsonResponse
     {
         if ($data instanceof PaginatedCollectionInterface) {
             $data = $this->addMetaPaginationInfo($data);
         }
 
         $contextWithRoles = $this->appendRolesToContextGroups($context);
-        $translatedContent = $this->translateResponse($data, $contextWithRoles);
-
-        return $this->json($translatedContent, $status, $headers, $context);
+        $response = $this->translateResponse($data, $contextWithRoles);
+        if ($transformer !== null) {
+            $response = $this->prepareResponseData($response, $transformer);
+        }
+        return $this->json($response, $status, $headers, $context);
     }
 
-    protected function getLocales()
+    public function getLocales()
     {
         return $this->getParameter('locales');
     }
 
-    protected function getGuest(): ?GuestSession
+    public function getGuest(): ?GuestSession
     {
         /** @var $request Request */
         $request = $this->get('request_stack')->getCurrentRequest();
@@ -89,5 +98,21 @@ abstract class BaseController extends Controller implements ControllerInterface
         }
 
         return $context;
+    }
+
+    private function prepareResponseData(array $data, Transformer $transformer): array
+    {
+        $response = [];
+        $data = $transformer->process($data);
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                //$value = $transformer->process($value);
+                $response[$key] = $this->prepareResponseData($value, $transformer);
+                continue;
+            }
+            $response[$key] = $value;
+        }
+
+        return $response;
     }
 }

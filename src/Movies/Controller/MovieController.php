@@ -14,6 +14,7 @@ use App\Movies\Request\UpdateMovieRequest;
 use App\Movies\Request\UpdatePosterRequest;
 use App\Movies\Service\MovieManageService;
 use App\Movies\Service\SearchService;
+use App\Movies\Transformer\MovieTransformer;
 use App\Movies\Utils\Poster;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
@@ -53,11 +54,10 @@ class MovieController extends BaseController
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
+        $movies->setHydrationMode($movies::HYDRATE_ARRAY);
         $movies = new PaginatedCollection($movies, $offset, $limit);
 
-        return $this->response($movies, 200, [], [
-            'groups' => ['list'],
-        ]);
+        return $this->items($movies, MovieTransformer::list());
     }
 
     /**

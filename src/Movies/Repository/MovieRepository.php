@@ -28,11 +28,11 @@ class MovieRepository extends ServiceEntityRepository
     private function getBaseQuery(): QueryBuilder
     {
         return $this->createQueryBuilder('m')
-            ->leftJoin('m.translations', 'mt')
+            ->leftJoin('m.translations', 'mt', null, null, 'mt.locale')
             ->addSelect('mt')
             ->leftJoin('m.genres', 'mg')
             ->addSelect('mg')
-            ->leftJoin('mg.translations', 'mgt')
+            ->leftJoin('mg.translations', 'mgt', null, null, 'mgt.locale')
             ->addSelect('mgt');
     }
 

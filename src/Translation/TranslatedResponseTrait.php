@@ -55,6 +55,7 @@ trait TranslatedResponseTrait
     {
         $userLocale = $this->getUserPreferredLocale(array_keys($translations));
 
+        unset($translations[$userLocale]['id']);
         return $translations[$userLocale];
     }
 
