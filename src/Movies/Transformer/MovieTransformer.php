@@ -30,9 +30,7 @@ class MovieTransformer implements Transformer
             return $data;
         }
 
-        if (isset($data['userWatchedMovie'])) {
-            $data['isWatched'] = $data['userWatchedMovie'] !== null;
-        }
+        $data['isWatched'] = isset($data['userWatchedMovie']) && $data['userWatchedMovie'] ? true : false;
 
         if (isset($data['tmdb.id'])) {
             $data['tmdb']['id'] = $data['tmdb.id'];
