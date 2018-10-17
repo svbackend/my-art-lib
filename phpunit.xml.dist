@@ -24,7 +24,7 @@
         <!-- ###- symfony/swiftmailer-bundle ### -->
 
         <!-- ###+ enqueue/enqueue-bundle ### -->
-        <env name="ENQUEUE_DSN" value="null://"/>
+        <env name="ENQUEUE_DSN" value="redis://redis"/>
         <!-- ###- enqueue/enqueue-bundle ### -->
 
         <!-- ###+ nelmio/cors-bundle ### -->

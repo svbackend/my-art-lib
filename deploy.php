@@ -35,7 +35,15 @@ after('deploy:failed', 'supervisord:restart');
 // Migrate database before symlink new release.
 before('deploy:symlink', 'database:migrate');
 
+after('deploy:symlink', 'apache:restart');
+
 after('deploy:symlink', 'supervisord:restart');
+
+task('apache:restart', function() {
+    run('sudo chmod 777 /etc/php/7.2/apache2 && sudo chmod 777 /etc/php/7.2/apache2/php.ini && mv /etc/php/7.2/apache2/php.ini /etc/php/7.2/apache2/php.ini.old');
+    runLocally('scp ./.docker/php.ini {{user}}@{{hostname}}:/etc/php/7.2/apache2/php.ini');
+    run('sudo chmod 755 /etc/php/7.2/apache2 && sudo chmod 644 /etc/php/7.2/apache2/php.ini && sudo systemctl reload apache2');
+});
 
 task('supervisord:restart', function() {
     run('kill -15 $(cat /tmp/supervisord.pid)');
