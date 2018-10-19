@@ -16,6 +16,7 @@ use App\Movies\Service\MovieManageService;
 use App\Movies\Service\SearchService;
 use App\Movies\Transformer\MovieTransformer;
 use App\Movies\Utils\Poster;
+use App\Pagination\CustomPaginatedCollection;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
@@ -43,21 +44,14 @@ class MovieController extends BaseController
      */
     public function getAll(Request $request, MovieRepository $movieRepository)
     {
-        $user = $this->getUser();
-
-        if ($user instanceof User) {
-            $movies = $movieRepository->findAllWithIsUserWatchedFlag($user);
-        } else {
-            $movies = $movieRepository->findAllWithIsGuestWatchedFlag($this->getGuest());
-        }
+        [$movies, $ids, $count] = $movieRepository->findAllWithIsWatchedFlag($this->getUser(), $this->getGuest());
 
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
-        $movies->setHydrationMode($movies::HYDRATE_ARRAY);
-        $movies = new PaginatedCollection($movies, $offset, $limit);
+        $collection = new CustomPaginatedCollection($movies, $ids, $count, $offset, $limit);
 
-        return $this->items($movies, MovieTransformer::list());
+        return $this->items($collection, MovieTransformer::list());
     }
 
     /**

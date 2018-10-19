@@ -109,16 +109,38 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function findAllWithIsUserWatchedFlag(User $user)
+    public function findAllWithIsWatchedFlag(?User $user = null, ?GuestSession $guest = null): array
     {
-        $result = $this->getBaseQuery()
-            ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id') // if this relation exists then user has already watched this movie
-            ->addSelect('uwm')
-            ->setParameter('user_id', $user->getId())
-            ->orderBy('m.id', 'DESC')
-            ->getQuery();
+        $items = $this->getBaseQuery();
 
-        return $result;
+        if ($user !== null) {
+            $items
+                ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id')
+                ->addSelect('uwm')
+                ->setParameter('user_id', $user->getId());
+        }
+
+        if ($guest !== null) {
+            $items
+                ->leftJoin('m.guestWatchedMovie', 'gwm', 'WITH', 'gwm.guestSession = :guest_id')
+                ->addSelect('gwm')
+                ->setParameter('guest_id', $guest->getId());
+        }
+
+        $items->where('m.id IN (:ids)');
+
+        /** Ids query */
+
+        $ids = $this->createQueryBuilder('m')
+            ->select('m.id')
+            ->orderBy('m.id', 'DESC');
+
+        /** Count query */
+
+        $count = $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)');
+
+        return [$items->getQuery(), $ids->getQuery(), $count->getQuery()];
     }
 
     public function findAllWithIsGuestWatchedFlag(?GuestSession $guestSession)
