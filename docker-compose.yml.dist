@@ -23,18 +23,26 @@ services:
           CACHE_DRIVER: redis
     command: [".docker/entrypoint.sh"]
   postgres:
-      image: postgres:9.6
+      image: postgres:11
       ports:
         - 15432:5432
       environment:
         POSTGRES_DB: my_art_lib
         POSTGRES_USER: my_art_lib
         POSTGRES_PASSWORD: my_art_lib
-        PGDATA: /tmp
-  pgadmin:
-      image: fenglc/pgadmin4
-      ports:
-        - 5050:5050
+      volumes:
+      - /YOUR_LOCAL_PATH_TO_POSTGRES_DATA_VOLUME:/var/lib/postgresql/data
+      - .docker/postgres:/docker-entrypoint-initdb.d
+  #pgadmin:
+  #    image: fenglc/pgadmin4
+  #    ports:
+  #      - 5050:5050
+  #pghero:
+  #    image: ankane/pghero
+  #    ports:
+  #      - 8081:8080
+  #    environment:
+  #      DATABASE_URL: "postgres://my_art_lib:my_art_lib@postgres:5432/my_art_lib"
   redis:
       image: redis:4.0-alpine
       ports:

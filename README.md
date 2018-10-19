@@ -13,6 +13,7 @@ Pre-requirements:
 
 Install:
 
+* Copy and customize your docker-compose.yml: `cp docker-compose.yml.dist docker-compose.yml`
 * `docker-compose up --build`
 * `bin/composer update`
 * `cp .env.dist .env`
