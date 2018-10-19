@@ -224,22 +224,36 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function getAllWatchedMoviesByUserId(int $ownerId, ?User $currentUser = null): Query
+    public function getAllWatchedMoviesByUserId(User $owner, ?User $currentUser = null): array
     {
-        $result = $this->getBaseQuery()
+        $items = $this->getBaseQuery()
             ->leftJoin('m.ownerWatchedMovie', 'owm', 'WITH', 'owm.user = :owner_id')
             ->addSelect('owm')
-            ->setParameter('owner_id', $ownerId)
-            ->andWhere('owm.id != 0')
-            ->orderBy('owm.id', 'DESC');
+            ->setParameter('owner_id', $owner->getId());
 
         if ($currentUser !== null) {
-            $result->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id')
+            $items->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id')
                 ->addSelect('uwm')
                 ->setParameter('user_id', $currentUser->getId());
         }
 
-        return $result->getQuery();
+        $items->where('m.id IN (:ids)');
+
+        $ids = $this->createQueryBuilder('m')
+            ->select('m.id')
+            ->leftJoin('m.ownerWatchedMovie', 'owm', 'WITH', 'owm.user = :owner_id')
+            ->where('owm.id != 0')
+            ->setParameter('owner_id', $owner->getId())
+            ->orderBy('owm.id', 'DESC');
+
+        $count = $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)')
+            ->leftJoin('m.ownerWatchedMovie', 'owm', 'WITH', 'owm.user = :owner_id')
+            ->setParameter('owner_id', $owner->getId())
+
+            ->where('owm.id != 0');
+
+        return [$items->getQuery(), $ids->getQuery(), $count->getQuery()];
     }
 
     public function getAllInterestedMoviesByUserId(int $profileOwnerId, ?User $currentUser = null): Query

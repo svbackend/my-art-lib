@@ -4,6 +4,8 @@ namespace App\Users\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Repository\MovieRecommendationRepository;
+use App\Movies\Transformer\MovieTransformer;
+use App\Pagination\CustomPaginatedCollection;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
@@ -28,13 +30,9 @@ class RecommendationsController extends BaseController
         $limit = $request->get('limit', null);
         $minRating = (int) $request->get('minRating', 7);
 
-        $currentUser = $this->getUser();
+        [$items, $ids, $count] = $repository->findAllByUser($profileOwner->getId(), abs($minRating), $this->getUser());
+        $collection = new CustomPaginatedCollection($items, $ids, $count, $offset, $limit);
 
-        $query = $repository->findAllByUser($profileOwner->getId(), abs($minRating), $currentUser);
-        $movies = new PaginatedCollection($query, $offset, $limit, false);
-
-        return $this->response($movies, 200, [], [
-            'groups' => ['list'],
-        ]);
+        return $this->items($collection, MovieTransformer::list());
     }
 }

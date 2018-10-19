@@ -21,7 +21,8 @@ class CustomPaginatedCollection implements PaginatedCollectionInterface
             $this->limit = abs($limit);
         }
 
-        $ids = $idsQuery->setFirstResult($this->offset)->setMaxResults($this->limit)->getArrayResult();
+        $idsQuery = $idsQuery->setFirstResult($this->offset)->setMaxResults($this->limit);
+        $ids = $this->getIds($idsQuery);
         $this->itemsCount = $countQuery->getSingleScalarResult();
         $itemsQuery->setParameter('ids', $ids);
         $this->items = $itemsQuery->getArrayResult();
@@ -45,5 +46,18 @@ class CustomPaginatedCollection implements PaginatedCollectionInterface
     public function getLimit(): int
     {
         return $this->limit;
+    }
+
+    private function getIds(Query $idsQuery): array
+    {
+        $ids = $idsQuery->getArrayResult();
+
+        if (is_array(reset($ids)) === true) {
+            return array_map(function ($id) {
+                return reset($id);
+            }, $ids);
+        }
+
+        return $ids;
     }
 }

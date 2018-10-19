@@ -76,7 +76,7 @@ class WatchedMovieControllerTest extends WebTestCase
     {
         $client = self::$client;
         $apiToken = UsersFixtures::TESTER_API_TOKEN;
-        $username = UsersFixtures::TESTER_USERNAME;
+        $userId = UsersFixtures::TESTER_ID;
         $movies = self::getMovies();
         $movie = reset($movies);
 
@@ -90,15 +90,15 @@ class WatchedMovieControllerTest extends WebTestCase
             ],
         ]);
         //then get id of this movie in our library
-        $watchedMoviesList = $this->getWatchedMoviesList($username, $apiToken);
+        $watchedMoviesList = $this->getWatchedMoviesList($userId, $apiToken);
         $watchedMovie = reset($watchedMoviesList['data']);
         $this->assertSame($movie['id'], $watchedMovie['id']);
         $this->assertNotEmpty($watchedMovie['userWatchedMovie']['id']);
-        $this->assertSame(0, $watchedMovie['userWatchedMovie']['vote']);
+        $this->assertSame(0, (int)$watchedMovie['userWatchedMovie']['vote']);
         $this->assertNull($watchedMovie['userWatchedMovie']['watchedAt']);
 
         $watchedMovieId = $watchedMovie['userWatchedMovie']['id'];
-        $client->request('PATCH', "/api/users/{$username}/watchedMovies/{$watchedMovieId}?api_token={$apiToken}", [
+        $client->request('PATCH', "/api/users/{$userId}/watchedMovies/{$watchedMovieId}?api_token={$apiToken}", [
             'movie' => [
                 'vote' => 8,
                 'watchedAt' => '2010-05-01',
@@ -106,9 +106,9 @@ class WatchedMovieControllerTest extends WebTestCase
         ]);
         $this->assertSame(200, $client->getResponse()->getStatusCode());
 
-        $watchedMoviesList = $this->getWatchedMoviesList($username, $apiToken);
+        $watchedMoviesList = $this->getWatchedMoviesList($userId, $apiToken);
         $updatedWatchedMovie = reset($watchedMoviesList['data']);
-        $this->assertSame(8, $updatedWatchedMovie['userWatchedMovie']['vote']);
+        $this->assertSame(8, (int)$updatedWatchedMovie['userWatchedMovie']['vote']);
         $this->assertNotNull($updatedWatchedMovie['userWatchedMovie']['watchedAt']);
         $this->assertContains('2010-05-01', $updatedWatchedMovie['userWatchedMovie']['watchedAt']);
     }
@@ -117,7 +117,7 @@ class WatchedMovieControllerTest extends WebTestCase
     {
         $client = self::$client;
         $apiToken = UsersFixtures::TESTER_API_TOKEN;
-        $username = UsersFixtures::TESTER_USERNAME;
+        $userId = UsersFixtures::TESTER_ID;
         $movies = self::getMovies();
         $movie = reset($movies);
 
@@ -131,7 +131,7 @@ class WatchedMovieControllerTest extends WebTestCase
             ],
         ]);
 
-        $client->request('PATCH', "/api/users/{$username}/watchedMovies/movie/{$movie['id']}?api_token={$apiToken}", [
+        $client->request('PATCH', "/api/users/{$userId}/watchedMovies/movie/{$movie['id']}?api_token={$apiToken}", [
             'movie' => [
                 'vote' => 7,
                 'watchedAt' => '2010-05-02',
@@ -139,9 +139,9 @@ class WatchedMovieControllerTest extends WebTestCase
         ]);
         $this->assertSame(200, $client->getResponse()->getStatusCode());
 
-        $watchedMoviesList = $this->getWatchedMoviesList($username, $apiToken);
+        $watchedMoviesList = $this->getWatchedMoviesList($userId, $apiToken);
         $updatedWatchedMovie = reset($watchedMoviesList['data']);
-        $this->assertSame(7, $updatedWatchedMovie['userWatchedMovie']['vote']);
+        $this->assertSame(7, (int)$updatedWatchedMovie['userWatchedMovie']['vote']);
         $this->assertNotNull($updatedWatchedMovie['userWatchedMovie']['watchedAt']);
         $this->assertContains('2010-05-02', $updatedWatchedMovie['userWatchedMovie']['watchedAt']);
     }
@@ -165,10 +165,10 @@ class WatchedMovieControllerTest extends WebTestCase
         $this->assertSame(202, $client->getResponse()->getStatusCode());
     }
 
-    private function getWatchedMoviesList(string $username, string $apiToken)
+    private function getWatchedMoviesList(int $id, string $apiToken)
     {
         $client = self::$client;
-        $client->request('GET', "/api/users/{$username}/watchedMovies?api_token={$apiToken}");
+        $client->request('GET', "/api/users/{$id}/watchedMovies?api_token={$apiToken}");
 
         return json_decode($client->getResponse()->getContent(), true);
     }

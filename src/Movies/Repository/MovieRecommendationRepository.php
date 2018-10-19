@@ -27,38 +27,54 @@ class MovieRecommendationRepository extends ServiceEntityRepository
     }
 
     // todo joins for movie (genres, translations etc.)
-    public function findAllByUser(int $userId, int $minVote = 7, ?User $currentUser = null): Query
+    public function findAllByUser(int $userId, int $minVote = 7, ?User $currentUser = null): array
     {
-        $result = $this->getEntityManager()->createQueryBuilder()
-            ->select('m, COUNT(mr.recommendedMovie) HIDDEN rate')
+        $items = $this->getEntityManager()->createQueryBuilder()
+            ->select('m')
+            ->from(Movie::class, 'm')
+            ->leftJoin('m.translations', 'mt', null, null, 'mt.locale')
+            ->addSelect('mt')
+            ->where('m.id IN (:ids)');
+
+        $ids = $this->getEntityManager()->createQueryBuilder()
+            ->select('IDENTITY(mr.recommendedMovie), COUNT(mr.recommendedMovie) HIDDEN rate')
             ->from(UserWatchedMovie::class, 'uwm')
             ->leftJoin(MovieRecommendation::class, 'mr', 'WITH', 'uwm.movie = mr.originalMovie')
-            ->leftJoin(Movie::class, 'm', 'WITH', 'mr.recommendedMovie = m')
-            ->where('m IS NOT NULL AND uwm.user = :user AND uwm.vote >= :vote')
+            ->where('uwm.user = :user AND uwm.vote >= :vote')
             ->setParameter('user', $userId)
             ->setParameter('vote', $minVote)
-            ->groupBy('mr.recommendedMovie, m.id')
-            ->orderBy('MAX(mr.id) DESC, rate', 'DESC');
+            ->groupBy('mr.recommendedMovie')
+            ->orderBy('rate DESC, MAX(mr.id)', 'DESC');
 
         if ($currentUser !== null) {
             if ($currentUser->getId() === $userId) {
-                $result = $result
+                $items = $items
                     ->addSelect('uwmj')
-                    ->addGroupBy('uwmj.id')
                     ->leftJoin('m.userWatchedMovie', 'uwmj', 'WITH', 'uwmj.user = :user')
-                    ->leftJoin(UserInterestedMovie::class, 'uimj', 'WITH', 'uimj.user = :user')
-                    ->andWhere('uwmj.id IS NULL');
+                    ->andWhere('uwmj.id IS NULL')
+                    ->setParameter('user', $currentUser->getId());
+
+                $ids
+                    ->leftJoin(UserWatchedMovie::class, 'uwmj', 'WITH', 'uwmj.movie = mr.recommendedMovie AND uwmj.user = :user')
+                    ->andWhere('uwmj.id IS NULL')
+                    ->setParameter('user', $currentUser->getId());
             } else {
-                $result = $result
+                $items = $items
                     ->addSelect('uwmj')
-                    ->addGroupBy('uwmj.id')
                     ->leftJoin('m.userWatchedMovie', 'uwmj', 'WITH', 'uwmj.user = :currentUser')
-                    ->leftJoin(UserInterestedMovie::class, 'uimj', 'WITH', 'uimj.user = :currentUser')
                     ->setParameter('currentUser', $currentUser->getId());
             }
         }
 
-        return $result->getQuery();
+        $count = $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(DISTINCT mr.recommendedMovie)')
+            ->from(UserWatchedMovie::class, 'uwm')
+            ->leftJoin(MovieRecommendation::class, 'mr', 'WITH', 'uwm.movie = mr.originalMovie')
+            ->where('uwm.user = :user AND uwm.vote >= :vote')
+            ->setParameter('user', $userId)
+            ->setParameter('vote', $minVote);
+
+        return [$items->getQuery(), $ids->getQuery(), $count->getQuery()];
     }
 
     public function findAllByMovieAndUser(int $movieId, int $userId): Query
