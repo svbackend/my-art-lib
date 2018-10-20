@@ -71,44 +71,6 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
-    public function findAllByIdsWithFlags(array $ids, int $userId, int $originalMovieId)
-    {
-        $result = $this->getBaseQuery()
-            ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id') // if this relation exists then user has already watched this movie
-            ->addSelect('uwm')
-            ->leftJoin('m.userRecommendedMovie', 'urm', 'WITH', 'urm.user = :user_id AND urm.originalMovie = :original_movie_id')
-            ->addSelect('urm')
-            ->where('m.id IN (:ids)')
-            ->setParameter('user_id', $userId)
-            ->setParameter('original_movie_id', $originalMovieId)
-            ->setParameter('ids', $ids)
-            ->getQuery()
-            ->getResult();
-
-        // Sorting here because ORDER BY FIELD(m.id, ...$ids) not working in postgres, we need to use joins on sorted table and so on, but I dont want to
-        // todo => add sorting to sql
-        $reversedIds = array_flip($ids);
-        usort($result, function (Movie $movie1, Movie $movie2) use ($reversedIds) {
-            return $reversedIds[$movie1->getId()] <=> $reversedIds[$movie2->getId()];
-        });
-
-        return $result;
-    }
-
-    public function findAllByIdsWithoutFlags(array $ids)
-    {
-        $result = $this->findAllByIds($ids);
-
-        // Sorting here because ORDER BY FIELD(m.id, ...$ids) not working in postgres, we need to use joins on sorted table and so on, but I dont want to
-        // todo => add sorting to sql
-        $reversedIds = array_flip($ids);
-        usort($result, function (Movie $movie1, Movie $movie2) use ($reversedIds) {
-            return $reversedIds[$movie1->getId()] <=> $reversedIds[$movie2->getId()];
-        });
-
-        return $result;
-    }
-
     public function findAllWithIsWatchedFlag(?User $user = null, ?GuestSession $guest = null): array
     {
         $items = $this->getBaseQuery();
@@ -141,20 +103,6 @@ class MovieRepository extends ServiceEntityRepository
             ->select('COUNT(m.id)');
 
         return [$items->getQuery(), $ids->getQuery(), $count->getQuery()];
-    }
-
-    public function findAllWithIsGuestWatchedFlag(?GuestSession $guestSession)
-    {
-        $guestSessionId = $guestSession ? $guestSession->getId() : 0;
-
-        $result = $this->getBaseQuery()
-            ->leftJoin('m.guestWatchedMovie', 'gwm', 'WITH', 'gwm.guestSession = :guest_session_id') // if this relation exists then guest has already watched this movie
-            ->addSelect('gwm')
-            ->setParameter('guest_session_id', $guestSessionId)
-            ->orderBy('m.id', 'DESC')
-            ->getQuery();
-
-        return $result;
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Users\Controller;
 use App\Controller\BaseController;
 use App\Movies\Repository\MovieRecommendationRepository;
 use App\Movies\Transformer\MovieTransformer;
+use App\Movies\Transformer\UserRecommendationTransformer;
 use App\Pagination\CustomPaginatedCollection;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
@@ -21,7 +22,7 @@ class RecommendationsController extends BaseController
      * @param User                          $profileOwner
      * @param Request                       $request
      * @param MovieRecommendationRepository $repository
-     *
+     * @throws
      * @return JsonResponse
      */
     public function getUserRecommendations(User $profileOwner, Request $request, MovieRecommendationRepository $repository)
@@ -33,6 +34,6 @@ class RecommendationsController extends BaseController
         [$items, $ids, $count] = $repository->findAllByUser($profileOwner->getId(), abs($minRating), $this->getUser());
         $collection = new CustomPaginatedCollection($items, $ids, $count, $offset, $limit);
 
-        return $this->items($collection, MovieTransformer::list());
+        return $this->items($collection, UserRecommendationTransformer::list($collection->getItemsIds()));
     }
 }
