@@ -53,8 +53,12 @@ class MovieRecommendationRepository extends ServiceEntityRepository
                     ->andWhere('uwmj.id IS NULL')
                     ->setParameter('user', $currentUser->getId());
 
+                // idk how it works, in join I put "...AND uwmj.id IS NOT NULL" but I've also add where condition:
+                // "uwmj.id IS NULL" and its working correctly and fast, if we remove condition from join - it will
+                // still work correctly but ~x10 longer, if we remove condition from andWhere(...) then it will show
+                // movies that user already watched. So this query very tricky, be careful :)
                 $ids
-                    ->leftJoin(UserWatchedMovie::class, 'uwmj', 'WITH', 'uwmj.movie = mr.recommendedMovie AND uwmj.user = :user')
+                    ->leftJoin(UserWatchedMovie::class, 'uwmj', 'WITH', 'uwmj.movie = mr.recommendedMovie AND uwmj.user = :user AND uwmj.id IS NOT NULL')
                     ->andWhere('uwmj.id IS NULL')
                     ->setParameter('user', $currentUser->getId());
             } else {
