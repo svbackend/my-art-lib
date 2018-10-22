@@ -44,6 +44,20 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     }
 
     /**
+     * @param string $email
+     * @return User|null
+     * @throws NonUniqueResultException
+     */
+    public function loadUserByEmail(string $email): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.email = :email')
+            ->setParameter('email', $email)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * @param array $criteria
      *
      * @return mixed

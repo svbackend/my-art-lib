@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Users\Repository;
 
 use App\Users\Entity\ConfirmationToken;
+use App\Users\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -21,10 +22,37 @@ class ConfirmationTokenRepository extends ServiceEntityRepository
         parent::__construct($registry, ConfirmationToken::class);
     }
 
+    /**
+     * @param string $token
+     * @return ConfirmationToken|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function findByToken(string $token): ?ConfirmationToken
     {
-        return $this->findOneBy([
-            'token' => $token,
-        ]);
+        return $this->createQueryBuilder('t')
+            ->select('t')
+            ->where('t.token = :token AND t.expires_at >= :now')
+            ->setParameter('token', $token)
+            ->setParameter('now', new \DateTime())
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @param User $user
+     * @param string $type
+     * @return ConfirmationToken|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findByUserAndType(User $user, string $type): ?ConfirmationToken
+    {
+        return $this->createQueryBuilder('t')
+            ->select('t')
+            ->where('t.user = :user AND t.type = :type AND t.expires_at >= :now')
+            ->setParameter('user', $user->getId())
+            ->setParameter('type', $type)
+            ->setParameter('now', new \DateTime())
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

@@ -112,7 +112,7 @@ class WatchedMovieController extends BaseController
      * @param Request         $request
      * @param User            $profileOwner
      * @param MovieRepository $repository
-     *
+     * @throws
      * @return JsonResponse
      */
     public function getAll(Request $request, User $profileOwner, MovieRepository $repository)

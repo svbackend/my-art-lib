@@ -69,6 +69,8 @@ class UserController extends BaseController
      * @param ConfirmationTokenRepository $confirmationTokenRepository
      * @param TranslatorInterface         $translator
      *
+     * @throws
+     *
      * @return JsonResponse
      */
     public function postConfirmEmail(ConfirmEmailRequest $request, ConfirmationTokenRepository $confirmationTokenRepository, TranslatorInterface $translator)

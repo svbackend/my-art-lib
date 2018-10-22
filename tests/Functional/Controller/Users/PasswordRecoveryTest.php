@@ -20,10 +20,16 @@ class PasswordRecoveryTest extends WebTestCase
     public function testPasswordLostRequestSuccess()
     {
         $client = self::$client;
-        $client->enableProfiler();
-        $client->request('POST', '/api/passwordLostRequest', [
-            'email' => UsersFixtures::TESTER_EMAIL,
+
+        // To remove test token
+        $client->request('POST', '/api/passwordRecovery', [
+            'token' => UsersFixtures::TESTER_PASSWORD_RECOVERY_TOKEN,
+            'password' => 'newPassword123',
         ]);
+
+        $client->enableProfiler();
+        $email = UsersFixtures::TESTER_EMAIL;
+        $client->request('GET', "/api/users/{$email}/recoverPassword");
         $this->assertSame(200, $client->getResponse()->getStatusCode());
 
         $mailCollector = $client->getProfile()->getCollector('swiftmailer');
@@ -36,24 +42,21 @@ class PasswordRecoveryTest extends WebTestCase
 
         $this->assertInstanceOf(\Swift_Message::class, $message);
         $this->assertSame(UsersFixtures::TESTER_EMAIL, key($message->getTo()));
-        $this->assertContains('?token', $message->getBody());
     }
 
     public function testPasswordLostRequestWithoutAccess()
     {
         $client = self::$client;
-        $client->request('POST', '/api/passwordLostRequest?api_token='.UsersFixtures::TESTER_API_TOKEN, [
-            'email' => UsersFixtures::TESTER_EMAIL,
-        ]);
+        $email = UsersFixtures::TESTER_EMAIL;
+        $token = UsersFixtures::TESTER_API_TOKEN;
+        $client->request('GET', "/api/users/{$email}/recoverPassword?api_token={$token}");
         $this->assertSame(403, $client->getResponse()->getStatusCode());
     }
 
     public function testPasswordLostRequestNotFoundUser()
     {
         $client = self::$client;
-        $client->request('POST', '/api/passwordLostRequest', [
-            'email' => 'not@existing.email',
-        ]);
+        $client->request('GET', "/api/users/not@existing.email/recoverPassword");
         $this->assertSame(404, $client->getResponse()->getStatusCode());
     }
 

@@ -66,5 +66,11 @@
         <target>Добро пожаловать на {appName}!</target>
       </segment>
     </unit>
+    <unit id="DiQsp6C" name="user_password_recovery_email_subject">
+      <segment>
+        <source>user_password_recovery_email_subject</source>
+        <target>Возобновление пароля</target>
+      </segment>
+    </unit>
   </file>
 </xliff>
