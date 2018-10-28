@@ -3,6 +3,8 @@
 namespace App\Movies\EventListener;
 
 use App\Actors\EventListener\ActorSyncProcessor;
+use App\Movies\Entity\Movie;
+use App\Movies\Entity\ReleaseDateQueue;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -43,6 +45,8 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
      * @throws \ErrorException
      *
      * @return object|string
+     *
+     * todo add event that new movie is added through this processor?
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
@@ -56,6 +60,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         }
 
         $movies = $this->normalizer->normalizeMoviesToObjects([$movie]);
+        /** @var $movie Movie */
         $movie = $movies->current();
 
         if ($this->em->isOpen() === false) {
@@ -64,6 +69,11 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
         $this->em->persist($movie);
         $this->logger->info(sprintf('Saved %s with id %s', $movie->getOriginalTitle(), $movie->getId()));
+
+        if ($movie->getReleaseDate() === null || $movie->getReleaseDate()->getTimestamp() > time()) {
+            $releaseDateQueueItem = new ReleaseDateQueue($movie);
+            $this->em->persist($releaseDateQueueItem);
+        }
 
         try {
             $this->em->flush();
