@@ -10,7 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass="App\Countries\Repository\CountryRepository")
  * @ORM\Table(name="countries")
- * @UniqueEntity(fields="code", message="This un code already exists")
+ * @UniqueEntity(fields="code", message="This code already exists")
  */
 class Country
 {
@@ -39,8 +39,8 @@ class Country
             );
         }
 
-        $this->code = $code;
-        $this->name = $name;
+        $this->code = mb_strtoupper($code);
+        $this->name = ucfirst($name);
     }
 
     public function getId()
