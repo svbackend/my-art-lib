@@ -70,11 +70,6 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         $this->em->persist($movie);
         $this->logger->info(sprintf('Saved %s with id %s', $movie->getOriginalTitle(), $movie->getId()));
 
-        if ($movie->getReleaseDate() === null || $movie->getReleaseDate()->getTimestamp() > time()) {
-            $releaseDateQueueItem = new ReleaseDateQueue($movie);
-            $this->em->persist($releaseDateQueueItem);
-        }
-
         try {
             $this->em->flush();
         } catch (UniqueConstraintViolationException $uniqueException) {
