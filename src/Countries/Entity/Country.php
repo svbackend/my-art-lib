@@ -33,10 +33,9 @@ class Country
 
     public function __construct(string $name, string $code)
     {
+        // todo movie to db constraint
         if (mb_strlen($code) !== 3) {
-            throw new \InvalidArgumentException(
-                sprintf('"%s" should be exactly 3 characters long', $code)
-            );
+            // throw new \InvalidArgumentException(sprintf('"%s" should be exactly 3 characters long', $code));
         }
 
         $this->code = mb_strtoupper($code);

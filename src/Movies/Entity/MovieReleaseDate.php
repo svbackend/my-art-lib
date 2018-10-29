@@ -34,7 +34,7 @@ class MovieReleaseDate
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Countries\Entity\Country")
-     * @ORM\JoinColumn(name="country_code", referencedColumnName="code", nullable=false)
+     * @ORM\JoinColumn(referencedColumnName="code", nullable=false)
      * @Groups({"list", "view"})
      */
     private $country;

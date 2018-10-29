@@ -7,9 +7,11 @@ namespace App\Movies\Service;
 use App\Countries\Entity\Country;
 use App\Countries\Repository\CountryRepository;
 use App\Movies\Entity\Movie;
+use App\Movies\Entity\MovieReleaseDate;
 use App\Movies\Entity\ReleaseDateQueue;
 use App\Movies\Repository\MovieReleaseDateRepository;
 use App\Movies\Repository\ReleaseDateQueueRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ReleaseDateService
@@ -38,7 +40,12 @@ class ReleaseDateService
                 $movie = $queueItem->getMovie();
                 $releaseDate = $this->imdbReleaseDateService->getReleaseDate($movie, $country);
                 if ($releaseDate === null) {
+                    echo "No release date for country {$country->getName()}\r\n";
                     $allCountriesHaveReleaseDate = false;
+                } else {
+                    echo "Release date {$releaseDate->format('d-m-Y')} in {$country->getName()} ({$country->getCode()}) saved for movie {$movie->getOriginalTitle()}\r\n";
+                    $movieReleaseDate = new MovieReleaseDate($movie, $country, $releaseDate);
+                    $this->em->persist($movieReleaseDate);
                 }
             }
 
@@ -47,6 +54,10 @@ class ReleaseDateService
             }
         }
 
-        $this->em->flush();
+        try {
+            $this->em->flush();
+        } catch (UniqueConstraintViolationException $exception) {
+            // If release date was saved early
+        }
     }
 }
