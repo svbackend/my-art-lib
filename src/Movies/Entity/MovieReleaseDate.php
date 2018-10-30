@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass="App\Movies\Repository\MovieReleaseDateRepository")
  * @ORM\Table(name="movies_release_dates",
  *     uniqueConstraints={
- *      @ORM\UniqueConstraint(name="Movie_id_Country_code", columns={"movie_id", "country_code"})
+ *      @ORM\UniqueConstraint(name="Movie_id_Country_id", columns={"movie_id", "country_id"})
  *     })
  */
 class MovieReleaseDate
@@ -34,7 +34,7 @@ class MovieReleaseDate
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Countries\Entity\Country")
-     * @ORM\JoinColumn(referencedColumnName="code", nullable=false)
+     * @ORM\JoinColumn(nullable=false)
      * @Groups({"list", "view"})
      */
     private $country;
