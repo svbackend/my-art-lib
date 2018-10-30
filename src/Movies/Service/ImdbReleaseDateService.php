@@ -27,8 +27,6 @@ class ImdbReleaseDateService
      */
     public function getReleaseDate(Movie $movie, Country $country): ?\DateTimeInterface
     {
-        //$this->cache->set($this->getCacheKeyForIsParsedFlag($movie), false);
-
         if ($this->cache->get($this->getCacheKeyForIsParsedFlag($movie), false) === false) {
             $this->parseReleaseDates($movie);
         }
@@ -64,9 +62,9 @@ class ImdbReleaseDateService
          */
         foreach ($result as $countryCode => $date) {
             $country = new Country('', $countryCode);
-            $this->cache->set($this->getCacheKeyForDate($movie, $country), $date->getTimestamp());
+            $this->cache->set($this->getCacheKeyForDate($movie, $country), $date->getTimestamp(), time() + 3600);
         }
 
-        $this->cache->set($this->getCacheKeyForIsParsedFlag($movie), true);
+        $this->cache->set($this->getCacheKeyForIsParsedFlag($movie), true, time() + 3600);
     }
 }
