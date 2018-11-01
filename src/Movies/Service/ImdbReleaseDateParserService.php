@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
-use App\Countries\Entity\Country;
 use App\Movies\Entity\Movie;
 use Symfony\Component\DomCrawler\Crawler;
 

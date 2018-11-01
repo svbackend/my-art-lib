@@ -31,16 +31,6 @@ class Country
      */
     private $name;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private $imdbName;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $altNames;
-
     public function __construct(string $name, string $code)
     {
         // todo movie to db constraint
@@ -50,8 +40,6 @@ class Country
 
         $this->code = mb_strtoupper($code);
         $this->name = ucfirst($name);
-        $this->imdbName = $this->name;
-        $this->altNames = $this->name;
     }
 
     public function getId()
@@ -67,15 +55,5 @@ class Country
     public function getName(): string
     {
         return $this->name;
-    }
-
-    public function getImdbName()
-    {
-        return $this->imdbName;
-    }
-
-    public function getAltNames()
-    {
-        return $this->altNames;
     }
 }

@@ -40,10 +40,8 @@ class ReleaseDateService
                 $movie = $queueItem->getMovie();
                 $releaseDate = $this->imdbReleaseDateService->getReleaseDate($movie, $country);
                 if ($releaseDate === null) {
-                    echo "No release date for country {$country->getName()}\r\n";
                     $allCountriesHaveReleaseDate = false;
                 } else {
-                    echo "Release date {$releaseDate->format('d-m-Y')} in {$country->getName()} ({$country->getCode()}) saved for movie {$movie->getOriginalTitle()}\r\n";
                     $movieReleaseDate = new MovieReleaseDate($movie, $country, $releaseDate);
                     $this->em->persist($movieReleaseDate);
                 }

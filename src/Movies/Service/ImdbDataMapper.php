@@ -6,21 +6,23 @@ namespace App\Movies\Service;
 
 use App\Countries\Entity\Country;
 use App\Countries\Repository\CountryRepository;
+use App\Countries\Repository\ImdbCountryRepository;
 
 class ImdbDataMapper
 {
-    private $countryMap = [
-        'Poland' => 'POL',
-        'Ukraine' => 'UKR',
-        'Russia' => 'RUS',
-        'Belarus' => 'BLR',
-    ];
+    private $countryMap = [];
 
     private $countryRepository;
 
-    public function __construct(CountryRepository $countryRepository)
+    public function __construct(ImdbCountryRepository $countryRepository)
     {
         $this->countryRepository = $countryRepository;
+
+        $countries = $countryRepository->findAll();
+
+        foreach ($countries as $imdbCountry) {
+            $this->countryMap[$imdbCountry->getName()] = $imdbCountry->getCountry()->getCode();
+        }
     }
 
     /***
