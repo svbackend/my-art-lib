@@ -27,4 +27,14 @@ class CountryRepository extends ServiceEntityRepository
             'code' => $code
         ]);
     }
+
+    public function findAllByName(string $name): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c')
+            ->where('c.name LIKE "%:name%"')
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getResult();
+    }
 }

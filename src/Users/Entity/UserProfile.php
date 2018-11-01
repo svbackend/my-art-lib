@@ -59,6 +59,11 @@ class UserProfile
      */
     private $public_email;
 
+    /**
+     * @ORM\Column(type="string", length=3, nullable=true)
+     */
+    private $country_code;
+
     public function __construct()
     {
         $this->contacts = new ArrayCollection();
@@ -192,5 +197,15 @@ class UserProfile
         $this->contacts->add($contact);
 
         return $this;
+    }
+
+    public function setCountryCode(string $code)
+    {
+        $this->countryCode = $code;
+    }
+
+    public function getCountryCode(): string
+    {
+        return $this->countryCode;
     }
 }
