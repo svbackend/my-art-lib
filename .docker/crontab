@@ -1,3 +1,4 @@
 * * * * * /var/www/mykino.top/current/bin/console swiftmailer:spool:send
 0 3 * * * /var/www/mykino.top/current/bin/console app:run-release-date-queue
 0 20 * * * /var/www/mykino.top/current/bin/console app:release-date-notifications
+0 1 * * * /var/www/mykino.top/current/bin/console app:fix-release-date-queue

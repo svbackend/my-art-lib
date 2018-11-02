@@ -23,12 +23,13 @@ class ReleaseDateQueueRepository extends ServiceEntityRepository
         parent::__construct($registry, ReleaseDateQueue::class);
     }
 
-    public function findAllWithMovies(): Query
+    public function findAllWithMovies(int $isActive = 1): Query
     {
         $query = $this->createQueryBuilder('rdq')
             ->leftJoin('rdq.movie', 'm')
             ->addSelect('m')
-            ->where('rdq.isActive = 1')
+            ->where('rdq.isActive = :active')
+            ->setParameter('active', $isActive)
             ->getQuery();
 
         return $query;
