@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Movie "{{ movieTitle }}" available in the cinemas of your country!</title>
+</head>
+<body>
+    Hello! You added the movie "{{ movieTitle }}" as a movie you want to watch,
+    a good news - it has already appeared in the cinemas of your country, enjoy watching!<br>
+    After viewing, do not forget to add it to your collection on
+    <a href="{{ appFrontendUrl }}/movie/{{ movieId }}">{{ movieTitle }} ({{ releaseDate | date('Y') }}) | {{ globalApplicationName }}</a>
+    <br>
+    <br>
+    From <a href="{{ appFrontendUrl }}">{{ globalApplicationName }}</a> team.
+</body>
+</html>

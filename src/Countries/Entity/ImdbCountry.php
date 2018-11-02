@@ -37,10 +37,10 @@ class ImdbCountry
      */
     private $altNames;
 
-    public function __construct(Country $country, string $name, string $altNames = '')
+    public function __construct(Country $country, string $name = '', string $altNames = '')
     {
         $this->country = $country;
-        $this->name = $name;
+        $this->name = $name ?: $country->getName();
         $this->altNames = $altNames;
     }
 

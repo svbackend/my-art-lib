@@ -8,6 +8,8 @@ Warning: Some examples in this documentation can be simplified for better readab
 * `php bin/console doctrine:migrations:diff`
 * `php bin/console doctrine:fixtures:load --purge-with-truncate`
 * `bin/console enqueue:consume --setup-broker -vvv`
+* `bin/console translation:extract`
+* `bin/console swiftmailer:spool:send`
 * `php vendor/bin/php-cs-fixer fix src`
 * `vendor/bin/dep deploy -vvv`
 * `php bin/phpunit`
