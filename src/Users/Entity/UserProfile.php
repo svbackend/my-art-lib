@@ -61,6 +61,7 @@ class UserProfile
 
     /**
      * @ORM\Column(type="string", length=3, nullable=true)
+     * @Groups({"list", "view"})
      */
     private $country_code;
 
