@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Movies\Repository;
 
-use App\Movies\Entity\Movie;
 use App\Movies\Entity\ReleaseDateQueue;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;

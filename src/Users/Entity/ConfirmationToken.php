@@ -58,7 +58,7 @@ class ConfirmationToken
      */
     public function __construct(User $user, $type, \DateTimeInterface $expires_at = null)
     {
-        if (in_array($type, $this->getValidTypes(), true) === false) {
+        if (\in_array($type, $this->getValidTypes(), true) === false) {
             throw new \InvalidArgumentException(sprintf('$type should be valid type! Instead %s given', $type));
         }
 

@@ -39,7 +39,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
         if (!$userProvider instanceof UserProvider) {
             throw new \InvalidArgumentException(
                 $this->translator->trans('invalid_user_provider', [
-                    'actual' => get_class($userProvider),
+                    'actual' => \get_class($userProvider),
                 ], 'exceptions')
             );
         }

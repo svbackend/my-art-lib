@@ -11,8 +11,10 @@ class CountryController extends BaseController
 {
     /**
      * @Route("/api/countries", methods={"GET"})
-     * @param Request $request
+     *
+     * @param Request           $request
      * @param CountryRepository $repository
+     *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function getAll(Request $request, CountryRepository $repository)

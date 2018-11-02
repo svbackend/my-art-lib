@@ -40,8 +40,8 @@ class UserInterestedMovie
     /**
      * UserInterestedMovie constructor.
      *
-     * @param User                    $user
-     * @param Movie                   $movie
+     * @param User  $user
+     * @param Movie $movie
      *
      * @throws \Exception
      */

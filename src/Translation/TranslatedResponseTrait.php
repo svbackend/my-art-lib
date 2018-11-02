@@ -21,7 +21,7 @@ trait TranslatedResponseTrait
         /** @var $normalizer Serializer */
         $normalizer = $this->get('serializer');
         $response = $normalizer->normalize($response, null, $context);
-        $response = $this->translateEntities(is_array($response) ? $response : [$response]);
+        $response = $this->translateEntities(\is_array($response) ? $response : [$response]);
 
         return $response;
     }
@@ -40,7 +40,7 @@ trait TranslatedResponseTrait
                 break;
             }
 
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $data[$key] = $this->translateEntities($value, $recursive);
             }
         }
@@ -56,6 +56,7 @@ trait TranslatedResponseTrait
         $userLocale = $this->getUserPreferredLocale(array_keys($translations));
 
         unset($translations[$userLocale]['id']);
+
         return $translations[$userLocale];
     }
 
@@ -78,7 +79,7 @@ trait TranslatedResponseTrait
         $preferredLocale = $request->getPreferredLanguage($locales);
 
         $locale = $request->getLocale(); // can be set by query param (?language=ru) or by symfony
-        if ($locale !== $request->getDefaultLocale() && in_array($locale, $locales, true) === true) {
+        if ($locale !== $request->getDefaultLocale() && \in_array($locale, $locales, true) === true) {
             $preferredLocale = $locale;
         }
 

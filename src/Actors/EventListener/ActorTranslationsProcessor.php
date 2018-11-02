@@ -99,7 +99,7 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
 
         foreach ($translations as $translation) {
             $translationLocale = $translation['iso_639_1'];
-            if (in_array($translationLocale, $this->locales, true) === false) {
+            if (\in_array($translationLocale, $this->locales, true) === false) {
                 continue;
             }
             if ($actor->getTranslation($translationLocale, false) !== null) {

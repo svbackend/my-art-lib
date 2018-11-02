@@ -34,7 +34,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $this->movieRepository = $movieRepository;
         $this->searchService = $searchService;
         $this->locales = $localeService->getLocales();
-        $this->localesCount = count($this->locales);
+        $this->localesCount = \count($this->locales);
         $this->producer = $producer;
     }
 
@@ -99,7 +99,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
         $translations = $translationsResponse['translations'];
 
         foreach ($translations as $translation) {
-            if (in_array($translation['iso_639_1'], $this->locales, true) === false) {
+            if (\in_array($translation['iso_639_1'], $this->locales, true) === false) {
                 continue;
             }
             $data = $translation['data'];
@@ -149,7 +149,7 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
             }
         }
 
-        return count(array_diff($this->locales, $existingTranslations)) <= 2;
+        return \count(array_diff($this->locales, $existingTranslations)) <= 2;
     }
 
     public static function getSubscribedTopics()

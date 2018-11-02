@@ -8,7 +8,8 @@ class UserRecommendationTransformer implements Transformer
 {
     private $hiddenFields = [];
     /**
-     * [int movie id => int how many times this movie were recommended]
+     * [int movie id => int how many times this movie were recommended].
+     *
      * @var array
      */
     private $idToTimesRecommendedMap = [];

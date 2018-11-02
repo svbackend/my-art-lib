@@ -7,7 +7,6 @@ use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieRecommendation;
 use App\Movies\EventListener\AddRecommendationProcessor;
 use App\Movies\Repository\MovieRecommendationRepository;
-use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\NewMovieRecommendationRequest;
 use App\Movies\Request\RemoveMovieRecommendationRequest;
 use App\Movies\Request\SearchRequest;
@@ -143,8 +142,8 @@ class MovieRecommendationController extends BaseController
     /**
      * @Route("/api/movies/{id}/recommendations", methods={"GET"})
      *
-     * @param Request $request
-     * @param Movie $movie
+     * @param Request                       $request
+     * @param Movie                         $movie
      * @param MovieRecommendationRepository $repository
      *
      * @return JsonResponse

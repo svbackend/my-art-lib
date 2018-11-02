@@ -4,7 +4,6 @@ namespace App\Movies\EventListener;
 
 use App\Actors\EventListener\ActorSyncProcessor;
 use App\Movies\Entity\Movie;
-use App\Movies\Entity\ReleaseDateQueue;
 use App\Movies\Event\MovieAddedFromTmdbEvent;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;

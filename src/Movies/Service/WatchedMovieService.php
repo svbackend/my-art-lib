@@ -173,7 +173,7 @@ class WatchedMovieService
     private function onMovieAdded(WatchedMovie $watchedMovie): void
     {
         $movie = $watchedMovie->getMovie();
-        if (count($movie->getSimilarMovies()) === 0) {
+        if (\count($movie->getSimilarMovies()) === 0) {
             $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, json_encode($movie->getId()));
         }
     }

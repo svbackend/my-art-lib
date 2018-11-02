@@ -22,7 +22,7 @@ class MovieAddedFromTmdbEventListener
         $this->em = $em;
         $this->imdbIdLoaderService = $imdbIdLoaderService;
     }
-    
+
     public function onMovieAddedFromTmdb(MovieAddedFromTmdbEvent $event): void
     {
         $movie = $event->getMovie();

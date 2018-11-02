@@ -47,9 +47,11 @@ class InterestedMovieController extends BaseController
      * @Route("/api/users/interestedMovies", methods={"POST"});
      *
      * @param AddInterestedMovieRequest $request
-     * @param EntityManagerInterface $em
-     * @return JsonResponse
+     * @param EntityManagerInterface    $em
+     *
      * @throws \Exception
+     *
+     * @return JsonResponse
      */
     public function postInterestedMovies(AddInterestedMovieRequest $request, EntityManagerInterface $em)
     {
@@ -72,9 +74,10 @@ class InterestedMovieController extends BaseController
     /**
      * @Route("/api/users/interestedMovies/{id<\d+>}", methods={"DELETE"});
      *
-     * @param int $id
+     * @param int                       $id
      * @param InterestedMovieRepository $repository
-     * @param EntityManagerInterface $em
+     * @param EntityManagerInterface    $em
+     *
      * @return JsonResponse
      */
     public function deleteInterestedMovies(int $id, InterestedMovieRepository $repository, EntityManagerInterface $em)

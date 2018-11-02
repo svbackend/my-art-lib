@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
-use App\Countries\Entity\Country;
-use App\Countries\Repository\CountryRepository;
 use App\Countries\Repository\ImdbCountryRepository;
 
 class ImdbDataMapper

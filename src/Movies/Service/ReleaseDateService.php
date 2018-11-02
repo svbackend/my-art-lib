@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Movies\Service;
 
-use App\Countries\Entity\Country;
 use App\Countries\Repository\CountryRepository;
-use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieReleaseDate;
 use App\Movies\Entity\ReleaseDateQueue;
-use App\Movies\Repository\MovieReleaseDateRepository;
 use App\Movies\Repository\ReleaseDateQueueRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;

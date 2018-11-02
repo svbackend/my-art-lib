@@ -24,7 +24,7 @@ class CountryRepository extends ServiceEntityRepository
     public function findOneByCode(string $code): ?Country
     {
         return $this->findOneBy([
-            'code' => $code
+            'code' => $code,
         ]);
     }
 

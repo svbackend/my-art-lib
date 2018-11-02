@@ -21,6 +21,7 @@ class MovieTransformer implements Transformer
             'tmdb.voteAverage',
             'tmdb.voteCount',
         ];
+
         return $transformer;
     }
 

@@ -10,8 +10,8 @@ use App\Movies\Entity\MovieReleaseDate;
 use App\Users\Entity\User;
 use App\Users\Entity\UserInterestedMovie;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\Common\Persistence\ObjectManager;
 
 class UsersMoviesFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -20,6 +20,7 @@ class UsersMoviesFixtures extends Fixture implements DependentFixtureInterface
 
     /**
      * @param ObjectManager $manager
+     *
      * @throws
      */
     public function load(ObjectManager $manager): void

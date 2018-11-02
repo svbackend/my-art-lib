@@ -5,7 +5,6 @@ namespace App\Movies\Command;
 use App\Movies\Entity\ReleaseDateQueue;
 use App\Movies\Repository\ReleaseDateQueueRepository;
 use App\Movies\Service\ImdbIdLoaderService;
-use App\Movies\Service\ReleaseDateService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,7 +52,7 @@ class FixReleaseDateQueue extends Command
                 sleep(5);
             }
 
-            $i++;
+            ++$i;
         }
 
         $this->em->flush();

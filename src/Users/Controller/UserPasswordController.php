@@ -10,23 +10,23 @@ use App\Users\Repository\ConfirmationTokenRepository;
 use App\Users\Repository\UserRepository;
 use App\Users\Request\ChangePasswordRequest;
 use App\Users\Request\PasswordRecoveryRequest;
-use App\Users\Service\ConfirmationTokenService;
 use App\Users\Service\SendEmailService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserPasswordController extends BaseController
 {
     /**
      * @Route("/api/users/{id}/password", methods={"POST"}, requirements={"id"="\d+"})
-     * @param ChangePasswordRequest $request
-     * @param User $user
+     *
+     * @param ChangePasswordRequest        $request
+     * @param User                         $user
      * @param UserPasswordEncoderInterface $passwordEncoder
+     *
      * @return JsonResponse
      */
     public function postUserPassword(ChangePasswordRequest $request, User $user, UserPasswordEncoderInterface $passwordEncoder)
@@ -64,7 +64,7 @@ class UserPasswordController extends BaseController
 
         if ($token !== null) {
             return $this->json([
-                'status' => 'token_already_sent'
+                'status' => 'token_already_sent',
             ]);
         }
 

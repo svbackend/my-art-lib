@@ -164,7 +164,7 @@ class Actor implements TranslatableInterface
      */
     public function setGender(int $gender): void
     {
-        if (false === in_array($gender, [self::GENDER_FEMALE, self::GENDER_MALE], true)) {
+        if (false === \in_array($gender, [self::GENDER_FEMALE, self::GENDER_MALE], true)) {
             throw new \InvalidArgumentException('Invalid gender value');
         }
         $this->gender = $gender;

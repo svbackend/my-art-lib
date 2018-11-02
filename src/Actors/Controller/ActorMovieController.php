@@ -3,9 +3,6 @@
 namespace App\Actors\Controller;
 
 use App\Controller\BaseController;
-use App\Movies\Entity\MovieActor;
-use App\Movies\Pagination\MovieCollection;
-use App\Movies\Repository\MovieActorRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Pagination\PaginatedCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,9 +14,9 @@ class ActorMovieController extends BaseController
     /**
      * @Route("/api/actors/{id}/movies", methods={"GET"}, requirements={"id"="\d+"})
      *
-     * @param Request              $request
-     * @param int                  $id
-     * @param MovieRepository      $repository
+     * @param Request         $request
+     * @param int             $id
+     * @param MovieRepository $repository
      *
      * @return JsonResponse
      */

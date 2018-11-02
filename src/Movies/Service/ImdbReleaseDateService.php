@@ -46,7 +46,7 @@ class ImdbReleaseDateService
 
     private function getCacheKeyForIsParsedFlag(Movie $movie): string
     {
-        return 'is_parsed' . $movie->getId();
+        return 'is_parsed'.$movie->getId();
     }
 
     /**
@@ -57,8 +57,8 @@ class ImdbReleaseDateService
         $result = $this->parser->getReleaseDates($movie);
 
         /**
-         * @var $countryCode string
-         * @var $date \DateTimeInterface
+         * @var string
+         * @var $date  \DateTimeInterface
          */
         foreach ($result as $countryCode => $date) {
             $country = new Country('', $countryCode);

@@ -38,7 +38,8 @@ class SendEmailService
     private $logger;
 
     /**
-     * From email
+     * From email.
+     *
      * @var string
      */
     private $supportEmail;
@@ -58,7 +59,7 @@ class SendEmailService
     {
         $body = $this->twig->render(
             'emails/releaseDateNotification.html.twig',
-            (array)$data
+            (array) $data
         );
 
         $subject = $this->translator->trans('release_date_notification_email_subject', [
@@ -114,7 +115,7 @@ class SendEmailService
         $failedRecipients = [];
         $this->mailer->send($message, $failedRecipients);
 
-        if (count($failedRecipients)) {
+        if (\count($failedRecipients)) {
             $this->logger->warning('[MAILER] Some of mails not sent, list of all recipients: ', $failedRecipients);
         }
     }

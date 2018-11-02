@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
@@ -8,7 +10,6 @@ use App\Movies\Service\ImdbIdLoaderService;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
@@ -18,7 +19,7 @@ final class Version20181030094901 extends AbstractMigration implements Container
 {
     use ContainerAwareTrait;
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
@@ -41,11 +42,10 @@ final class Version20181030094901 extends AbstractMigration implements Container
 
             if ($isActive === 0) {
                 $imdbId = null;
-                $i++;
+                ++$i;
                 try {
-                    $imdbId = $imdbIdLoader->getImdbId((int)$movie['tmdb_id']);
+                    $imdbId = $imdbIdLoader->getImdbId((int) $movie['tmdb_id']);
                 } catch (TmdbMovieNotFoundException $movieNotFoundException) {
-
                 } catch (TmdbRequestLimitException $requestLimitException) {
                     sleep(5);
                 }
@@ -62,10 +62,10 @@ final class Version20181030094901 extends AbstractMigration implements Container
         }
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
-        $this->addSql("DELETE FROM release_date_queue;");
+        $this->addSql('DELETE FROM release_date_queue;');
     }
 }

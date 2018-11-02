@@ -11,7 +11,7 @@ class ReleaseDateNotificationDTO
     public $releaseDate;
     public $countryName;
 
-    public function __construct(int $movieId,  string $movieTitle, string $countryName)
+    public function __construct(int $movieId, string $movieTitle, string $countryName)
     {
         $this->movieId = $movieId;
         $this->movieTitle = $movieTitle;

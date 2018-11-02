@@ -79,10 +79,10 @@ class UserProvider implements UserProviderInterface
      */
     public function refreshUser(UserInterface $user): ?User
     {
-        if (!$this->supportsClass(get_class($user))) {
+        if (!$this->supportsClass(\get_class($user))) {
             throw new UnsupportedUserException($this->translator->trans('unexpected_class', [
                 'expected_class' => User::class,
-                'actual_class' => get_class($user),
+                'actual_class' => \get_class($user),
             ], 'exceptions'));
         }
 

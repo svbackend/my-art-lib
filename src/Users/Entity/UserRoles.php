@@ -27,7 +27,7 @@ class UserRoles
 
     public function addRole(string $role): self
     {
-        if (in_array($role, $this->getValidRoles(), true) === false) {
+        if (\in_array($role, $this->getValidRoles(), true) === false) {
             throw new \InvalidArgumentException(sprintf('Invalid role: %s', $role));
         }
 
@@ -56,7 +56,7 @@ class UserRoles
 
     private function setRoles(array $roles): self
     {
-        if (!count($roles)) {
+        if (!\count($roles)) {
             $this->roles = null;
 
             return $this;
@@ -81,7 +81,7 @@ class UserRoles
 
         $roles = (array) json_decode($this->roles);
 
-        if (!count($roles)) {
+        if (!\count($roles)) {
             return $this->getDefaultRoles();
         }
 

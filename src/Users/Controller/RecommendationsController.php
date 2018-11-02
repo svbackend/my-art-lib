@@ -4,12 +4,9 @@ namespace App\Users\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Repository\MovieRecommendationRepository;
-use App\Movies\Transformer\MovieTransformer;
 use App\Movies\Transformer\UserRecommendationTransformer;
 use App\Pagination\CustomPaginatedCollection;
-use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
-use App\Users\Entity\UserRoles;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,7 +19,9 @@ class RecommendationsController extends BaseController
      * @param User                          $profileOwner
      * @param Request                       $request
      * @param MovieRecommendationRepository $repository
+     *
      * @throws
+     *
      * @return JsonResponse
      */
     public function getUserRecommendations(User $profileOwner, Request $request, MovieRecommendationRepository $repository)

@@ -10,12 +10,10 @@ use App\Movies\Request\UpdateWatchedMovieRequest;
 use App\Movies\Service\WatchedMovieService;
 use App\Movies\Transformer\MovieTransformer;
 use App\Pagination\CustomPaginatedCollection;
-use App\Pagination\PaginatedCollection;
 use App\Users\Entity\User;
 use App\Users\Entity\UserWatchedMovie;
 use App\Users\Repository\WatchedMovieRepository;
 use App\Users\Request\MergeWatchedMoviesRequest;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -112,7 +110,9 @@ class WatchedMovieController extends BaseController
      * @param Request         $request
      * @param User            $profileOwner
      * @param MovieRepository $repository
+     *
      * @throws
+     *
      * @return JsonResponse
      */
     public function getAll(Request $request, User $profileOwner, MovieRepository $repository)

@@ -9,7 +9,6 @@ use App\Users\Entity\UserRoles;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
-use Doctrine\Tests\Common\DataFixtures\CountryFixture;
 
 class UsersFixtures extends Fixture
 {
