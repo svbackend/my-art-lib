@@ -202,10 +202,10 @@ class UserProfile
 
     public function setCountryCode(string $code)
     {
-        $this->country_code = $code;
+        $this->country_code = $code ?: null;
     }
 
-    public function getCountryCode(): string
+    public function getCountryCode(): ?string
     {
         return $this->country_code;
     }

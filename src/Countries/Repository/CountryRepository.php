@@ -32,8 +32,8 @@ class CountryRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->select('c')
-            ->where('c.name LIKE "%:name%"')
-            ->setParameter('name', $name)
+            ->where('c.name LIKE :name')
+            ->setParameter('name', "%{$name}%")
             ->getQuery()
             ->getResult();
     }

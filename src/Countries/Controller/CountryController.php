@@ -26,6 +26,8 @@ class CountryController extends BaseController
             $countries = $repository->findAllByName($name);
         }
 
-        return $this->response($countries);
+        return $this->json($countries, 200, [], [
+            'context' => ['groups' => ['view', 'list']]
+        ]);
     }
 }
