@@ -51,7 +51,7 @@ class GenreController extends BaseController
         $genre = $genreManageService->createGenreByRequest($request);
         $errors = $validator->validate($genre);
 
-        if (count($errors)) {
+        if (\count($errors)) {
             return $request->getErrorResponse($errors);
         }
 
@@ -81,7 +81,7 @@ class GenreController extends BaseController
         $genre = $genreManageService->updateGenreByRequest($request, $genre);
         $errors = $validator->validate($genre);
 
-        if (count($errors)) {
+        if (\count($errors)) {
             return $request->getErrorResponse($errors);
         }
 

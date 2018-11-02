@@ -3,7 +3,7 @@
   <file id="error.ru">
     <unit id="WoR7vyq" name="api_token_authentication_failure">
       <notes>
-        <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:66</note>
+        <note category="file-source" priority="1">src/Users/Security/TokenAuthenticator.php:65</note>
       </notes>
       <segment>
         <source>api_token_authentication_failure</source>
@@ -12,7 +12,7 @@
     </unit>
     <unit id="aKHmxMO" name="api_token_authentication_failure_description">
       <notes>
-        <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:67</note>
+        <note category="file-source" priority="1">src/Users/Security/TokenAuthenticator.php:66</note>
       </notes>
       <segment>
         <source>api_token_authentication_failure_description</source>
@@ -21,7 +21,7 @@
     </unit>
     <unit id="yT3VxxE" name="api_token_authentication_required">
       <notes>
-        <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:76</note>
+        <note category="file-source" priority="1">src/Users/Security/TokenAuthenticator.php:75</note>
       </notes>
       <segment>
         <source>api_token_authentication_required</source>
@@ -30,7 +30,7 @@
     </unit>
     <unit id="KcRY30V" name="api_token_authentication_required_description">
       <notes>
-        <note category="file-source" priority="1">src/Security/TokenAuthenticator.php:77</note>
+        <note category="file-source" priority="1">src/Users/Security/TokenAuthenticator.php:76</note>
       </notes>
       <segment>
         <source>api_token_authentication_required_description</source>

@@ -78,17 +78,10 @@ class SearchService
     }
 
     /**
-     * @param string   $query
-     * @param string   $locale
-     * @param int      $offset
-     * @param int|null $limit
-     *
      * @throws TmdbMovieNotFoundException
      * @throws TmdbRequestLimitException
      * @throws \ErrorException
      * @throws \Psr\SimpleCache\InvalidArgumentException
-     *
-     * @return PaginatedCollectionInterface
      */
     public function findByQueryWithUserRecommendedMovie(string $query, int $originalMovieId, int $userId, string $locale, int $offset = 0, ?int $limit = null): PaginatedCollectionInterface
     {

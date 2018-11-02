@@ -24,8 +24,10 @@ class ConfirmationTokenRepository extends ServiceEntityRepository
 
     /**
      * @param string $token
-     * @return ConfirmationToken|null
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return ConfirmationToken|null
      */
     public function findByToken(string $token): ?ConfirmationToken
     {
@@ -39,10 +41,12 @@ class ConfirmationTokenRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param User $user
+     * @param User   $user
      * @param string $type
-     * @return ConfirmationToken|null
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return ConfirmationToken|null
      */
     public function findByUserAndType(User $user, string $type): ?ConfirmationToken
     {

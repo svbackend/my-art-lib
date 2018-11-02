@@ -23,6 +23,9 @@ services:
             $defaultLocale: "%locale%"
             $locales: "%locales%"
 
+    App\Movies\Service\ImdbIdLoaderService:
+        public: true
+
     _instanceof:
         App\Controller\ControllerInterface:
             tags: ['controller.service_arguments']

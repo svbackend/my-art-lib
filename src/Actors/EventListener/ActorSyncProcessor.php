@@ -43,7 +43,7 @@ class ActorSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 
         $movieTmdbId = $movie->getTmdb()->getId();
         $actorsList = $this->searchService->findActorsByMovieId($movieTmdbId)['cast'];
-        $actorsList = array_slice($actorsList, 0, 10);
+        $actorsList = \array_slice($actorsList, 0, 10);
 
         foreach ($actorsList as $actor) {
             $this->saveActor($actor['id']);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Users\Service;
 
+use App\Movies\DTO\ReleaseDateNotificationDTO;
 use App\Users\Entity\User;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -37,7 +38,8 @@ class SendEmailService
     private $logger;
 
     /**
-     * From email
+     * From email.
+     *
      * @var string
      */
     private $supportEmail;
@@ -50,6 +52,22 @@ class SendEmailService
         $this->confirmationTokenService = $confirmationTokenService;
         $this->supportEmail = \getenv('MAILER_SUPPORT_EMAIL') ?: 'support@mykino.top';
         $this->logger = $logger ?? new NullLogger();
+    }
+
+    // todo translations for movie + for email text
+    public function sendReleaseDateNotification(string $email, ReleaseDateNotificationDTO $data)
+    {
+        $body = $this->twig->render(
+            'emails/releaseDateNotification.html.twig',
+            (array) $data
+        );
+
+        $subject = $this->translator->trans('release_date_notification_email_subject', [
+            '{movieTitle}' => $data->movieTitle,
+            '{countryName}' => $data->countryName,
+        ], 'users');
+
+        $this->sendEmail($email, $subject, $body);
     }
 
     public function sendEmailConfirmation(User $user)
@@ -97,7 +115,7 @@ class SendEmailService
         $failedRecipients = [];
         $this->mailer->send($message, $failedRecipients);
 
-        if (count($failedRecipients)) {
+        if (\count($failedRecipients)) {
             $this->logger->warning('[MAILER] Some of mails not sent, list of all recipients: ', $failedRecipients);
         }
     }

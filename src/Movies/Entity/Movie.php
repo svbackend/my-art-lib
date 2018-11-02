@@ -320,7 +320,7 @@ class Movie implements TranslatableInterface
      *
      * @return Movie
      */
-    public function setReleaseDate(\DateTimeInterface $releaseDate)
+    public function setReleaseDate(?\DateTimeInterface $releaseDate = null)
     {
         $this->releaseDate = $releaseDate;
 
@@ -392,10 +392,7 @@ class Movie implements TranslatableInterface
         return $this->budget;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getReleaseDate()
+    public function getReleaseDate(): ?\DateTimeInterface
     {
         return $this->releaseDate;
     }

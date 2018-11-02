@@ -60,7 +60,7 @@ class TmdbNormalizerService
             $actorObject->setBirthday(new \DateTimeImmutable($actor['birthday'] ?? ''));
 
             $gender = $actor['gender'] ?? 0;
-            if (in_array($gender, [$actorObject::GENDER_FEMALE, $actorObject::GENDER_MALE], true)) {
+            if (\in_array($gender, [$actorObject::GENDER_FEMALE, $actorObject::GENDER_MALE], true)) {
                 $actorObject->setGender($gender);
             }
 

@@ -24,7 +24,7 @@ trait TranslatableTrait
     public function updateTranslations(array $translations, callable $add, callable $update = null, $localeField = 'locale')
     {
         foreach ($translations as $translation) {
-            $locale = is_object($translation) ? $translation->getLocale() : $translation[$localeField];
+            $locale = \is_object($translation) ? $translation->getLocale() : $translation[$localeField];
             if (null === $oldTranslation = $this->getTranslation($locale, false)) {
                 $add($translation);
                 continue;

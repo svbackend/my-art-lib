@@ -260,7 +260,7 @@ class TmdbSearchService
         $string = '';
 
         foreach ($array as $key => $value) {
-            if (is_array($value) === true) {
+            if (\is_array($value) === true) {
                 $value = $this->arrayAsString($value);
             }
             $string .= "$key-$value";

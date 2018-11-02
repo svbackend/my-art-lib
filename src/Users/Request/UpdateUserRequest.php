@@ -16,6 +16,7 @@ class UpdateUserRequest extends BaseRequest
                 'birth_date' => new Assert\Date(),
                 'about' => new Assert\Length(['max' => 255]),
                 'public_email' => new Assert\Email(),
+                'country_code' => new Assert\Length(['min' => 3, 'max' => 3]),
             ]),
         ]);
     }

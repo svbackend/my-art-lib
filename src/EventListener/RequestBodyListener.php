@@ -22,7 +22,7 @@ class RequestBodyListener implements EventSubscriberInterface
             throw new BadRequestHttpException('Invalid json body: '.json_last_error_msg());
         }
 
-        $request->request->replace(is_array($data) ? $data : []);
+        $request->request->replace(\is_array($data) ? $data : []);
     }
 
     /**

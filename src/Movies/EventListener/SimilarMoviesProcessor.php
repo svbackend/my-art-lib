@@ -42,7 +42,7 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
 
         $movies = $this->movieRepository->findAllByIdsWithSimilarMovies([$movieId]);
 
-        if (count($movies) === 0) {
+        if (\count($movies) === 0) {
             return self::REJECT;
         }
 

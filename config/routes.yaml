@@ -16,6 +16,9 @@ actors:
 images:
     resource: ../src/Images/Controller
     type: annotation
+countries:
+    resource: ../src/Countries/Controller
+    type: annotation
 
 # FRONTEND ROUTES (used for url generation in templates/emails/*.twig)
 confirm_email:

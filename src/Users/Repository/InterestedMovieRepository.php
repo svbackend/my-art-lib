@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Users\Repository;
 
-use App\Movies\Entity\Movie;
 use App\Users\Entity\UserInterestedMovie;
-use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 

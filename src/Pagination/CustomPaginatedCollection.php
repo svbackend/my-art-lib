@@ -16,11 +16,13 @@ class CustomPaginatedCollection implements PaginatedCollectionInterface
 
     /**
      * CustomPaginatedCollection constructor.
-     * @param Query $itemsQuery
-     * @param Query $idsQuery
-     * @param Query $countQuery
-     * @param int $offset
+     *
+     * @param Query    $itemsQuery
+     * @param Query    $idsQuery
+     * @param Query    $countQuery
+     * @param int      $offset
      * @param int|null $limit
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function __construct(Query $itemsQuery, Query $idsQuery, Query $countQuery, int $offset, ?int $limit = null)
@@ -51,7 +53,7 @@ class CustomPaginatedCollection implements PaginatedCollectionInterface
 
     public function getTotal(): int
     {
-        return (int)$this->itemsCount;
+        return (int) $this->itemsCount;
     }
 
     public function getOffset(): int
@@ -66,21 +68,26 @@ class CustomPaginatedCollection implements PaginatedCollectionInterface
 
     private function sortItems(array $items, array $ids): array
     {
-        if (count($ids) === 0) return [];
+        if (\count($ids) === 0) {
+            return [];
+        }
 
         $ids = array_flip($ids);
         usort($items, function (array $item1, array $item2) use ($ids) {
             return $ids[$item1['id']] <=> $ids[$item2['id']];
         });
+
         return $items;
     }
 
     private function getIds(array $ids): array
     {
-        if (count($ids) === 0) return [];
+        if (\count($ids) === 0) {
+            return [];
+        }
 
         $firstValue = reset($ids);
-        if (is_array($firstValue) === true) {
+        if (\is_array($firstValue) === true) {
             return array_map(function ($id) {
                 return reset($id);
             }, $ids);

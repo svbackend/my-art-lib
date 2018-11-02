@@ -27,9 +27,9 @@ abstract class BaseController extends Controller implements ControllerInterface
 
     /**
      * @param $data
-     * @param int   $status
-     * @param array $headers
-     * @param array $context
+     * @param int         $status
+     * @param array       $headers
+     * @param array       $context
      * @param Transformer $transformer
      *
      * @return JsonResponse
@@ -45,6 +45,7 @@ abstract class BaseController extends Controller implements ControllerInterface
         if ($transformer !== null) {
             $response = $this->prepareResponseData($response, $transformer);
         }
+
         return $this->json($response, $status, $headers, $context);
     }
 
@@ -105,7 +106,7 @@ abstract class BaseController extends Controller implements ControllerInterface
         $response = [];
         $data = $transformer->process($data);
         foreach ($data as $key => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 //$value = $transformer->process($value);
                 $response[$key] = $this->prepareResponseData($value, $transformer);
                 continue;

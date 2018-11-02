@@ -24,7 +24,7 @@ class TmdbSyncService
 
     public function syncMovies(array $movies, bool $loadSimilar = false): void
     {
-        if (!count($movies)) {
+        if (!\count($movies)) {
             return;
         }
 
@@ -54,6 +54,6 @@ class TmdbSyncService
 
     private function isSupport($movie)
     {
-        return is_array($movie) && isset($movie['id']) && isset($movie['original_title']);
+        return \is_array($movie) && isset($movie['id']) && isset($movie['original_title']);
     }
 }

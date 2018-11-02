@@ -92,13 +92,11 @@ class MovieRepository extends ServiceEntityRepository
         $items->where('m.id IN (:ids)');
 
         /** Ids query */
-
         $ids = $this->createQueryBuilder('m')
             ->select('m.id')
             ->orderBy('m.id', 'DESC');
 
         /** Count query */
-
         $count = $this->createQueryBuilder('m')
             ->select('COUNT(m.id)');
 

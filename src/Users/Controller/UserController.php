@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -168,6 +167,7 @@ class UserController extends BaseController
         $profile->setBirthDate(new \DateTimeImmutable($profileData['birth_date']));
         $profile->setAbout($profileData['about']);
         $profile->setPublicEmail($profileData['public_email']);
+        $profile->setCountryCode($profileData['country_code']);
         $this->getDoctrine()->getManager()->flush();
 
         return new JsonResponse(null, 202);

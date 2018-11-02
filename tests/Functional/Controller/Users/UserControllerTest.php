@@ -49,6 +49,7 @@ class UserControllerTest extends WebTestCase
                 'birth_date' => '2000-10-01',
                 'about' => 'about',
                 'public_email' => 'public@email.com',
+                'country_code' => 'UKR',
             ],
         ]);
         $this->assertSame(202, $client->getResponse()->getStatusCode());
@@ -74,6 +75,7 @@ class UserControllerTest extends WebTestCase
                 'birth_date' => '2000-10-01',
                 'about' => 'about',
                 'public_email' => 'public@email.com',
+                'country_code' => 'UKR',
             ],
         ]);
         $this->assertSame(401, $client->getResponse()->getStatusCode());
@@ -92,6 +94,7 @@ class UserControllerTest extends WebTestCase
                 'birth_date' => '2000-10-01',
                 'about' => 'about',
                 'public_email' => 'public@email.com',
+                'country_code' => 'UKR',
             ],
         ]);
         $this->assertSame(403, $client->getResponse()->getStatusCode());
@@ -110,6 +113,7 @@ class UserControllerTest extends WebTestCase
                 'birth_date' => '2000-10-01',
                 'about' => 'about',
                 'public_email' => 'public@email.com',
+                'country_code' => 'UKR',
             ],
         ]);
         $this->assertSame(202, $client->getResponse()->getStatusCode());

@@ -13,9 +13,12 @@ use App\Movies\Entity\MovieTMDB;
 use App\Movies\Service\MovieManageService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 
 class MoviesFixtures extends Fixture
 {
+    const MOVIE_1_ID = 1;
+    const MOVIE_2_ID = 2;
     const MOVIE_TITLE = 'zMs1Os7qwEqWxXvb';
     const MOVIE_TMDB_ID = 1;
     const MOVIE_TMDB_ID_2 = 2;
@@ -35,6 +38,11 @@ class MoviesFixtures extends Fixture
      */
     public function load(ObjectManager $manager): void
     {
+        if ($manager instanceof EntityManager === false) {
+            throw new \InvalidArgumentException('MoviesFixtures $manager should be instance of EntityManager');
+        }
+        /* @var $manager EntityManager */
+
         $movieTitle = self::MOVIE_TITLE;
         $movieDTO = new MovieDTO($movieTitle, 'http://placehold.it/320x480', 'imdb-test-id', 60000, 100, '-10 years');
         $tmdb = new MovieTMDB(self::MOVIE_TMDB_ID, 7.8, 100);
@@ -62,6 +70,8 @@ class MoviesFixtures extends Fixture
             new MovieTranslationDTO('ru', "$movieTitle 2 (ru)", 'Overview (ru)', 'http://placehold.it/320x480'),
         ]);
         $movie2->addActor($actor);
+
+        $manager->getConnection()->exec("ALTER SEQUENCE movies_id_seq RESTART WITH 1; UPDATE movies SET id=nextval('movies_id_seq');");
 
         $manager->persist($testGenre);
         $manager->persist($actor);

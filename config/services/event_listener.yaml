@@ -25,3 +25,7 @@ services:
     App\EventListener\RequestBodyListener:
             tags:
                 - { name: kernel.event_subscriber }
+
+    App\Movies\EventListener\MovieAddedFromTmdbEventListener:
+      tags:
+      - { name: kernel.event_listener, event: movie.addedFromTmdb }

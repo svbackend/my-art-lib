@@ -3,7 +3,7 @@
   <file id="users.ru">
     <unit id="uInWk5M" name="not_found_by_id">
       <notes>
-        <note category="file-source" priority="1">src/Controller/UserController.php:115</note>
+        <note category="file-source" priority="1">src/Users/Controller/UserController.php:116</note>
       </notes>
       <segment>
         <source>not_found_by_id</source>
@@ -12,7 +12,7 @@
     </unit>
     <unit id="leFh34_" name="not_found_by_username">
       <notes>
-        <note category="file-source" priority="1">src/Security/UserProvider.php:51</note>
+        <note category="file-source" priority="1">src/Users/Security/UserProvider.php:51</note>
       </notes>
       <segment>
         <source>not_found_by_username</source>
@@ -21,7 +21,7 @@
     </unit>
     <unit id="rHa3rS_" name="not_found_by_api_token">
       <notes>
-        <note category="file-source" priority="1">src/Security/UserProvider.php:68</note>
+        <note category="file-source" priority="1">src/Users/Security/UserProvider.php:69</note>
       </notes>
       <segment>
         <source>not_found_by_api_token</source>
@@ -30,7 +30,7 @@
     </unit>
     <unit id="UHZkiu3" name="user_with_this_username_not_exist">
       <notes>
-        <note category="file-source" priority="1">src/Service/User/AuthService.php:81</note>
+        <note category="file-source" priority="1">src/Users/Service/AuthService.php:104</note>
       </notes>
       <segment>
         <source>user_with_this_username_not_exist</source>
@@ -39,7 +39,7 @@
     </unit>
     <unit id="i2MINB7" name="wrong_password">
       <notes>
-        <note category="file-source" priority="1">src/Service/User/AuthService.php:89</note>
+        <note category="file-source" priority="1">src/Users/Service/AuthService.php:112</note>
       </notes>
       <segment>
         <source>wrong_password</source>
@@ -48,8 +48,7 @@
     </unit>
     <unit id="KRx.u3l" name="bad_email_confirmation_token">
       <notes>
-        <note category="file-source" priority="1">src/Controller/UserController.php:75</note>
-        <note category="state" priority="1">new</note>
+        <note category="file-source" priority="1">src/Users/Controller/UserController.php:81</note>
       </notes>
       <segment>
         <source>bad_email_confirmation_token</source>
@@ -58,8 +57,7 @@
     </unit>
     <unit id="wHtHVzn" name="user_registration_email_subject">
       <notes>
-        <note category="file-source" priority="1">src/Service/User/SendEmailService.php:48</note>
-        <note category="state" priority="1">new</note>
+        <note category="file-source" priority="1">src/Users/Service/SendEmailService.php:81</note>
       </notes>
       <segment>
         <source>user_registration_email_subject</source>
@@ -67,9 +65,22 @@
       </segment>
     </unit>
     <unit id="DiQsp6C" name="user_password_recovery_email_subject">
+      <notes>
+        <note category="file-source" priority="1">src/Users/Service/SendEmailService.php:97</note>
+      </notes>
       <segment>
         <source>user_password_recovery_email_subject</source>
         <target>Возобновление пароля</target>
+      </segment>
+    </unit>
+    <unit id="nub2nI." name="release_date_notification_email_subject">
+      <notes>
+        <note category="file-source" priority="1">src/Users/Service/SendEmailService.php:64</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>release_date_notification_email_subject</source>
+        <target>Фильм "{movieTitle}" появился в кинотеатрах вашей страны!</target>
       </segment>
     </unit>
   </file>

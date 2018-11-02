@@ -3,7 +3,7 @@
   <file id="validators.ru">
     <unit id="F2EPJsR" name="Email already taken">
       <notes>
-        <note category="file-source" priority="1">src/Entity/User.php:0</note>
+        <note category="file-source" priority="1">src/Users/Entity/User.php:0</note>
       </notes>
       <segment>
         <source>Email already taken</source>
@@ -12,7 +12,7 @@
     </unit>
     <unit id="E4bQcD." name="Username already taken">
       <notes>
-        <note category="file-source" priority="1">src/Entity/User.php:0</note>
+        <note category="file-source" priority="1">src/Users/Entity/User.php:0</note>
       </notes>
       <segment>
         <source>Username already taken</source>
@@ -21,11 +21,42 @@
     </unit>
     <unit id="kr5hODx" name="This token already taken">
       <notes>
-        <note category="file-source" priority="1">src/Entity/ConfirmationToken.php:0</note>
-        <note category="file-source" priority="1">src/Entity/ApiToken.php:0</note>
+        <note category="file-source" priority="1">src/Guests/Entity/GuestSession.php:0</note>
+        <note category="file-source" priority="1">src/Users/Entity/ApiToken.php:0</note>
+        <note category="file-source" priority="1">src/Users/Entity/ConfirmationToken.php:0</note>
       </notes>
       <segment>
         <source>This token already taken</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="y3TJsCx" name="This TMDB ID already taken">
+      <notes>
+        <note category="file-source" priority="1">src/Genres/Entity/Genre.php:0</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>This TMDB ID already taken</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="BegBX0M" name="This country already exists">
+      <notes>
+        <note category="file-source" priority="1">src/Countries/Entity/ImdbCountry.php:0</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>This country already exists</source>
+        <target></target>
+      </segment>
+    </unit>
+    <unit id="IQ4_5EY" name="This code already exists">
+      <notes>
+        <note category="file-source" priority="1">src/Countries/Entity/Country.php:0</note>
+        <note category="state" priority="1">new</note>
+      </notes>
+      <segment>
+        <source>This code already exists</source>
         <target></target>
       </segment>
     </unit>

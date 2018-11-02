@@ -27,7 +27,7 @@ class ImageController extends BaseController
         $filenameParts = explode('.', $filename);
         $ext = end($filenameParts);
 
-        if (in_array($ext, ['jpg'], true) === false) {
+        if (\in_array($ext, ['jpg'], true) === false) {
             return new Response('Image not found (404)', 404);
         }
         $size = $filenameParts[1]; // string '64x64'

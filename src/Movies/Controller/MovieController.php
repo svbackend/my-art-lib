@@ -17,8 +17,6 @@ use App\Movies\Service\SearchService;
 use App\Movies\Transformer\MovieTransformer;
 use App\Movies\Utils\Poster;
 use App\Pagination\CustomPaginatedCollection;
-use App\Pagination\PaginatedCollection;
-use App\Users\Entity\User;
 use App\Users\Entity\UserRoles;
 use Enqueue\Client\ProducerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -74,7 +72,7 @@ class MovieController extends BaseController
             throw new NotFoundHttpException();
         }
 
-        if (count($movie->getSimilarMovies()) === 0) {
+        if (\count($movie->getSimilarMovies()) === 0) {
             $producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, json_encode($movie->getId()));
         }
 
@@ -151,7 +149,7 @@ class MovieController extends BaseController
         $movie = $service->createMovieByRequest($request);
         $errors = $validator->validate($movie);
 
-        if (count($errors)) {
+        if (\count($errors)) {
             return $request->getErrorResponse($errors);
         }
 

@@ -45,8 +45,10 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
 
     /**
      * @param string $email
-     * @return User|null
+     *
      * @throws NonUniqueResultException
+     *
+     * @return User|null
      */
     public function loadUserByEmail(string $email): ?User
     {

@@ -13,7 +13,7 @@ class ActorPhoto
     public static function savePhoto(int $actorId, string $photoUrl): ?string
     {
         $saveTo = str_replace('{actorId}', $actorId, self::BASE_PATH);
-        $destinationDir = dirname($saveTo);
+        $destinationDir = \dirname($saveTo);
 
         if (is_dir($destinationDir) === false) {
             if (is_file($destinationDir)) {
@@ -39,7 +39,7 @@ class ActorPhoto
         if (file_exists($saveTo)) {
             unlink($saveTo);
         }
-        $fp = fopen($saveTo, 'x');
+        $fp = fopen($saveTo, 'xb');
         fwrite($fp, $raw);
         fclose($fp);
         chmod($saveTo, 0777);
