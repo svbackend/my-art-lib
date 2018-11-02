@@ -16,6 +16,7 @@ use Interop\Queue\PsrMessage;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MovieSyncProcessorTest extends KernelTestCase
 {
@@ -44,6 +45,7 @@ class MovieSyncProcessorTest extends KernelTestCase
      * @var MockObject|MovieRepository
      */
     private $repository;
+    private $dispatcher;
 
     protected function setUp()
     {
@@ -54,6 +56,7 @@ class MovieSyncProcessorTest extends KernelTestCase
         $this->tmdbNormalizer = $this->createMock(TmdbNormalizerService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repository = $this->createMock(MovieRepository::class);
+        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
     private function getMoviesIterator($movie)
@@ -88,7 +91,7 @@ class MovieSyncProcessorTest extends KernelTestCase
         // 4 events should be fired: loadPosters, loadTranslations + load similar movies + loadActors
         $this->producer->expects($this->exactly(4))->method('sendEvent');
 
-        $this->movieSyncProcessor = new MovieSyncProcessor($this->em, $this->producer, $this->tmdbNormalizer, $this->logger, $this->repository);
+        $this->movieSyncProcessor = new MovieSyncProcessor($this->em, $this->producer, $this->tmdbNormalizer, $this->logger, $this->repository, $this->dispatcher);
         $result = $this->movieSyncProcessor->process($this->psrMessage, $this->psrContext);
 
         $this->assertSame(123, $persistedEntity->getId());
@@ -122,7 +125,7 @@ class MovieSyncProcessorTest extends KernelTestCase
         // 3 events should be fired: loadPosters and loadTranslations + loadActors
         $this->producer->expects($this->exactly(3))->method('sendEvent');
 
-        $this->movieSyncProcessor = new MovieSyncProcessor($this->em, $this->producer, $this->tmdbNormalizer, $this->logger, $this->repository);
+        $this->movieSyncProcessor = new MovieSyncProcessor($this->em, $this->producer, $this->tmdbNormalizer, $this->logger, $this->repository, $this->dispatcher);
         $result = $this->movieSyncProcessor->process($this->psrMessage, $this->psrContext);
 
         $this->assertSame(123, $persistedEntity->getId());

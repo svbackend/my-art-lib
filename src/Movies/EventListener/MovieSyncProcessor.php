@@ -5,6 +5,7 @@ namespace App\Movies\EventListener;
 use App\Actors\EventListener\ActorSyncProcessor;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\ReleaseDateQueue;
+use App\Movies\Event\MovieAddedFromTmdbEvent;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbNormalizerService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -17,6 +18,7 @@ use Interop\Queue\PsrContext;
 use Interop\Queue\PsrMessage;
 use Interop\Queue\PsrProcessor;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 {
@@ -28,14 +30,16 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     private $normalizer;
     private $logger;
     private $movieRepository;
+    private $dispatcher;
 
-    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository)
+    public function __construct(EntityManagerInterface $em, ProducerInterface $producer, TmdbNormalizerService $normalizer, LoggerInterface $logger, MovieRepository $movieRepository, EventDispatcherInterface $dispatcher)
     {
         $this->em = $em;
         $this->producer = $producer;
         $this->normalizer = $normalizer;
         $this->logger = $logger;
         $this->movieRepository = $movieRepository;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -75,6 +79,10 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         } catch (UniqueConstraintViolationException $uniqueException) {
             return self::ACK;
         }
+
+        $event = new MovieAddedFromTmdbEvent($movie);
+        $this->dispatcher->dispatch($event::NAME, $event);
+
         $this->em->clear();
 
         $this->loadTranslations($movie->getId());
