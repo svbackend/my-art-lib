@@ -15,6 +15,9 @@ final class Version20181101141057 extends AbstractMigration
         'POL' => 'Poland',
         'BLR' => 'Belarus',
         'RUS' => 'Russia',
+        'ESP' => 'Spain',
+        'CAN' => 'Canada',
+        'USA' => 'USA',
     ];
 
     public function up(Schema $schema) : void
