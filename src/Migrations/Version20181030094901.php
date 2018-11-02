@@ -52,7 +52,7 @@ final class Version20181030094901 extends AbstractMigration implements Container
 
                 if ($imdbId) {
                     $isActive = 1;
-                    $this->addSql("UPDATE movies SET imdb_id = {$imdbId} WHERE id = {$movie['id']}");
+                    $this->addSql("UPDATE movies SET imdb_id = '{$imdbId}' WHERE id = {$movie['id']}");
                 }
             }
 
