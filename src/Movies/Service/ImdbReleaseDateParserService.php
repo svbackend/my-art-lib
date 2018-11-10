@@ -25,7 +25,7 @@ class ImdbReleaseDateParserService
         }
 
         $html = $this->loadImdbReleaseDatesPageHtml($movie->getImdbId());
-        $crawler = new Crawler($html, self::IMDB_RELEASE_DATES_URL);
+        $crawler = new Crawler($html, $this->getEndpoint($movie->getImdbId()));
 
         $tds = $crawler->filterXPath('//*[@id="release_dates"]//td')->getIterator();
 
@@ -47,9 +47,14 @@ class ImdbReleaseDateParserService
         return $result;
     }
 
+    private function getEndpoint(string $imdbId): string
+    {
+        return str_replace('{id}', $imdbId, self::IMDB_RELEASE_DATES_URL);
+    }
+
     private function loadImdbReleaseDatesPageHtml(string $imdbId): string
     {
-        $endpoint = str_replace('{id}', $imdbId, self::IMDB_RELEASE_DATES_URL);
+        $endpoint = $this->getEndpoint($imdbId);
 
         $c = curl_init($endpoint);
         curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
