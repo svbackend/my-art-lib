@@ -7,6 +7,7 @@ namespace App\Movies\Service;
 use App\Countries\Entity\Country;
 use App\Movies\Entity\Movie;
 use App\Movies\Repository\MovieReleaseDateRepository;
+use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 
 class ImdbReleaseDateService
@@ -14,12 +15,14 @@ class ImdbReleaseDateService
     private $repository;
     private $cache;
     private $parser;
+    private $logger;
 
-    public function __construct(MovieReleaseDateRepository $repository, CacheInterface $cache, ImdbReleaseDateParserService $parser)
+    public function __construct(MovieReleaseDateRepository $repository, CacheInterface $cache, ImdbReleaseDateParserService $parser, LoggerInterface $logger)
     {
         $this->repository = $repository;
         $this->cache = $cache;
         $this->parser = $parser;
+        $this->logger = $logger;
     }
 
     /**
@@ -28,10 +31,12 @@ class ImdbReleaseDateService
     public function getReleaseDate(Movie $movie, Country $country): ?\DateTimeInterface
     {
         if ($this->cache->get($this->getCacheKeyForIsParsedFlag($movie), false) === false) {
+            $this->logger->debug("[ImdbReleaseDateService] Cache for key {$this->getCacheKeyForIsParsedFlag($movie)} not found, so lets parse imdb");
             $this->parseReleaseDates($movie);
         }
 
         $timestamp = $this->cache->get($this->getCacheKeyForDate($movie, $country));
+        $this->logger->debug("[ImdbReleaseDateService] Trying to get releaseDate for movie {$movie->getOriginalTitle()} in {$country->getCode()}, result is: {$timestamp}");
         if ($timestamp === null) {
             return null;
         }
@@ -55,6 +60,7 @@ class ImdbReleaseDateService
     private function parseReleaseDates(Movie $movie): void
     {
         $result = $this->parser->getReleaseDates($movie);
+        $this->logger->debug("[ImdbReleaseDateService] parseReleaseDates result: ", $result);
 
         /**
          * @var string

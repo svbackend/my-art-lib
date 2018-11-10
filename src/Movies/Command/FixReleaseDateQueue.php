@@ -35,7 +35,7 @@ class FixReleaseDateQueue extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $queueItems = $this->repository->findAllWithMovies(0)->getResult();
+        $queueItems = $this->repository->findAllWithMovies(false)->getResult();
 
         $i = 0;
         /** @var $queueItem ReleaseDateQueue */
