@@ -25,9 +25,14 @@ class ImdbReleaseDateParserService
         }
 
         $html = $this->loadImdbReleaseDatesPageHtml($movie->getImdbId());
+
+        // Because filterXPath('//*[@id="release_dates"]//td') don't work correctly due errors in html from imdb page
+        $html = substr($html, strpos($html, '<a id="releases" name="releases"></a>'));
+        $html = substr($html, 0, strpos($html, '<a id="akas" name="akas"></a>'));
+
         $crawler = new Crawler($html, $this->getEndpoint($movie->getImdbId()));
 
-        $tds = $crawler->filterXPath('//*[@id="release_dates"]//td')->getIterator();
+        $tds = $crawler->filterXPath('//td')->getIterator();
 
         $result = [];
         $country = '';

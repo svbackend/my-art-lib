@@ -68,9 +68,9 @@ class ImdbReleaseDateService
          */
         foreach ($result as $countryCode => $date) {
             $country = new Country('', $countryCode);
-            $this->cache->set($this->getCacheKeyForDate($movie, $country), $date->getTimestamp(), 3600);
+            $this->cache->set($this->getCacheKeyForDate($movie, $country), $date->getTimestamp(), 35);
         }
 
-        $this->cache->set($this->getCacheKeyForIsParsedFlag($movie), true, 3600);
+        $this->cache->set($this->getCacheKeyForIsParsedFlag($movie), true, 30);
     }
 }
