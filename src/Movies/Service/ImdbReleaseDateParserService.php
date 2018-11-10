@@ -9,7 +9,7 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class ImdbReleaseDateParserService
 {
-    private const IMDB_RELEASE_DATES_URL = 'https://imdb.com/title/{id}/releaseinfo?ref_=tt_dt_dt';
+    private const IMDB_RELEASE_DATES_URL = 'https://www.imdb.com/title/{id}/releaseinfo?ref_=tt_dt_dt';
 
     private $imdbMapper;
 
@@ -56,8 +56,8 @@ class ImdbReleaseDateParserService
 
         $html = curl_exec($c);
 
-        if (curl_error($c)) {
-            //todo write to log
+        if ($html === false) {
+            //todo write to log curl_error()
             return '';
         }
 
