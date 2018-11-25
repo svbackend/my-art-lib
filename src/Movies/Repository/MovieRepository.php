@@ -220,21 +220,35 @@ class MovieRepository extends ServiceEntityRepository
         return $result->getQuery();
     }
 
-    public function findAllByActor(int $actorId, ?User $currentUser = null): Query
+    public function findAllByActor(int $actorId, ?User $currentUser = null): array
     {
-        $result = $this->getBaseQuery()
+        $items = $this->getBaseQuery()
+            ->leftJoin('m.actors', 'ma', 'WITH', 'ma.actor = :actor AND ma.movie = m')
+            ->setParameter('actor', $actorId)
+            ->orderBy('m.releaseDate', 'DESC');
+
+        if ($currentUser !== null) {
+            $items->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id')
+                ->addSelect('uwm')
+                ->setParameter('user_id', $currentUser->getId());
+        }
+
+        $items->where('m.id IN (:ids)');
+
+        $ids = $this->createQueryBuilder('m')
+            ->select('m.id')
             ->leftJoin('m.actors', 'ma', 'WITH', 'ma.actor = :actor AND ma.movie = m')
             ->setParameter('actor', $actorId)
             ->andWhere('ma.id != 0')
             ->orderBy('m.releaseDate', 'DESC');
 
-        if ($currentUser !== null) {
-            $result->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id')
-                ->addSelect('uwm')
-                ->setParameter('user_id', $currentUser->getId());
-        }
+        $count = $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)')
+            ->leftJoin('m.actors', 'ma', 'WITH', 'ma.actor = :actor AND ma.movie = m')
+            ->setParameter('actor', $actorId)
+            ->andWhere('ma.id != 0');
 
-        return $result->getQuery();
+        return [$items->getQuery(), $ids->getQuery(), $count->getQuery()];
     }
 
     public function findAllQuery()

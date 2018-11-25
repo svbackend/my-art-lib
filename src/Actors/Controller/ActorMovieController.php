@@ -4,6 +4,8 @@ namespace App\Actors\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Repository\MovieRepository;
+use App\Movies\Transformer\MovieTransformer;
+use App\Pagination\CustomPaginatedCollection;
 use App\Pagination\PaginatedCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,20 +20,18 @@ class ActorMovieController extends BaseController
      * @param int             $id
      * @param MovieRepository $repository
      *
+     * @throws
      * @return JsonResponse
      */
     public function getActorsMovies(Request $request, int $id, MovieRepository $repository)
     {
-        $movies = $repository->findAllByActor($id, $this->getUser());
+        [$movies, $ids, $count] = $repository->findAllByActor($id, $this->getUser());
 
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
-        $movies->setHydrationMode($movies::HYDRATE_ARRAY);
-        $movies = new PaginatedCollection($movies, $offset, $limit);
+        $collection = new CustomPaginatedCollection($movies, $ids, $count, $offset, $limit);
 
-        return $this->response($movies, 200, [], [
-            'groups' => ['list'],
-        ]);
+        return $this->items($collection, MovieTransformer::list());
     }
 }
