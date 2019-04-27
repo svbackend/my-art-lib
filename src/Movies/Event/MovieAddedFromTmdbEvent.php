@@ -9,7 +9,7 @@ use Symfony\Component\EventDispatcher\Event;
 
 class MovieAddedFromTmdbEvent extends Event
 {
-    const NAME = 'movie.addedFromTmdb';
+    public const NAME = 'movie.addedFromTmdb';
 
     private $movie;
 
