@@ -45,6 +45,7 @@ class ReleaseDateQueue
     {
         $this->movie = $movie;
         $this->addedAt = new \DateTime();
+        $this->isActive = 1;
 
         if (!$movie->getImdbId()) {
             $this->isActive = 0;
