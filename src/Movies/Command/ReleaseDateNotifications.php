@@ -42,7 +42,7 @@ class ReleaseDateNotifications extends Command
         foreach ($rows as $row) {
             $dto = new ReleaseDateNotificationDTO(
                 (int) $row['m_id'],
-                $row['m_original_title'],
+                $row['m_originalTitle'],
                 $row['c_name']
             );
             $this->emailService->sendReleaseDateNotification($row['u_email'], $dto);
