@@ -48,13 +48,14 @@ class ImdbReleaseDateParserService
         $result = [];
         $country = '';
         foreach ($tds as $td) {
-            if ($td->getAttribute('class') === 'release_date') {
+            if ($td->getAttribute('class') === 'release-date-item__date') {
                 $result[$country] = $this->imdbMapper->dateToObject($td->textContent);
                 continue;
             }
 
             if ($td->hasChildNodes() && $td->getElementsByTagName('a')->item(0) !== null) {
                 $country = $td->getElementsByTagName('a')->item(0)->textContent;
+                $country = trim($country);
                 $country = $this->imdbMapper->countryToCode($country);
                 continue;
             }
