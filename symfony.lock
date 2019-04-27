@@ -287,9 +287,6 @@
     "queue-interop/queue-interop": {
         "version": "0.6.1"
     },
-    "ralouphie/getallheaders": {
-        "version": "2.0.5"
-    },
     "ramsey/uuid": {
         "version": "3.7.3"
     },
@@ -367,9 +364,6 @@
             "version": "3.3",
             "ref": "e3868d2f4a5104f19f844fe551099a00c6562527"
         }
-    },
-    "symfony/contracts": {
-        "version": "v1.0.2"
     },
     "symfony/debug": {
         "version": "v4.0.6"
@@ -461,9 +455,6 @@
     "symfony/polyfill-intl-icu": {
         "version": "v1.7.0"
     },
-    "symfony/polyfill-intl-idn": {
-        "version": "v1.11.0"
-    },
     "symfony/polyfill-mbstring": {
         "version": "v1.7.0"
     },
@@ -491,6 +482,9 @@
             "ref": "cda8b550123383d25827705d05a42acf6819fe4e"
         }
     },
+    "symfony/security": {
+        "version": "v4.0.9"
+    },
     "symfony/security-bundle": {
         "version": "3.3",
         "recipe": {
@@ -502,15 +496,6 @@
     },
     "symfony/security-core": {
         "version": "v4.0.6"
-    },
-    "symfony/security-csrf": {
-        "version": "v4.2.7"
-    },
-    "symfony/security-guard": {
-        "version": "v4.2.7"
-    },
-    "symfony/security-http": {
-        "version": "v4.2.7"
     },
     "symfony/serializer": {
         "version": "v4.0.8"
@@ -556,9 +541,6 @@
     },
     "symfony/var-dumper": {
         "version": "v4.0.6"
-    },
-    "symfony/var-exporter": {
-        "version": "v4.2.7"
     },
     "symfony/web-profiler-bundle": {
         "version": "3.3",
