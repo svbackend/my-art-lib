@@ -45,6 +45,7 @@ class FixReleaseDateQueue extends Command
             $tmdbId = $movie->getTmdb()->getId();
 
             if ($movie->getImdbId()) {
+                $queueItem->activate();
                 continue;
             }
 
