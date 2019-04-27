@@ -27,14 +27,14 @@ class ImdbReleaseDateParserService
         $html = $this->loadImdbReleaseDatesPageHtml($movie->getImdbId());
 
         // Because filterXPath('//*[@id="release_dates"]//td') don't work correctly due errors in html from imdb page
-        $releasesPosition = strpos($html, '<a id="releases" name="releases"></a>');
+        $releasesPosition = strpos($html, 'id="releases"');
         if ($releasesPosition === false) {
             // no releases yet on imdb
             return [];
         }
         $html = substr($html, $releasesPosition);
 
-        $akasPosition = strpos($html, '<a id="akas" name="akas"></a>');
+        $akasPosition = strpos($html, 'id="akas"');
         if ($akasPosition === false) {
             // If no akas section - just dont cut our html
             $akasPosition = null;
