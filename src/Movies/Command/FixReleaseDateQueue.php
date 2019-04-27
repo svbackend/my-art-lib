@@ -3,6 +3,7 @@
 namespace App\Movies\Command;
 
 use App\Movies\Entity\ReleaseDateQueue;
+use App\Movies\Exception\TmdbMovieNotFoundException;
 use App\Movies\Repository\ReleaseDateQueueRepository;
 use App\Movies\Service\ImdbIdLoaderService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,7 +43,18 @@ class FixReleaseDateQueue extends Command
         foreach ($queueItems as $queueItem) {
             $movie = $queueItem->getMovie();
             $tmdbId = $movie->getTmdb()->getId();
-            if (null !== $imdbId = $this->imdb->getImdbId($tmdbId)) {
+
+            if ($movie->getImdbId()) {
+                continue;
+            }
+
+            try {
+                $imdbId = $this->imdb->getImdbId($tmdbId);
+            } catch (TmdbMovieNotFoundException $e) {
+                continue;
+            }
+
+            if ($imdbId !== null ) {
                 $queueItem->activate();
                 $movie->setImdbId($imdbId);
             }
