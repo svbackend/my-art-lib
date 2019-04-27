@@ -21,8 +21,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
 {
-    const ADD_MOVIES_TMDB = 'addMoviesTMDB';
-    const PARAM_LOAD_SIMILAR_MOVIES = 'loadSimilarMovies';
+    public const ADD_MOVIES_TMDB = 'addMoviesTMDB';
+    public const PARAM_LOAD_SIMILAR_MOVIES = 'loadSimilarMovies';
 
     private $em;
     private $producer;
@@ -48,8 +48,6 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
      * @throws \ErrorException
      *
      * @return object|string
-     *
-     * todo add event that new movie is added through this processor?
      */
     public function process(PsrMessage $message, PsrContext $session)
     {
@@ -124,7 +122,7 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         $this->producer->sendEvent(ActorSyncProcessor::ADD_ACTOR, $message);
     }
 
-    public static function getSubscribedTopics()
+    public static function getSubscribedTopics(): array
     {
         return [self::ADD_MOVIES_TMDB];
     }
