@@ -3,10 +3,12 @@
 namespace App\Movies\Controller;
 
 use App\Controller\BaseController;
+use App\Countries\Entity\Country;
 use App\Movies\DTO\MovieTranslationDTO;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTranslations;
 use App\Movies\EventListener\SimilarMoviesProcessor;
+use App\Movies\Repository\MovieReleaseDateRepository;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Request\CreateMovieRequest;
 use App\Movies\Request\SearchRequest;
@@ -19,11 +21,13 @@ use App\Movies\Utils\Poster;
 use App\Pagination\CustomPaginatedCollection;
 use App\Users\Entity\UserRoles;
 use Enqueue\Client\ProducerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 
 /**
  * Class MovieController.
@@ -77,6 +81,21 @@ class MovieController extends BaseController
         }
 
         return $this->response($movie, 200, [], [
+            'groups' => ['view'],
+        ]);
+    }
+
+    /**
+     * @Route("/api/movies/{movieId}/releaseDate/{countryCode}", methods={"GET"}, requirements={"movie"="\d+"})
+     * @ParamConverter("country", options={"mapping": {"countryCode": "code"}})
+     */
+    public function getMovieReleaseDate(int $movieId, Country $country, MovieReleaseDateRepository $repository)
+    {
+        if (null === $releaseDate = $repository->findOneByCountry($movieId, $country->getId())) {
+            throw new NotFoundHttpException();
+        }
+
+        return $this->response($releaseDate, 200, [], [
             'groups' => ['view'],
         ]);
     }

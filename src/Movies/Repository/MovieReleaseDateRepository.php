@@ -26,11 +26,11 @@ class MovieReleaseDateRepository extends ServiceEntityRepository
         parent::__construct($registry, MovieReleaseDate::class);
     }
 
-    public function findOneByCountry(int $movieId, Country $country): ?MovieReleaseDate
+    public function findOneByCountry(int $movieId, int $countryId): ?MovieReleaseDate
     {
         return $this->findOneBy([
             'movie' => $movieId,
-            'country' => $country->getCode(),
+            'country' => $countryId,
         ]);
     }
 

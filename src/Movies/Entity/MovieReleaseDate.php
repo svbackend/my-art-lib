@@ -28,7 +28,6 @@ class MovieReleaseDate
     /**
      * @ORM\ManyToOne(targetEntity="App\Movies\Entity\Movie")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"list", "view"})
      */
     private $movie;
 

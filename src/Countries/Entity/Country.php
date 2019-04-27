@@ -6,6 +6,7 @@ namespace App\Countries\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Countries\Repository\CountryRepository")
@@ -23,11 +24,13 @@ class Country
 
     /**
      * @ORM\Column(type="string", length=3, unique=true)
+     * @Groups({"list", "view"})
      */
     private $code;
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
+     * @Groups({"list", "view"})
      */
     private $name;
 
