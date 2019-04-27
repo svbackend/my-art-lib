@@ -27,9 +27,17 @@ class MovieAddedFromTmdbEventListener
     {
         $movie = $event->getMovie();
 
-        // If we dont know release date yet or it would be in the future - add movie to queue
+        if ($movie->getImdbId() === null) {
+            $theMovieDbId = $movie->getTmdb()->getId();
+            $imdbId = $this->imdbIdLoaderService->getImdbId($theMovieDbId);
+            $movie->setImdbId($imdbId);
+            $this->em->persist($movie);
+            $this->em->flush();
+        }
+
+        // If we dont know release date yet or movie was/would be released this year or in the future
         // All movies in queue will be checked every day for any info about release date (parsing imdb/tmdb)
-        if ($movie->getReleaseDate() === null || $movie->getReleaseDate()->getTimestamp() > time()) {
+        if ($movie->getReleaseDate() === null || $movie->getReleaseDate()->format('Y') >= date('Y')) {
             $releaseDateQueueItem = new ReleaseDateQueue($movie);
             $this->em->persist($releaseDateQueueItem);
             try {
@@ -37,14 +45,6 @@ class MovieAddedFromTmdbEventListener
             } catch (UniqueConstraintViolationException $exception) {
                 // It's ok
             }
-        }
-
-        if ($movie->getImdbId() === null) {
-            $theMovieDbId = $movie->getTmdb()->getId();
-            $imdbId = $this->imdbIdLoaderService->getImdbId($theMovieDbId);
-            $movie->setImdbId($imdbId);
-            $this->em->persist($movie);
-            $this->em->flush();
         }
     }
 }
