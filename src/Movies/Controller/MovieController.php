@@ -85,7 +85,7 @@ class MovieController extends BaseController
     }
 
     /**
-     * @Route("/api/movies/{movieId}/releaseDate/{countryCode}", methods={"GET"}, requirements={"movieId"="\d+"})
+     * @Route("/api/movies/{movieId}/releaseDate/{countryCode}", methods={"GET"}, requirements={"movie"="\d+"})
      * @ParamConverter("country", options={"mapping": {"countryCode": "code"}})
      */
     public function getMovieReleaseDate(int $movieId, Country $country, MovieReleaseDateRepository $repository)
