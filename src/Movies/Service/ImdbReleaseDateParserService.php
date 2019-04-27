@@ -36,10 +36,10 @@ class ImdbReleaseDateParserService
 
         $akasPosition = strpos($html, 'id="akas"');
         if ($akasPosition === false) {
-            // If no akas section - just dont cut our html
-            $akasPosition = null;
+            $html = substr($html, 0);
+        } else {
+            $html = substr($html, 0, $akasPosition);
         }
-        $html = substr($html, 0, $akasPosition);
 
         $crawler = new Crawler($html, $this->getEndpoint($movie->getImdbId()));
 
