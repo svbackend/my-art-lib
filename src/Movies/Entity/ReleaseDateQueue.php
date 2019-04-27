@@ -66,13 +66,13 @@ class ReleaseDateQueue
         return $this->addedAt;
     }
 
-    public function activate()
+    public function activate(): void
     {
         $this->isActive = 1;
     }
 
     public function isActive(): bool
     {
-        return $this->isActive === 1 ? true : false;
+        return $this->isActive === 1;
     }
 }
