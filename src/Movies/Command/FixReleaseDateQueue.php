@@ -52,6 +52,7 @@ class FixReleaseDateQueue extends Command
             try {
                 $imdbId = $this->imdb->getImdbId($tmdbId);
             } catch (TmdbMovieNotFoundException $e) {
+                $this->em->remove($queueItem);
                 continue;
             }
 
