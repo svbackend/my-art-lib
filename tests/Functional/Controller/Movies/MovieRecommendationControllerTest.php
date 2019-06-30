@@ -4,7 +4,7 @@ namespace App\Tests\Functional\Controller\Movies;
 
 use App\Movies\EventListener\AddRecommendationProcessor;
 use App\Users\DataFixtures\UsersFixtures;
-use Enqueue\Client\TraceableProducer;
+use Enqueue\Client\ProducerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MovieRecommendationControllerTest extends WebTestCase
@@ -52,11 +52,11 @@ class MovieRecommendationControllerTest extends WebTestCase
     /**
      * @param $client
      *
-     * @return TraceableProducer
+     * @return ProducerInterface
      */
     private function getProducer($client)
     {
-        return $client->getContainer()->get(TraceableProducer::class);
+        return $client->getContainer()->get(ProducerInterface::class);
     }
 
     public function testAddMovieRecommendation()

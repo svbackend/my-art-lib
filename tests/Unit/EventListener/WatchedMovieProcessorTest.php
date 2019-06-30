@@ -10,8 +10,8 @@ use App\Movies\EventListener\WatchedMovieProcessor;
 use App\Users\Entity\User;
 use App\Users\Entity\UserWatchedMovie;
 use Doctrine\ORM\EntityManagerInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
+use Interop\Queue\Context;
+use Interop\Queue\Message;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -24,10 +24,10 @@ class WatchedMovieProcessorTest extends KernelTestCase
     /** @var LoggerInterface|MockObject */
     private $logger;
 
-    /** @var PsrContext */
+    /** @var Context */
     private $psrContext;
 
-    /** @var PsrMessage|MockObject */
+    /** @var Message|MockObject */
     private $psrMessage;
 
     /** @var WatchedMovieProcessor */
@@ -40,8 +40,8 @@ class WatchedMovieProcessorTest extends KernelTestCase
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->psrContext = $this->createMock(PsrContext::class);
-        $this->psrMessage = $this->createMock(PsrMessage::class);
+        $this->psrContext = $this->createMock(Context::class);
+        $this->psrMessage = $this->createMock(Message::class);
         $this->watchedMovieProcessor = new WatchedMovieProcessor($this->em, $this->logger);
     }
 

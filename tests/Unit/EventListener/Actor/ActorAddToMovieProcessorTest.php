@@ -12,8 +12,8 @@ use App\Movies\Entity\Movie;
 use App\Movies\Repository\MovieRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
+use Interop\Queue\Context;
+use Interop\Queue\Message;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -23,10 +23,10 @@ class ActorAddToMovieProcessorTest extends KernelTestCase
     /** @var EntityManager|MockObject */
     private $em;
 
-    /** @var PsrContext */
+    /** @var Context */
     private $psrContext;
 
-    /** @var PsrMessage|MockObject */
+    /** @var Message|MockObject */
     private $psrMessage;
 
     /**
@@ -51,8 +51,8 @@ class ActorAddToMovieProcessorTest extends KernelTestCase
 
     protected function setUp()
     {
-        $this->psrContext = $this->createMock(PsrContext::class);
-        $this->psrMessage = $this->createMock(PsrMessage::class);
+        $this->psrContext = $this->createMock(Context::class);
+        $this->psrMessage = $this->createMock(Message::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->actorRepository = $this->createMock(ActorRepository::class);

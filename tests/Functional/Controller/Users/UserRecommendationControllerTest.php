@@ -4,7 +4,7 @@ namespace App\Tests\Functional\Controller\Users;
 
 use App\Movies\EventListener\AddRecommendationProcessor;
 use App\Users\DataFixtures\UsersFixtures;
-use Enqueue\Client\TraceableProducer;
+use Enqueue\Client\ProducerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class UserRecommendationControllerTest extends WebTestCase

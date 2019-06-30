@@ -10,18 +10,18 @@ use App\Movies\Entity\MovieTMDB;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Service\TmdbSearchService;
 use Enqueue\Client\ProducerInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
+use Interop\Queue\Context;
+use Interop\Queue\Message;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ActorSyncProcessorTest extends KernelTestCase
 {
-    /** @var PsrContext */
+    /** @var Context */
     private $psrContext;
 
-    /** @var PsrMessage|MockObject */
+    /** @var Message|MockObject */
     private $psrMessage;
 
     /** @var MockObject|ProducerInterface */
@@ -46,8 +46,8 @@ class ActorSyncProcessorTest extends KernelTestCase
 
     protected function setUp()
     {
-        $this->psrContext = $this->createMock(PsrContext::class);
-        $this->psrMessage = $this->createMock(PsrMessage::class);
+        $this->psrContext = $this->createMock(Context::class);
+        $this->psrMessage = $this->createMock(Message::class);
         $this->producer = $this->createMock(ProducerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repository = $this->createMock(MovieRepository::class);

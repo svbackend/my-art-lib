@@ -11,8 +11,8 @@ use App\Users\Entity\User;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
+use Interop\Queue\Context;
+use Interop\Queue\Message;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -21,10 +21,10 @@ class AddRecommendationProcessorTest extends KernelTestCase
     /** @var EntityManager|MockObject */
     private $em;
 
-    /** @var PsrContext */
+    /** @var Context */
     private $psrContext;
 
-    /** @var PsrMessage|MockObject */
+    /** @var Message|MockObject */
     private $psrMessage;
 
     /**
@@ -40,8 +40,8 @@ class AddRecommendationProcessorTest extends KernelTestCase
     protected function setUp()
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->psrContext = $this->createMock(PsrContext::class);
-        $this->psrMessage = $this->createMock(PsrMessage::class);
+        $this->psrContext = $this->createMock(Context::class);
+        $this->psrMessage = $this->createMock(Message::class);
         $this->repository = $this->createMock(MovieRepository::class);
 
         $this->processor = new AddRecommendationProcessor($this->em, $this->repository);

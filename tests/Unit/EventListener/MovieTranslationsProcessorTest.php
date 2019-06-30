@@ -13,8 +13,8 @@ use App\Movies\Service\TmdbSearchService;
 use App\Service\LocaleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
+use Interop\Queue\Context;
+use Interop\Queue\Message;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -23,10 +23,10 @@ class MovieTranslationsProcessorTest extends KernelTestCase
     /** @var EntityManagerInterface|MockObject */
     private $em;
 
-    /** @var PsrContext */
+    /** @var Context */
     private $psrContext;
 
-    /** @var PsrMessage|MockObject */
+    /** @var Message|MockObject */
     private $psrMessage;
 
     /** @var MovieTranslationsProcessor */
@@ -49,8 +49,8 @@ class MovieTranslationsProcessorTest extends KernelTestCase
      */
     public function setUp()
     {
-        $this->psrContext = $this->createMock(PsrContext::class);
-        $this->psrMessage = $this->createMock(PsrMessage::class);
+        $this->psrContext = $this->createMock(Context::class);
+        $this->psrMessage = $this->createMock(Message::class);
 
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->movieRepository = $this->createMock(MovieRepository::class);

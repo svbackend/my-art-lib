@@ -8,7 +8,7 @@ use App\Movies\Entity\Movie;
 use App\Movies\EventListener\MovieSyncProcessor;
 use App\Movies\Utils\Poster;
 use App\Users\DataFixtures\UsersFixtures;
-use Enqueue\Client\TraceableProducer;
+use Enqueue\Client\ProducerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MoviesControllerTest extends WebTestCase
@@ -361,11 +361,11 @@ class MoviesControllerTest extends WebTestCase
     /**
      * @param $client
      *
-     * @return TraceableProducer
+     * @return ProducerInterface
      */
     private function getProducer($client)
     {
-        return $client->getContainer()->get(TraceableProducer::class);
+        return $client->getContainer()->get(ProducerInterface::class);
     }
 
     private function checkIsApiKeyProvided()

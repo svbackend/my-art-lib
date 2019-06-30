@@ -11,8 +11,8 @@ use App\Movies\Service\TmdbNormalizerService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
+use Interop\Queue\Context;
+use Interop\Queue\Message;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -23,10 +23,10 @@ class MovieSyncProcessorTest extends KernelTestCase
     /** @var EntityManager|MockObject */
     private $em;
 
-    /** @var PsrContext */
+    /** @var Context */
     private $psrContext;
 
-    /** @var PsrMessage|MockObject */
+    /** @var Message|MockObject */
     private $psrMessage;
 
     /** @var MovieSyncProcessor */
@@ -50,8 +50,8 @@ class MovieSyncProcessorTest extends KernelTestCase
     protected function setUp()
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->psrContext = $this->createMock(PsrContext::class);
-        $this->psrMessage = $this->createMock(PsrMessage::class);
+        $this->psrContext = $this->createMock(Context::class);
+        $this->psrMessage = $this->createMock(Message::class);
         $this->producer = $this->createMock(ProducerInterface::class);
         $this->tmdbNormalizer = $this->createMock(TmdbNormalizerService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
