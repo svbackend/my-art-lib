@@ -13,12 +13,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\Message;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 
-class SaveActorProcessor implements PsrProcessor, TopicSubscriberInterface
+class SaveActorProcessor implements Processor, TopicSubscriberInterface
 {
     const SAVE_ACTOR = 'saveActor';
 
@@ -39,7 +39,7 @@ class SaveActorProcessor implements PsrProcessor, TopicSubscriberInterface
         $this->searchService = $searchService;
     }
 
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $this->logger->info('SaveActorProcessor start with memory usage: ', [memory_get_usage()]);
 

@@ -6,11 +6,11 @@ use App\Actors\Repository\ActorRepository;
 use App\Actors\Utils\ActorPhoto;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 
-class ActorPhotoProcessor implements PsrProcessor, TopicSubscriberInterface
+class ActorPhotoProcessor implements Processor, TopicSubscriberInterface
 {
     const LOAD_PHOTO = 'LoadActorPhoto';
 
@@ -23,7 +23,7 @@ class ActorPhotoProcessor implements PsrProcessor, TopicSubscriberInterface
         $this->actorRepository = $actorRepository;
     }
 
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $actorId = $message->getBody();
         $actorId = json_decode($actorId, true);

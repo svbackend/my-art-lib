@@ -12,17 +12,17 @@ use App\Users\Entity\UserWatchedMovie;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 
 // Looks like here some logic problem
 // todo construct entities by params from message here instead of create each of them with correct associations
 // TODO IMPORTANT
-class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
+class WatchedMovieProcessor implements Processor, TopicSubscriberInterface
 {
-    const ADD_WATCHED_MOVIE_TMDB = 'addWatchedMovieTMDB';
+    public const ADD_WATCHED_MOVIE_TMDB = 'addWatchedMovieTMDB';
 
     private $em;
     private $logger;
@@ -36,14 +36,14 @@ class WatchedMovieProcessor implements PsrProcessor, TopicSubscriberInterface
     /**
      * This method called when user or guest trying to add movie to own list of watched movies but we do not have this movie in our db yet.
      *
-     * @param PsrMessage $message
-     * @param PsrContext $session
+     * @param QMessage $message
+     * @param Context $session
      *
      * @throws \Doctrine\ORM\ORMException|\Exception
      *
      * @return object|string
      */
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $watchedMovies = $message->getBody();
         $watchedMovies = unserialize($watchedMovies);

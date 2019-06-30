@@ -13,11 +13,11 @@ use App\Service\LocaleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 
-class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterface
+class MovieTranslationsProcessor implements Processor, TopicSubscriberInterface
 {
     const LOAD_TRANSLATIONS = 'LoadMoviesTranslationsFromTMDB';
 
@@ -39,15 +39,15 @@ class MovieTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     }
 
     /**
-     * @param PsrMessage $message
-     * @param PsrContext $session
+     * @param QMessage $message
+     * @param Context $session
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
      *
      * @return object|string
      */
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $movieId = $message->getBody();
         $movieId = json_decode($movieId, true);

@@ -7,13 +7,13 @@ use App\Movies\Utils\Poster;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 
-class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
+class MoviePostersProcessor implements Processor, TopicSubscriberInterface
 {
-    const LOAD_POSTERS = 'LoadMoviesPosters';
+    public const LOAD_POSTERS = 'LoadMoviesPosters';
 
     private $em;
     private $movieRepository;
@@ -26,7 +26,7 @@ class MoviePostersProcessor implements PsrProcessor, TopicSubscriberInterface
         $this->producer = $producer;
     }
 
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $movieId = $message->getBody();
         $movieId = json_decode($movieId, true);

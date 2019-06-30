@@ -6,23 +6,23 @@ use App\Movies\Utils\Poster;
 use Enqueue\Client\TopicSubscriberInterface;
 use Gumlet\ImageResize;
 use Gumlet\ImageResizeException;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 
-class PosterResizerProcessor implements PsrProcessor, TopicSubscriberInterface
+class PosterResizerProcessor implements Processor, TopicSubscriberInterface
 {
-    const RESIZE_POSTERS = 'ResizeMoviesPosters';
+    public const RESIZE_POSTERS = 'ResizeMoviesPosters';
 
     /**
-     * @param PsrMessage $message
-     * @param PsrContext $session
+     * @param QMessage $message
+     * @param Context $session
      *
      * @throws ImageResizeException
      *
      * @return object|string
      */
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $movieId = $message->getBody();
         $movieId = json_decode($movieId, true);

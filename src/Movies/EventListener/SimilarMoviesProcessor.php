@@ -12,11 +12,11 @@ use Enqueue\Client\Message;
 use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 
-class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
+class SimilarMoviesProcessor implements Processor, TopicSubscriberInterface
 {
     const LOAD_SIMILAR_MOVIES = 'LoadSimilarMoviesFromTMDB';
 
@@ -35,7 +35,7 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
         $this->producer = $producer;
     }
 
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $movieId = $message->getBody();
         $movieId = json_decode($movieId, true);
@@ -107,7 +107,7 @@ class SimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
     private function addSimilarMovies(array $allSimilarMoviesTable)
     {
         $message = new Message(json_encode($allSimilarMoviesTable));
-        $message->setPriority(MessagePriority::VERY_LOW);
+        // todo redis doesnt support priority $message->setPriority(MessagePriority::VERY_LOW);
         $this->producer->sendEvent(AddSimilarMoviesProcessor::ADD_SIMILAR_MOVIES, $message);
     }
 

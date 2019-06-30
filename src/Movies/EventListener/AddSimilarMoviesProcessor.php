@@ -9,11 +9,11 @@ use App\Users\Entity\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 
-class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterface
+class AddSimilarMoviesProcessor implements Processor, TopicSubscriberInterface
 {
     const ADD_SIMILAR_MOVIES = 'AddSimilarMovies';
 
@@ -29,7 +29,7 @@ class AddSimilarMoviesProcessor implements PsrProcessor, TopicSubscriberInterfac
         $this->searchService = $searchService;
     }
 
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $moviesTable = $message->getBody();
         $moviesTable = json_decode($moviesTable, true);

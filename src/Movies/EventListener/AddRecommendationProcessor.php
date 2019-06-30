@@ -7,13 +7,13 @@ use App\Users\Entity\User;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 
-class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterface
+class AddRecommendationProcessor implements Processor, TopicSubscriberInterface
 {
-    const ADD_RECOMMENDATION = 'AddRecommendation';
+    public const ADD_RECOMMENDATION = 'AddRecommendation';
 
     private $em;
     private $movieRepository;
@@ -24,7 +24,7 @@ class AddRecommendationProcessor implements PsrProcessor, TopicSubscriberInterfa
         $this->movieRepository = $movieRepository;
     }
 
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $movie = $message->getBody();
         $movie = json_decode($movie, true);

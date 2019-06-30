@@ -7,12 +7,12 @@ use App\Movies\Repository\MovieRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 
-class ActorAddToMovieProcessor implements PsrProcessor, TopicSubscriberInterface
+class ActorAddToMovieProcessor implements Processor, TopicSubscriberInterface
 {
     const ADD_TO_MOVIE = 'addActorToMovie';
 
@@ -29,7 +29,7 @@ class ActorAddToMovieProcessor implements PsrProcessor, TopicSubscriberInterface
         $this->actorRepository = $actorRepository;
     }
 
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $this->logger->info('ActorAddToMovieProcessor start with memory usage: ', [memory_get_usage()]);
 

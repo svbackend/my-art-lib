@@ -12,12 +12,12 @@ use App\Service\LocaleService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 
-class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterface
+class ActorTranslationsProcessor implements Processor, TopicSubscriberInterface
 {
     const LOAD_TRANSLATIONS = 'loadActorTranslations';
 
@@ -37,15 +37,15 @@ class ActorTranslationsProcessor implements PsrProcessor, TopicSubscriberInterfa
     }
 
     /**
-     * @param PsrMessage $message
-     * @param PsrContext $session
+     * @param QMessage $message
+     * @param Context $session
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException
      *
      * @return string
      */
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $this->logger->info('ActorTranslationsProcessor start with memory usage: ', [memory_get_usage()]);
 

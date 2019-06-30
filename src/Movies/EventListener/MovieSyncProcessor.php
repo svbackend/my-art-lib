@@ -13,13 +13,13 @@ use Enqueue\Client\Message;
 use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
+class MovieSyncProcessor implements Processor, TopicSubscriberInterface
 {
     public const ADD_MOVIES_TMDB = 'addMoviesTMDB';
     public const PARAM_LOAD_SIMILAR_MOVIES = 'loadSimilarMovies';
@@ -42,14 +42,14 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     }
 
     /**
-     * @param PsrMessage $message
-     * @param PsrContext $session
+     * @param QMessage $message
+     * @param Context $session
      *
      * @throws \ErrorException
      *
      * @return object|string
      */
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $this->logger->info('MovieSyncProcessor start with memory usage: ', [memory_get_usage()]);
 
@@ -105,14 +105,14 @@ class MovieSyncProcessor implements PsrProcessor, TopicSubscriberInterface
     private function loadSimilarMovies(int $movieId)
     {
         $message = new Message(json_encode($movieId));
-        $message->setPriority(MessagePriority::VERY_LOW);
+        // todo redis doesnt support priority $message->setPriority(MessagePriority::VERY_LOW);
         $this->producer->sendEvent(SimilarMoviesProcessor::LOAD_SIMILAR_MOVIES, $message);
     }
 
     private function loadPosters(int $movieId)
     {
         $message = new Message(json_encode($movieId));
-        $message->setPriority(MessagePriority::VERY_LOW);
+        // todo redis doesnt support priority $message->setPriority(MessagePriority::VERY_LOW);
         $this->producer->sendEvent(MoviePostersProcessor::LOAD_POSTERS, $message);
     }
 

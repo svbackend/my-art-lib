@@ -8,14 +8,14 @@ use Enqueue\Client\Message;
 use Enqueue\Client\MessagePriority;
 use Enqueue\Client\ProducerInterface;
 use Enqueue\Client\TopicSubscriberInterface;
-use Interop\Queue\PsrContext;
-use Interop\Queue\PsrMessage;
-use Interop\Queue\PsrProcessor;
+use Interop\Queue\Context;
+use Interop\Queue\Message as QMessage;
+use Interop\Queue\Processor;
 use Psr\Log\LoggerInterface;
 
-class ActorSyncProcessor implements PsrProcessor, TopicSubscriberInterface
+class ActorSyncProcessor implements Processor, TopicSubscriberInterface
 {
-    const ADD_ACTOR = 'addActor';
+    public const ADD_ACTOR = 'addActor';
 
     private $producer;
     private $logger;
@@ -30,7 +30,7 @@ class ActorSyncProcessor implements PsrProcessor, TopicSubscriberInterface
         $this->searchService = $searchService;
     }
 
-    public function process(PsrMessage $message, PsrContext $session)
+    public function process(QMessage $message, Context $session)
     {
         $this->logger->info('ActorSyncProcessor start with memory usage: ', [memory_get_usage()]);
 
@@ -65,7 +65,7 @@ class ActorSyncProcessor implements PsrProcessor, TopicSubscriberInterface
             'actorTmdbId' => $actorTmdbId,
             'movieId' => $movieId,
         ]));
-        $message->setPriority(MessagePriority::VERY_LOW);
+        // todo redis doesnt support priority $message->setPriority(MessagePriority::VERY_LOW);
         $this->producer->sendEvent(ActorAddToMovieProcessor::ADD_TO_MOVIE, $message);
     }
 

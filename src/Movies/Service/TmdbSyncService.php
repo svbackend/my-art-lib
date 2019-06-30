@@ -45,7 +45,7 @@ class TmdbSyncService
             }
 
             $message = new Message(json_encode($movie));
-            $message->setPriority(MessagePriority::HIGH);
+            // todo redis doesnt support priority $message->setPriority(MessagePriority::HIGH);
             $message->setProperty(MovieSyncProcessor::PARAM_LOAD_SIMILAR_MOVIES, $loadSimilar);
 
             $this->producer->sendEvent(MovieSyncProcessor::ADD_MOVIES_TMDB, $message);

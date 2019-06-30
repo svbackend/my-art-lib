@@ -53,7 +53,7 @@ class MovieRecommendationController extends BaseController
                 'movie_id' => $originalMovie->getId(),
                 'user_id' => $user->getId(),
             ]));
-            $message->setPriority(MessagePriority::VERY_LOW);
+            // todo redis doesnt support priority $message->setPriority(MessagePriority::VERY_LOW);
             $producer->sendEvent(AddRecommendationProcessor::ADD_RECOMMENDATION, $message);
 
             return new JsonResponse();
