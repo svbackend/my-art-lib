@@ -365,7 +365,7 @@ class MoviesControllerTest extends WebTestCase
      */
     private function getProducer($client)
     {
-        return $client->getContainer()->get(ProducerInterface::class);
+        return $client->getContainer()->get('enqueue.client.default.producer');
     }
 
     private function checkIsApiKeyProvided()

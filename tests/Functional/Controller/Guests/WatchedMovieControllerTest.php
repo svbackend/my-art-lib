@@ -7,7 +7,6 @@ use App\Guests\Entity\GuestWatchedMovie;
 use App\Movies\DataFixtures\MoviesFixtures;
 use App\Movies\EventListener\WatchedMovieProcessor;
 use Enqueue\Client\ProducerInterface;
-use Enqueue\Client\ProducerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class WatchedMovieControllerTest extends WebTestCase
@@ -108,6 +107,6 @@ class WatchedMovieControllerTest extends WebTestCase
      */
     private function getProducer($client)
     {
-        return $client->getContainer()->get(ProducerInterface::class);
+        return $client->getContainer()->get('enqueue.client.default.producer');
     }
 }
