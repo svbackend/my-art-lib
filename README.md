@@ -15,12 +15,11 @@ Install:
 
 * Copy and customize your docker-compose.yml: `cp docker-compose.yml.dist docker-compose.yml`
 * `docker-compose up --build`
-* `bin/composer update`
+* `docker-compose exec app composer update`
 * `cp .env.dist .env`
 * `cp .env.dist .env.test`
 * Change test db name: `sed -i 's/postgres\/my_art_lib/postgres\/my_art_lib_test/g' .env.test` 
-* `docker-compose exec app bash`
-* `php bin/console doctrine:migr:migr`
+* `docker-compose exec app bin/console doctrine:migr:migr`
 * Optional - fixtures (you will be able to sign in as tester_fixture with pass 123456 and some other useful stuff): `php bin/console doctrine:fixtures:load --purge-with-truncate`
 * Open .env + .env.test and set MOVIE_DB_API_KEY
 * And finally to be sure that all is fine - run tests: `php bin/phpunit`
