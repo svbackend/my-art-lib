@@ -16,7 +16,7 @@ services:
 
     App\:
         resource: '../src/*'
-        exclude: '../src/**/{EventListener,Entity,DTO,Migrations,Tests,Kernel.php}'
+        exclude: '../src/**/{EventListener,Entity,DTO,Migrations,Tests,Filters,Kernel.php}'
 
     App\Service\LocaleService:
         arguments:
