@@ -52,9 +52,12 @@ class MovieController extends BaseController
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
-        (new FilterBuilder(
-            new Filter\Year()
-        ))->process($request->query, $ids);
+        $filter = new FilterBuilder(
+            new Filter\YearRange()
+        );
+
+        $filter->process($request->query, $ids);
+        $filter->process($request->query, $count);
 
         $collection = new CustomPaginatedCollection($movies->getQuery(), $ids->getQuery(), $count->getQuery(), $offset, $limit);
 
