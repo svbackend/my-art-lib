@@ -1,7 +1,7 @@
 language: php
 
 php:
-  - 7.2
+  - "7.2"
 
 services:
   - postgresql
@@ -19,6 +19,8 @@ env:
 before_script:
   - psql -c "CREATE DATABASE my_art_lib;" -U postgres
   - psql -c "CREATE USER my_art_lib WITH PASSWORD 'my_art_lib';" -U postgres
+  - php bin/console doctrine:migrations:migrate --no-interaction
+  - touch tests/.db_already_created
 
 script:
   - ./bin/phpunit --coverage-clover=coverage.clover
