@@ -5,6 +5,7 @@ php:
 
 services:
   - postgresql
+  - redis-server
 
 addons:
   postgresql: "9.6"
@@ -15,6 +16,7 @@ install:
 
 env:
   - DATABASE_URL="pgsql://my_art_lib:my_art_lib@localhost/my_art_lib"
+  - ENQUEUE_DSN="redis://localhost"
 
 before_script:
   - psql -c "CREATE DATABASE my_art_lib;" -U postgres
