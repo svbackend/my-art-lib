@@ -4,6 +4,8 @@ namespace App\Movies\Controller;
 
 use App\Controller\BaseController;
 use App\Countries\Entity\Country;
+use App\Filters\FilterBuilder;
+use App\Filters\Movie as Filter;
 use App\Movies\DTO\MovieTranslationDTO;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTranslations;
@@ -50,7 +52,11 @@ class MovieController extends BaseController
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
-        $collection = new CustomPaginatedCollection($movies, $ids, $count, $offset, $limit);
+        (new FilterBuilder(
+            new Filter\Year()
+        ))->process($request->query, $ids);
+
+        $collection = new CustomPaginatedCollection($movies->getQuery(), $ids->getQuery(), $count->getQuery(), $offset, $limit);
 
         return $this->items($collection, MovieTransformer::list());
     }

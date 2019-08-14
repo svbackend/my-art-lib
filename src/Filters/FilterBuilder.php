@@ -2,7 +2,6 @@
 
 namespace App\Filters;
 
-use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -14,7 +13,7 @@ final class FilterBuilder
     public function __construct(Filter ...$filters)
     {
         foreach ($filters as $filter) {
-            $filter[get_class($filter)] = $filter;
+            $this->filters[get_class($filter)] = $filter;
         }
     }
 

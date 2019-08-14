@@ -71,6 +71,9 @@ class MovieRepository extends ServiceEntityRepository
         return $result;
     }
 
+    /**
+     * @return QueryBuilder[]
+     */
     public function findAllWithIsWatchedFlag(?User $user = null, ?GuestSession $guest = null): array
     {
         $items = $this->getBaseQuery();
@@ -100,7 +103,7 @@ class MovieRepository extends ServiceEntityRepository
         $count = $this->createQueryBuilder('m')
             ->select('COUNT(m.id)');
 
-        return [$items->getQuery(), $ids->getQuery(), $count->getQuery()];
+        return [$items, $ids, $count];
     }
 
     /**

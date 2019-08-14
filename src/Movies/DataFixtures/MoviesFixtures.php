@@ -44,7 +44,8 @@ class MoviesFixtures extends Fixture
         /* @var $manager EntityManager */
 
         $movieTitle = self::MOVIE_TITLE;
-        $movieDTO = new MovieDTO($movieTitle, 'http://placehold.it/320x480', 'imdb-test-id', 60000, 100, '-10 years');
+        $movieDTO1 = new MovieDTO($movieTitle, 'http://placehold.it/320x480', 'imdb-test-id1', 60000, 100, '01.01.2009');
+        $movieDTO2 = new MovieDTO($movieTitle, 'http://placehold.it/320x480', 'imdb-test-id2', 60000, 100, '01.01.2019');
         $tmdb = new MovieTMDB(self::MOVIE_TMDB_ID, 7.8, 100);
         $tmdb2 = new MovieTMDB(self::MOVIE_TMDB_ID_2, 7.8, 100);
 
@@ -57,14 +58,14 @@ class MoviesFixtures extends Fixture
         $actor = new Actor('Test MovieActor', new ActorTMDB(self::MOVIE_ACTOR_TMDB_ID));
         $actor->addTranslation(new ActorTranslations($actor, 'en', 'Test MovieActor (en)'));
 
-        $movie = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb, [$testGenre], [
+        $movie = $this->movieManageService->createMovieByDTO($movieDTO1, $tmdb, [$testGenre], [
             new MovieTranslationDTO('en', "$movieTitle (en)", 'Overview (en)', 'http://placehold.it/320x480'),
             new MovieTranslationDTO('uk', "$movieTitle (uk)", 'Overview (uk)', 'http://placehold.it/320x480'),
             new MovieTranslationDTO('ru', "$movieTitle (ru)", 'Overview (ru)', 'http://placehold.it/320x480'),
         ]);
         $movie->addActor($actor);
 
-        $movie2 = $this->movieManageService->createMovieByDTO($movieDTO, $tmdb2, [$testGenre], [
+        $movie2 = $this->movieManageService->createMovieByDTO($movieDTO2, $tmdb2, [$testGenre], [
             new MovieTranslationDTO('en', "$movieTitle 2 (en)", 'Overview (en)', 'http://placehold.it/320x480'),
             new MovieTranslationDTO('uk', "$movieTitle 2 (uk)", 'Overview (uk)', 'http://placehold.it/320x480'),
             new MovieTranslationDTO('ru', "$movieTitle 2 (ru)", 'Overview (ru)', 'http://placehold.it/320x480'),

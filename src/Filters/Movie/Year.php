@@ -27,8 +27,8 @@ class Year implements Filter
         }
 
         return $qb
-            ->andWhere("m.year {$operation} :y")
-            ->setParameter('y', $value);
+            ->andWhere("DATE_PART('year', m.releaseDate) {$operation} :filter_year")
+            ->setParameter('filter_year', $value);
     }
 
     private function isValidOperation(string $operation): bool
