@@ -230,9 +230,15 @@ class MoviesControllerTest extends WebTestCase
             ],
         ]);
 
+
         $this->assertSame(202, $client->getResponse()->getStatusCode());
         $client->request('GET', "/api/movies/{$movie['id']}?language=pl");
         $updatedMovie = json_decode($client->getResponse()->getContent(), true);
+
+        echo "\r\n";
+        echo var_export($client->getResponse()->getContent(), true);
+        echo "\r\n";
+
         $this->assertSame('new original title', $updatedMovie['originalTitle']);
         $this->assertSame('newImdbId', $updatedMovie['imdbId']);
         $this->assertSame(90, $updatedMovie['runtime']);
@@ -312,6 +318,10 @@ class MoviesControllerTest extends WebTestCase
         $client->request('POST', '/api/movies/search?language=ru', [
             'query' => $movieTitle,
         ]);
+
+        echo "\r\nTMDB START\r\n";
+        echo var_export($client->getResponse()->getContent(), true);
+        echo "\r\nTMDB END\r\n";
 
         self::assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true)['data'];
