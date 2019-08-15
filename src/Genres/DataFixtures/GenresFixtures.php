@@ -31,15 +31,15 @@ class GenresFixtures extends Fixture
 
         $comedy = new Genre();
         $comedy
-            ->addTranslation(new GenreTranslations($drama, 'en', 'Comedy'))
-            ->addTranslation(new GenreTranslations($drama, 'uk', 'Комедия'))
-            ->addTranslation(new GenreTranslations($drama, 'ru', 'Комедія'));
+            ->addTranslation(new GenreTranslations($comedy, 'en', 'Comedy'))
+            ->addTranslation(new GenreTranslations($comedy, 'uk', 'Комедия'))
+            ->addTranslation(new GenreTranslations($comedy, 'ru', 'Комедія'));
 
         $criminal = new Genre();
         $criminal
-            ->addTranslation(new GenreTranslations($drama, 'en', 'Criminal'))
-            ->addTranslation(new GenreTranslations($drama, 'uk', 'Криминал'))
-            ->addTranslation(new GenreTranslations($drama, 'ru', 'Кримінал'));
+            ->addTranslation(new GenreTranslations($criminal, 'en', 'Criminal'))
+            ->addTranslation(new GenreTranslations($criminal, 'uk', 'Криминал'))
+            ->addTranslation(new GenreTranslations($criminal, 'ru', 'Кримінал'));
 
         $manager->persist($drama);
         $manager->persist($comedy);

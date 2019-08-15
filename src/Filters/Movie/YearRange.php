@@ -6,6 +6,9 @@ use App\Filters\Filter;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
+/**
+ * /api/movies?yf=2000&yt=2010 => Will display all movies with release date between 2000-2010
+ */
 class YearRange implements Filter
 {
     public function handle(ParameterBag $params, QueryBuilder $qb): QueryBuilder
@@ -42,8 +45,6 @@ class YearRange implements Filter
 
         return $qb;
     }
-
-
 
     private function isValid(int $year): bool
     {

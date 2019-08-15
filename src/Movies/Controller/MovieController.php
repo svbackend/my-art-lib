@@ -48,18 +48,23 @@ class MovieController extends BaseController
      */
     public function getAll(Request $request, MovieRepository $movieRepository)
     {
-        [$movies, $ids, $count] = $movieRepository->findAllWithIsWatchedFlag($this->getUser(), $this->getGuest());
+        [$movies, $ids] = $movieRepository->findAllWithIsWatchedFlag($this->getUser(), $this->getGuest());
 
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
+        // Its important to keep order of filters from easiest to heaviest in order to improve performance (in theory)
         $filter = new FilterBuilder(
             new Filter\YearRange(),
+            new Filter\Rating(),
             new Filter\Genre()
         );
 
         $filter->process($request->query, $ids);
-        $filter->process($request->query, $count);
+
+        // todo move this clone qb to CustomPaginatedCollection
+        $count = clone $ids;
+        $count->select('COUNT(m.id)')->resetDQLPart('orderBy');
 
         $collection = new CustomPaginatedCollection($movies->getQuery(), $ids->getQuery(), $count->getQuery(), $offset, $limit);
 

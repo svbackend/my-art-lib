@@ -99,11 +99,7 @@ class MovieRepository extends ServiceEntityRepository
             ->select('m.id')
             ->orderBy('m.id', 'DESC');
 
-        /** Count query */
-        $count = $this->createQueryBuilder('m')
-            ->select('COUNT(m.id)');
-
-        return [$items, $ids, $count];
+        return [$items, $ids];
     }
 
     /**

@@ -49,7 +49,7 @@ class MoviesFixtures extends Fixture implements DependentFixtureInterface
         $movieDTO1 = new MovieDTO($movieTitle, 'http://placehold.it/320x480', 'imdb-test-id1', 60000, 100, '01.01.2009');
         $movieDTO2 = new MovieDTO($movieTitle, 'http://placehold.it/320x480', 'imdb-test-id2', 60000, 100, '01.01.2019');
         $tmdb = new MovieTMDB(self::MOVIE_TMDB_ID, 7.8, 100);
-        $tmdb2 = new MovieTMDB(self::MOVIE_TMDB_ID_2, 7.8, 100);
+        $tmdb2 = new MovieTMDB(self::MOVIE_TMDB_ID_2, 10, 100);
 
         $drama = $manager->getReference(Genre::class, GenresFixtures::GENRE_DRAMA_ID);
         $comedy = $manager->getReference(Genre::class, GenresFixtures::GENRE_COMEDY_ID);
