@@ -13,7 +13,7 @@ class MovieTransformer implements Transformer
         $transformer = new self();
         $transformer->hiddenFields = [
             'budget',
-            'genres',
+            #'genres',
             'imdbId',
             'overview',
             'runtime',

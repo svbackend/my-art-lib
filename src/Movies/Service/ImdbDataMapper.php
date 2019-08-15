@@ -12,15 +12,11 @@ class ImdbDataMapper
 
     private $countryRepository;
 
+    private $isMapped = false;
+
     public function __construct(ImdbCountryRepository $countryRepository)
     {
         $this->countryRepository = $countryRepository;
-
-        $countries = $countryRepository->findAll();
-
-        foreach ($countries as $imdbCountry) {
-            $this->countryMap[$imdbCountry->getName()] = $imdbCountry->getCountry()->getCode();
-        }
     }
 
     /***
@@ -33,6 +29,14 @@ class ImdbDataMapper
 
     public function countryToCode(string $country): string
     {
+        if ($this->isMapped === false) {
+            $this->isMapped = true;
+            $countries = $this->countryRepository->findAll();
+            foreach ($countries as $imdbCountry) {
+                $this->countryMap[$imdbCountry->getName()] = $imdbCountry->getCountry()->getCode();
+            }
+        }
+
         return $this->countryMap[$country] ?? $country;
     }
 }

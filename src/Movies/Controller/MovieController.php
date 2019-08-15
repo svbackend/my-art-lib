@@ -44,6 +44,7 @@ class MovieController extends BaseController
      * @param MovieRepository $movieRepository
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @throws
      */
     public function getAll(Request $request, MovieRepository $movieRepository)
     {
@@ -53,7 +54,8 @@ class MovieController extends BaseController
         $limit = $request->get('limit', null);
 
         $filter = new FilterBuilder(
-            new Filter\YearRange()
+            new Filter\YearRange(),
+            new Filter\Genre()
         );
 
         $filter->process($request->query, $ids);
