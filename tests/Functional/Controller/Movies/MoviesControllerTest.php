@@ -230,9 +230,11 @@ class MoviesControllerTest extends WebTestCase
             ],
         ]);
 
+
         $this->assertSame(202, $client->getResponse()->getStatusCode());
         $client->request('GET', "/api/movies/{$movie['id']}?language=pl");
         $updatedMovie = json_decode($client->getResponse()->getContent(), true);
+
         $this->assertSame('new original title', $updatedMovie['originalTitle']);
         $this->assertSame('newImdbId', $updatedMovie['imdbId']);
         $this->assertSame(90, $updatedMovie['runtime']);

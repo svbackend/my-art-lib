@@ -17,6 +17,7 @@ class ReleaseDateService
     private $em;
     private $repository;
     private $imdbReleaseDateService;
+    private $countryRepository;
     private $countries;
     private $logger;
 
@@ -25,13 +26,14 @@ class ReleaseDateService
         $this->em = $em;
         $this->repository = $repository;
         $this->imdbReleaseDateService = $imdbReleaseDateService;
-        $this->countries = $countryRepository->findAll();
+        $this->countryRepository = $countryRepository;
         $this->logger = $logger;
     }
 
     public function runCheck(): void
     {
         $queueItems = $this->repository->findAllWithMovies()->getResult();
+        $this->countries = $this->countryRepository->findAll();
 
         $this->logger->debug('[ReleaseDateService] runCheck', [
             'count' => count($queueItems)

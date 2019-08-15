@@ -55,11 +55,10 @@ $createDatabaseDoctrineCommand = function () use ($application, $isDbAlreadyCrea
     $application->run($input, new ConsoleOutput());
 };
 
-// Add the doctrine:schema:update command to the application and run it
 $updateSchemaDoctrineCommand = function () use ($application) {
     $input = new ArrayInput([
-        'command' => 'doctrine:schema:update',
-        '--force' => true,
+        'command' => 'doctrine:migrations:migrate',
+        '--no-interaction' => true,
     ]);
     $input->setInteractive(false);
     $application->run($input, new ConsoleOutput());

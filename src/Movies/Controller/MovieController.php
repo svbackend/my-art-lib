@@ -4,6 +4,8 @@ namespace App\Movies\Controller;
 
 use App\Controller\BaseController;
 use App\Countries\Entity\Country;
+use App\Filters\FilterBuilder;
+use App\Filters\Movie as Filter;
 use App\Movies\DTO\MovieTranslationDTO;
 use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTranslations;
@@ -42,15 +44,29 @@ class MovieController extends BaseController
      * @param MovieRepository $movieRepository
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @throws
      */
     public function getAll(Request $request, MovieRepository $movieRepository)
     {
-        [$movies, $ids, $count] = $movieRepository->findAllWithIsWatchedFlag($this->getUser(), $this->getGuest());
+        [$movies, $ids] = $movieRepository->findAllWithIsWatchedFlag($this->getUser(), $this->getGuest());
 
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
-        $collection = new CustomPaginatedCollection($movies, $ids, $count, $offset, $limit);
+        // Its important to keep order of filters from easiest to heaviest in order to improve performance (in theory)
+        $filter = new FilterBuilder(
+            new Filter\YearRange(),
+            new Filter\Rating(),
+            new Filter\Genre()
+        );
+
+        $filter->process($request->query, $ids);
+
+        // todo move this clone qb to CustomPaginatedCollection
+        $count = clone $ids;
+        $count->select('COUNT(m.id)')->resetDQLPart('orderBy');
+
+        $collection = new CustomPaginatedCollection($movies->getQuery(), $ids->getQuery(), $count->getQuery(), $offset, $limit);
 
         return $this->items($collection, MovieTransformer::list());
     }
