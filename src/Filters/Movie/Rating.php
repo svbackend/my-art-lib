@@ -17,7 +17,7 @@ class Rating implements Filter
         $ratingFrom = (int)$params->get('rf');
         $ratingTo = (int)$params->get('rt');
 
-        if ($ratingFrom > $ratingTo) {
+        if ($ratingTo && $ratingFrom > $ratingTo) {
             return $qb;
         }
 

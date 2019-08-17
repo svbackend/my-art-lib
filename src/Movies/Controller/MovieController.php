@@ -57,7 +57,8 @@ class MovieController extends BaseController
         $filter = new FilterBuilder(
             new Filter\YearRange(),
             new Filter\Rating(),
-            new Filter\Genre()
+            new Filter\Genre(),
+            new Filter\Actor()
         );
 
         $filter->process($request->query, $ids);

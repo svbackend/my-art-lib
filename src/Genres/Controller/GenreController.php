@@ -4,9 +4,11 @@ namespace App\Genres\Controller;
 
 use App\Controller\BaseController;
 use App\Genres\Entity\Genre;
+use App\Genres\Repository\GenreRepository;
 use App\Genres\Request\CreateGenreRequest;
 use App\Genres\Request\UpdateGenreRequest;
 use App\Genres\Service\GenreManageService;
+use App\Pagination\PaginatedCollection;
 use App\Users\Entity\UserRoles;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,9 +26,10 @@ class GenreController extends BaseController
      *
      * @return JsonResponse
      */
-    public function getAll()
+    public function getAll(GenreRepository $genreRepository)
     {
-        $genres = $this->getDoctrine()->getRepository(Genre::class)->findAll();
+        $genres = $genreRepository->findAllWithTranslations();
+        $genres = new PaginatedCollection($genres->getQuery(), 0, 20);
 
         return $this->response($genres, 200, [], [
             'groups' => ['list'],

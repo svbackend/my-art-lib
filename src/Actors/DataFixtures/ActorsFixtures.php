@@ -10,8 +10,8 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class ActorsFixtures extends Fixture
 {
-    const ACTOR_ORIGINAL_NAME = 'Original Name';
-    const ACTOR_TMDB_ID = 1;
+    public const ACTOR_ORIGINAL_NAME = 'Original Name';
+    public const ACTOR_TMDB_ID = 1;
 
     /**
      * @param ObjectManager $manager

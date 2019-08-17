@@ -7,11 +7,13 @@ use App\Actors\Entity\ActorTranslations;
 use App\Actors\Repository\ActorRepository;
 use App\Actors\Request\UpdateActorRequest;
 use App\Controller\BaseController;
+use App\Filters\FilterBuilder;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\UserRoles;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Filters\Actor as Filter;
 
 class ActorController extends BaseController
 {
@@ -30,9 +32,43 @@ class ActorController extends BaseController
         $offset = (int) $request->get('offset', 0);
         $limit = $request->get('limit', null);
 
-        $movies = new PaginatedCollection($actors, $offset, $limit);
+        $filter = new FilterBuilder(
+            new Filter\Name()
+        );
 
-        return $this->response($movies, 200, [], [
+        $filter->process($request->query, $actors);
+
+        $actors = new PaginatedCollection($actors->getQuery(), $offset, $limit);
+
+        return $this->response($actors, 200, [], [
+            'groups' => ['list'],
+        ]);
+    }
+
+    /**
+     * @Route("/api/actors/search", methods={"GET"})
+     *
+     * @param Request         $request
+     * @param ActorRepository $repository
+     *
+     * @return JsonResponse
+     */
+    public function getSearch(Request $request, ActorRepository $repository): JsonResponse
+    {
+        $actors = $repository->findAllWithTranslations();
+
+        $offset = (int) $request->get('offset', 0);
+        $limit = $request->get('limit', null);
+
+        $filter = new FilterBuilder(
+            new Filter\Name()
+        );
+
+        $filter->process($request->query, $actors);
+
+        $actors = new PaginatedCollection($actors->getQuery(), $offset, $limit);
+
+        return $this->response($actors, 200, [], [
             'groups' => ['list'],
         ]);
     }

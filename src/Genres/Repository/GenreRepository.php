@@ -11,7 +11,6 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 /**
  * @method Genre|null find($id, $lockMode = null, $lockVersion = null)
  * @method Genre|null findOneBy(array $criteria, array $orderBy = null)
- * @method Genre[]    findAll()
  * @method Genre[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class GenreRepository extends ServiceEntityRepository
@@ -28,5 +27,13 @@ class GenreRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findAllWithTranslations()
+    {
+        return $this->createQueryBuilder('g')
+            ->leftJoin('g.translations', 'gt')
+            ->addSelect('gt')
+            ->orderBy('gt.name');
     }
 }

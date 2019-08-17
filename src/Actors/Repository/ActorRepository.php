@@ -6,7 +6,7 @@ namespace App\Actors\Repository;
 
 use App\Actors\Entity\Actor;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -29,12 +29,11 @@ class ActorRepository extends ServiceEntityRepository
         ]);
     }
 
-    public function findAllWithTranslations(): Query
+    public function findAllWithTranslations(): QueryBuilder
     {
         return $this->createQueryBuilder('a')
             ->leftJoin('a.translations', 'at')
             ->addSelect('at')
-            ->orderBy('a.id', 'DESC')
-            ->getQuery();
+            ->orderBy('a.id', 'DESC');
     }
 }

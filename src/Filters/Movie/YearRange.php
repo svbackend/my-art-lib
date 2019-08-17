@@ -17,7 +17,7 @@ class YearRange implements Filter
         $yearTo = (int)$params->get('yt');
         $year = (int)$params->get('y');
 
-        if ($yearFrom > $yearTo) {
+        if ($yearTo && $yearFrom > $yearTo) {
             return $qb;
         }
 
