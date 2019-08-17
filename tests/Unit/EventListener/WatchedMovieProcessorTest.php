@@ -66,23 +66,23 @@ class WatchedMovieProcessorTest extends KernelTestCase
         $userWatchedMovie1 = new UserWatchedMovie($user, $movie, 5.5, $watchedAt);
         $movies = serialize([$userWatchedMovie1]);
 
-        $this->em->method('getReference')->will($this->returnValueMap([
+        $this->em->method('getReference')->willReturnMap([
             [Genre::class, $genre->getId(), $genre],
             [User::class, $user->getId(), $user],
-        ]));
+        ]);
         $this->psrMessage->method('getBody')->willReturn($movies);
 
         $persistedEntities = [];
-        $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
+        $this->em->method('persist')->willReturnCallback(function ($entity) use (&$persistedEntities) {
             $persistedEntities[] = $entity;
 
             return true;
-        }));
+        });
 
         $this->em->expects($this->once())->method('flush');
         $this->watchedMovieProcessor->process($this->psrMessage, $this->psrContext);
 
-        $persistedEntitiesCount = count($persistedEntities);
+        $persistedEntitiesCount = \count($persistedEntities);
         self::assertSame(2, $persistedEntitiesCount); // UserWatchedMovie & Movie
 
         $incorrectEntities = array_filter($persistedEntities, function ($entity) {
@@ -90,7 +90,7 @@ class WatchedMovieProcessorTest extends KernelTestCase
             return $entity instanceof UserWatchedMovie === false && $entity instanceof Movie === false;
         });
 
-        if (count($incorrectEntities) > 0) {
+        if (\count($incorrectEntities) > 0) {
             $this->fail('Some of your entities are persisted instead of just be associated through reference');
         }
 

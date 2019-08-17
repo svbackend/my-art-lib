@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
  * /api/movies?g[]=2&g[]=1&gt=AND => Will display all movies in genres with ids 1 & 2 (In both)
- * /api/movies?g[]=2&g[]=1 => Will display all movies in genres with ids 1 & 2 (At least in one of them)
+ * /api/movies?g[]=2&g[]=1 => Will display all movies in genres with ids 1 & 2 (At least in one of them).
  */
 class Actor implements Filter
 {
@@ -20,13 +20,13 @@ class Actor implements Filter
         $conditionType = $params->get('at', self::CONDITION_TYPE_OR);
         $actors = $params->get('a', []);
 
-        if (count($actors) === 0) {
+        if (\count($actors) === 0) {
             return $qb;
         }
 
-        array_walk($actors, static function ($id) { return (int)$id; });
+        array_walk($actors, static function ($id) { return (int) $id; });
 
-        if ($conditionType === self::CONDITION_TYPE_OR || count($actors) === 1) {
+        if ($conditionType === self::CONDITION_TYPE_OR || \count($actors) === 1) {
             return $qb
                 ->leftJoin('m.actors', 'ma')
                 ->andWhere('ma.actor IN (:filter_actors)')
@@ -35,7 +35,7 @@ class Actor implements Filter
 
         $moviesIds = $this->getIntersectIds($qb, $actors);
 
-        if (count($moviesIds) === 0) {
+        if (\count($moviesIds) === 0) {
             return $qb->andWhere('1=0');
         }
 
@@ -55,7 +55,7 @@ class Actor implements Filter
         $ids = [];
         foreach ($actors as $actorId) {
             $ids[] = array_map(
-                static function($item) { return $item['id']; },
+                static function ($item) { return $item['id']; },
                 $query
                     ->setParameter('filter_actor_id', $actorId)
                     ->getArrayResult()

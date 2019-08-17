@@ -44,8 +44,8 @@ class MovieRecommendationControllerTest extends WebTestCase
         $this->assertCount(1, $traces);
         $messageData = json_decode($traces[0]['body'], true);
 
-        $this->assertEquals($originalMovie['id'], $messageData['movie_id']);
-        $this->assertEquals($recommendedMovie['tmdb']['id'], $messageData['tmdb_id']);
+        $this->assertSame($originalMovie['id'], $messageData['movie_id']);
+        $this->assertSame($recommendedMovie['tmdb']['id'], $messageData['tmdb_id']);
         $this->assertNotEmpty($messageData['user_id']);
     }
 
@@ -130,7 +130,7 @@ class MovieRecommendationControllerTest extends WebTestCase
         $recommendations = $response['data'];
 
         $this->assertSame(2, $response['paging']['total']);
-        $this->assertSame(null, $recommendations[0]['userRecommendedMovie']);
+        $this->assertNull($recommendations[0]['userRecommendedMovie']);
         $this->assertArrayHasKey('id', $recommendations[1]['userRecommendedMovie']);
     }
 
@@ -168,6 +168,6 @@ class MovieRecommendationControllerTest extends WebTestCase
         $recommendations = $response['data'];
 
         $this->assertSame(1, $response['paging']['total']);
-        $this->assertSame(null, $recommendations[0]['userRecommendedMovie']);
+        $this->assertNull($recommendations[0]['userRecommendedMovie']);
     }
 }

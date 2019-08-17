@@ -51,7 +51,7 @@ class AuthServiceTest extends KernelTestCase
 
         // passwordEncoder would not encode passwords
         $this->passwordEncoder = $this->createMock(UserPasswordEncoderInterface::class);
-        $this->passwordEncoder->method('encodePassword')->will($this->returnArgument(0));
+        $this->passwordEncoder->method('encodePassword')->willReturnArgument(0);
 
         $this->authService = new AuthService($this->entityManager, $this->userRepository, $this->translator, $this->passwordEncoder);
     }

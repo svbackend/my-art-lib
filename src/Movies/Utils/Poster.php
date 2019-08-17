@@ -12,7 +12,7 @@ class Poster
      * @param int    $movieId
      * @param string $posterUrl
      *
-     * @return null|string
+     * @return string|null
      */
     public static function savePoster(int $movieId, string $posterUrl): ?string
     {
@@ -43,7 +43,7 @@ class Poster
         if (file_exists($saveTo)) {
             self::removePoster($movieId);
         }
-        $fp = fopen($saveTo, 'xb');
+        $fp = fopen($saveTo, 'x');
         fwrite($fp, $raw);
         fclose($fp);
         chmod($saveTo, 0777);
@@ -58,9 +58,9 @@ class Poster
 
     public static function removePoster(int $movieId): void
     {
-        $saveTo = \str_replace('{movieId}', $movieId, self::BASE_PATH);
+        $saveTo = str_replace('{movieId}', $movieId, self::BASE_PATH);
         $dir = \dirname($saveTo);
-        $files = \scandir($dir);
+        $files = scandir($dir);
         foreach ($files as $file) {
             if (mb_substr($file, 0, 6) === 'poster' && mb_strpos($file, '.') !== false) {
                 // if its file like poster.jpg or poster.260x380.jpg - remove it

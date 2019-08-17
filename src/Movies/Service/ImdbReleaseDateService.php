@@ -60,7 +60,7 @@ class ImdbReleaseDateService
     private function parseReleaseDates(Movie $movie): void
     {
         $result = $this->parser->getReleaseDates($movie);
-        $this->logger->debug("[ImdbReleaseDateService] parseReleaseDates result: ", $result);
+        $this->logger->debug('[ImdbReleaseDateService] parseReleaseDates result: ', $result);
 
         /**
          * @var string

@@ -16,7 +16,7 @@ class PosterResizerProcessor implements Processor, TopicSubscriberInterface
 
     /**
      * @param QMessage $message
-     * @param Context $session
+     * @param Context  $session
      *
      * @throws ImageResizeException
      *

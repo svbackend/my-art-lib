@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Tests\Functional\Filters\Movies;
-
 
 use App\Actors\DataFixtures\ActorsFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

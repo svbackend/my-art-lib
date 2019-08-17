@@ -23,7 +23,7 @@ final class Version20181030094901 extends AbstractMigration implements Container
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
-        $currentDate = \date('Y-m-d');
+        $currentDate = date('Y-m-d');
         $movies = $this->connection->executeQuery(
             'SELECT m.id, m.imdb_id, m.tmdb_id FROM movies m WHERE m.release_date IS NOT NULL AND m.release_date::date > \''.$currentDate.'\''
         );

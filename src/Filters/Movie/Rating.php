@@ -7,15 +7,15 @@ use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
- * /api/movies?rf=5&rt=6 => Will display all movies with average tmdb rating
+ * /api/movies?rf=5&rt=6 => Will display all movies with average tmdb rating.
  */
 class Rating implements Filter
 {
     public function handle(ParameterBag $params, QueryBuilder $qb): QueryBuilder
     {
-        $rating = (int)$params->get('r');
-        $ratingFrom = (int)$params->get('rf');
-        $ratingTo = (int)$params->get('rt');
+        $rating = (int) $params->get('r');
+        $ratingFrom = (int) $params->get('rf');
+        $ratingTo = (int) $params->get('rt');
 
         if ($ratingTo && $ratingFrom > $ratingTo) {
             return $qb;

@@ -7,13 +7,13 @@ use App\Actors\Entity\ActorTranslations;
 use App\Actors\Repository\ActorRepository;
 use App\Actors\Request\UpdateActorRequest;
 use App\Controller\BaseController;
+use App\Filters\Actor as Filter;
 use App\Filters\FilterBuilder;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\UserRoles;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Filters\Actor as Filter;
 
 class ActorController extends BaseController
 {

@@ -27,18 +27,18 @@ class ImdbReleaseDateParserService
         $html = $this->loadImdbReleaseDatesPageHtml($movie->getImdbId());
 
         // Because filterXPath('//*[@id="release_dates"]//td') don't work correctly due errors in html from imdb page
-        $releasesPosition = strpos($html, 'id="releases"');
+        $releasesPosition = mb_strpos($html, 'id="releases"');
         if ($releasesPosition === false) {
             // no releases yet on imdb
             return [];
         }
-        $html = substr($html, $releasesPosition);
+        $html = mb_substr($html, $releasesPosition);
 
-        $akasPosition = strpos($html, 'id="akas"');
+        $akasPosition = mb_strpos($html, 'id="akas"');
         if ($akasPosition === false) {
-            $html = substr($html, 0);
+            $html = mb_substr($html, 0);
         } else {
-            $html = substr($html, 0, $akasPosition);
+            $html = mb_substr($html, 0, $akasPosition);
         }
 
         $crawler = new Crawler($html, $this->getEndpoint($movie->getImdbId()));

@@ -36,7 +36,7 @@ class ReleaseDateService
         $this->countries = $this->countryRepository->findAll();
 
         $this->logger->debug('[ReleaseDateService] runCheck', [
-            'count' => count($queueItems)
+            'count' => \count($queueItems),
         ]);
 
         /** @var $queueItem ReleaseDateQueue */

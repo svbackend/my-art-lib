@@ -80,13 +80,13 @@ class UserTest extends KernelTestCase
     {
         $defaultRoles = $this->user->getRolesObject()->getDefaultRoles();
 
-        self::assertTrue(count($defaultRoles) > 0);
+        self::assertTrue(\count($defaultRoles) > 0);
     }
 
     public function testValidRoles()
     {
         $validRoles = $this->user->getRolesObject()->getValidRoles();
 
-        self::assertTrue(count($validRoles) > 0);
+        self::assertTrue(\count($validRoles) > 0);
     }
 }

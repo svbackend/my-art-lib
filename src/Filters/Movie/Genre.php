@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
  * /api/movies?g[]=2&g[]=1&gt=AND => Will display all movies in genres with ids 1 & 2 (In both)
- * /api/movies?g[]=2&g[]=1 => Will display all movies in genres with ids 1 & 2 (At least in one of them)
+ * /api/movies?g[]=2&g[]=1 => Will display all movies in genres with ids 1 & 2 (At least in one of them).
  */
 class Genre implements Filter
 {
@@ -20,13 +20,13 @@ class Genre implements Filter
         $conditionType = $params->get('gt', self::CONDITION_TYPE_OR);
         $genres = $params->get('g', []);
 
-        if (count($genres) === 0) {
+        if (\count($genres) === 0) {
             return $qb;
         }
 
-        array_walk($genres, static function ($id) { return (int)$id; });
+        array_walk($genres, static function ($id) { return (int) $id; });
 
-        if ($conditionType === self::CONDITION_TYPE_OR || count($genres) === 1) {
+        if ($conditionType === self::CONDITION_TYPE_OR || \count($genres) === 1) {
             return $qb
                 ->leftJoin('m.genres', 'mg')
                 ->andWhere('mg.id IN (:filter_genres)')
@@ -35,7 +35,7 @@ class Genre implements Filter
 
         $moviesIds = $this->getIntersectIds($qb, $genres);
 
-        if (count($moviesIds) === 0) {
+        if (\count($moviesIds) === 0) {
             return $qb->andWhere('1=0');
         }
 
@@ -55,7 +55,7 @@ class Genre implements Filter
         $ids = [];
         foreach ($genres as $genreId) {
             $ids[] = array_map(
-                static function($item) { return $item['id']; },
+                static function ($item) { return $item['id']; },
                 $query
                     ->setParameter('filter_genre_id', $genreId)
                     ->getArrayResult()

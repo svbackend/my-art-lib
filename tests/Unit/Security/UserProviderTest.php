@@ -42,7 +42,7 @@ class UserProviderTest extends KernelTestCase
         $this->userRepositoryMock = $this->createMock(UserRepository::class);
         $this->apiTokenRepositoryMock = $this->createMock(ApiTokenRepository::class);
         $this->translatorMock = $this->createMock(Translator::class);
-        $this->translatorMock->method('trans')->will($this->returnArgument(0));
+        $this->translatorMock->method('trans')->willReturnArgument(0);
 
         $this->userProvider = new \App\Users\Security\UserProvider($this->userRepositoryMock, $this->apiTokenRepositoryMock, $this->translatorMock);
     }

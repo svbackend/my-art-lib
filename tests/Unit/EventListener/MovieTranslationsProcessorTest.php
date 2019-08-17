@@ -88,18 +88,18 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $this->searchService->method('findMovieTranslationsById')->willReturn($tmdbResponse);
 
         $persistedEntities = [];
-        $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
+        $this->em->method('persist')->willReturnCallback(function ($entity) use (&$persistedEntities) {
             $persistedEntities[] = $entity;
 
             return true;
-        }));
+        });
 
         $this->em->expects($this->once())->method('flush');
 
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
         $this->assertSame($this->movieTranslationsProcessor::ACK, $result);
-        $this->assertSame(3, count($persistedEntities)); // 3 locales
+        $this->assertSame(3, \count($persistedEntities)); // 3 locales
         $this->assertContainsOnlyInstancesOf(MovieTranslations::class, $persistedEntities);
     }
 
@@ -127,18 +127,18 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $this->searchService->method('findMovieTranslationsById')->willThrowException(new \App\Movies\Exception\TmdbMovieNotFoundException());
 
         $persistedEntities = [];
-        $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
+        $this->em->method('persist')->willReturnCallback(function ($entity) use (&$persistedEntities) {
             $persistedEntities[] = $entity;
 
             return true;
-        }));
+        });
 
         $this->em->expects($this->never())->method('flush');
 
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
         $this->assertSame($this->movieTranslationsProcessor::REJECT, $result);
-        $this->assertSame(0, count($persistedEntities));
+        $this->assertSame(0, \count($persistedEntities));
     }
 
     /**
@@ -165,17 +165,17 @@ class MovieTranslationsProcessorTest extends KernelTestCase
         $this->searchService->method('findMovieTranslationsById')->willThrowException(new \App\Movies\Exception\TmdbRequestLimitException());
 
         $persistedEntities = [];
-        $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntities) {
+        $this->em->method('persist')->willReturnCallback(function ($entity) use (&$persistedEntities) {
             $persistedEntities[] = $entity;
 
             return true;
-        }));
+        });
 
         $this->em->expects($this->never())->method('flush');
 
         $result = $this->movieTranslationsProcessor->process($this->psrMessage, $this->psrContext);
 
         $this->assertSame($this->movieTranslationsProcessor::REQUEUE, $result);
-        $this->assertSame(0, count($persistedEntities));
+        $this->assertSame(0, \count($persistedEntities));
     }
 }

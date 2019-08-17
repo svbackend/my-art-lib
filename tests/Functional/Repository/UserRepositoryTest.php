@@ -62,8 +62,8 @@ class UserRepositoryTest extends KernelTestCase
         $createdUser = $this->createUser('tester@tester.com', 'tester', '123456');
         $users = $this->entityManager->getRepository(User::class)->findAll();
 
-        $this->assertTrue(is_array($users));
-        $this->assertTrue(count($users) > 0);
+        $this->assertTrue(\is_array($users));
+        $this->assertTrue(\count($users) > 0);
         $this->assertContains($createdUser, $users);
     }
 

@@ -7,7 +7,7 @@ use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
- * /api/actors/search?n=Jake
+ * /api/actors/search?n=Jake.
  */
 class Name implements Filter
 {
@@ -27,6 +27,6 @@ class Name implements Filter
 
     private function isValid(string $name): bool
     {
-        return strlen($name) >= 3;
+        return \mb_strlen($name) >= 3;
     }
 }

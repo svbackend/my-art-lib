@@ -80,11 +80,11 @@ class MovieSyncProcessorTest extends KernelTestCase
         $this->tmdbNormalizer->method('normalizeMoviesToObjects')->willReturn($this->getMoviesIterator($newMovie));
 
         $persistedEntity = null;
-        $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntity) {
+        $this->em->method('persist')->willReturnCallback(function ($entity) use (&$persistedEntity) {
             $persistedEntity = $entity;
 
             return true;
-        }));
+        });
 
         $this->em->expects($this->once())->method('flush');
 
@@ -114,11 +114,11 @@ class MovieSyncProcessorTest extends KernelTestCase
         $this->tmdbNormalizer->method('normalizeMoviesToObjects')->willReturn($this->getMoviesIterator($newMovie));
 
         $persistedEntity = null;
-        $this->em->method('persist')->will($this->returnCallback(function ($entity) use (&$persistedEntity) {
+        $this->em->method('persist')->willReturnCallback(function ($entity) use (&$persistedEntity) {
             $persistedEntity = $entity;
 
             return true;
-        }));
+        });
 
         $this->em->expects($this->once())->method('flush');
 

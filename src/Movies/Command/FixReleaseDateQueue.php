@@ -56,7 +56,7 @@ class FixReleaseDateQueue extends Command
                 continue;
             }
 
-            if ($imdbId !== null ) {
+            if ($imdbId !== null) {
                 $queueItem->activate();
                 $movie->setImdbId($imdbId);
             }

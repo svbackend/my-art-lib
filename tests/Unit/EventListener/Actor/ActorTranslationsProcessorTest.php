@@ -91,11 +91,11 @@ class ActorTranslationsProcessorTest extends KernelTestCase
         $actor->method('getTmdb')->willReturn($actorTmdb);
         $actor->method('getId')->willReturn(1);
         $actor->method('getOriginalName')->willReturn('Original Name');
-        $actor->method('getTranslation')->will($this->returnValueMap([
+        $actor->method('getTranslation')->willReturnMap([
             ['en', false, $actorTranslation], // like only en translation is already exist
             ['uk', false, null],
             ['ru', false, null],
-        ]));
+        ]);
 
         $this->repository->method('find')->with(1)->willReturn($actor);
 
@@ -137,7 +137,7 @@ class ActorTranslationsProcessorTest extends KernelTestCase
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
 
         $this->assertSame($this->processor::ACK, $result);
-        $this->assertSame(2, count($persistedEntities));
+        $this->assertSame(2, \count($persistedEntities));
         $this->assertContainsOnlyInstancesOf(ActorTranslations::class, $persistedEntities);
         $this->assertSame('uk biography', $persistedEntities['uk']->getBiography());
         $this->assertSame('ru biography', $persistedEntities['ru']->getBiography());
@@ -207,10 +207,10 @@ class ActorTranslationsProcessorTest extends KernelTestCase
         $actor->method('getTmdb')->willReturn($actorTmdb);
         $actor->method('getId')->willReturn(1);
         $actor->method('getOriginalName')->willReturn('Original Name');
-        $actor->method('getTranslation')->will($this->returnValueMap([
+        $actor->method('getTranslation')->willReturnMap([
             ['en', false, $actorTranslation], // like only en translation is already exist
             ['uk', false, null],
-        ]));
+        ]);
 
         $this->repository->method('find')->with(1)->willReturn($actor);
 

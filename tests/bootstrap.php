@@ -17,7 +17,7 @@ $isDbAlreadyCreatedFile = __DIR__.'/.db_already_created';
 (new Dotenv())->load($environmentFile);
 
 // Create and boot 'test' kernel
-$kernel = new Kernel(\getenv('APP_ENV'), (bool) \getenv('APP_DEBUG'));
+$kernel = new Kernel(getenv('APP_ENV'), (bool) getenv('APP_DEBUG'));
 $kernel->boot();
 // Create new application
 $application = new Application($kernel);
@@ -47,7 +47,7 @@ $createDatabaseDoctrineCommand = function () use ($application, $isDbAlreadyCrea
         return;
     }
 
-    exec('touch ' . $isDbAlreadyCreatedFile);
+    exec('touch '.$isDbAlreadyCreatedFile);
     $input = new ArrayInput([
         'command' => 'doctrine:database:create',
     ]);
@@ -76,7 +76,7 @@ $loadFixturesDoctrineCommand = function () use ($application) {
 };
 
 // And finally call each of initialize functions to make test environment ready
-\array_map(
+array_map(
     '\call_user_func',
     [
         $dropDatabaseDoctrineCommand,

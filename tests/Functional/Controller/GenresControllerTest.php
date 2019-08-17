@@ -24,9 +24,9 @@ class GenresControllerTest extends WebTestCase
         $client->request('GET', '/api/genres?language=ru');
 
         $this->assertSame(200, $client->getResponse()->getStatusCode());
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $response = json_decode($client->getResponse()->getContent(), true)['data'];
 
-        self::assertTrue(is_array($response) && count($response) > 0);
+        self::assertTrue(\is_array($response) && \count($response) > 0);
 
         $genre = reset($response); // first item of genres array
         self::assertArrayHasKey('id', $genre);
@@ -42,9 +42,9 @@ class GenresControllerTest extends WebTestCase
         $client->request('GET', '/api/genres?language=WRONG_LANGUAGE');
 
         $this->assertSame(200, $client->getResponse()->getStatusCode());
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $response = json_decode($client->getResponse()->getContent(), true)['data'];
 
-        self::assertTrue(is_array($response) && count($response) > 0);
+        self::assertTrue(\is_array($response) && \count($response) > 0);
 
         $genre = array_pop($response); // last item of genres array
         self::assertArrayHasKey('id', $genre);
@@ -60,9 +60,9 @@ class GenresControllerTest extends WebTestCase
         $client->request('GET', '/api/genres');
 
         $this->assertSame(200, $client->getResponse()->getStatusCode());
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $response = json_decode($client->getResponse()->getContent(), true)['data'];
 
-        self::assertTrue(is_array($response) && count($response) > 0);
+        self::assertTrue(\is_array($response) && \count($response) > 0);
 
         $genre = array_pop($response); // last item of genres array
         self::assertArrayHasKey('id', $genre);
@@ -152,7 +152,7 @@ class GenresControllerTest extends WebTestCase
 
         $client->request('GET', '/api/genres');
         $response = json_decode($client->getResponse()->getContent(), true);
-        $firstGenre = reset($response);
+        $firstGenre = reset($response['data']);
 
         $client->request('POST', "/api/genres/{$firstGenre['id']}?api_token={$adminApiToken}", [
             'genre' => [

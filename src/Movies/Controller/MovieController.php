@@ -43,8 +43,9 @@ class MovieController extends BaseController
      * @param Request         $request
      * @param MovieRepository $movieRepository
      *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
      * @throws
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function getAll(Request $request, MovieRepository $movieRepository)
     {

@@ -36,7 +36,7 @@ class MovieTranslationDTO
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getOverview(): ?string
     {
@@ -44,7 +44,7 @@ class MovieTranslationDTO
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getPosterUrl(): ?string
     {

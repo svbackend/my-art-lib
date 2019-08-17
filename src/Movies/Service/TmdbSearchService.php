@@ -22,7 +22,7 @@ class TmdbSearchService
 
     public function __construct(LoggerInterface $logger, ClientInterface $client, CacheInterface $cache)
     {
-        $this->apiKey = \getenv('MOVIE_DB_API_KEY'); // is it ok to use \getenv() here?
+        $this->apiKey = getenv('MOVIE_DB_API_KEY'); // is it ok to use \getenv() here?
         $this->client = $client;
         $this->logger = $logger;
         $this->cache = $cache;

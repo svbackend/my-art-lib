@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Movies\EventListener {
-    function sleep(...$args) {
-        return;
+    function sleep(...$args)
+    {
     }
 }
 
 namespace App\Actors\EventListener {
-    function sleep(...$args) {
-        return;
+    function sleep(...$args)
+    {
     }
 }

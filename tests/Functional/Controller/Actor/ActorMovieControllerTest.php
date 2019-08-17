@@ -2,7 +2,6 @@
 
 namespace App\Tests\Functional\Controller\Actor;
 
-use App\Actors\Entity\Actor;
 use App\Users\DataFixtures\UsersFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

@@ -50,7 +50,7 @@ class WatchedMovieControllerTest extends WebTestCase
         $response = json_decode($client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('message', $response);
         $this->assertArrayHasKey('errors', $response);
-        $this->assertTrue(count($response['errors']) >= 2);
+        $this->assertTrue(\count($response['errors']) >= 2);
     }
 
     public function testAddWatchedMovieWithId()
@@ -94,7 +94,7 @@ class WatchedMovieControllerTest extends WebTestCase
         $watchedMovie = reset($watchedMoviesList['data']);
         $this->assertSame($movie['id'], $watchedMovie['id']);
         $this->assertNotEmpty($watchedMovie['userWatchedMovie']['id']);
-        $this->assertSame(0, (int)$watchedMovie['userWatchedMovie']['vote']);
+        $this->assertSame(0, (int) $watchedMovie['userWatchedMovie']['vote']);
         $this->assertNull($watchedMovie['userWatchedMovie']['watchedAt']);
 
         $watchedMovieId = $watchedMovie['userWatchedMovie']['id'];
@@ -108,7 +108,7 @@ class WatchedMovieControllerTest extends WebTestCase
 
         $watchedMoviesList = $this->getWatchedMoviesList($userId, $apiToken);
         $updatedWatchedMovie = reset($watchedMoviesList['data']);
-        $this->assertSame(8, (int)$updatedWatchedMovie['userWatchedMovie']['vote']);
+        $this->assertSame(8, (int) $updatedWatchedMovie['userWatchedMovie']['vote']);
         $this->assertNotNull($updatedWatchedMovie['userWatchedMovie']['watchedAt']);
         $this->assertContains('2010-05-01', $updatedWatchedMovie['userWatchedMovie']['watchedAt']);
     }
@@ -141,7 +141,7 @@ class WatchedMovieControllerTest extends WebTestCase
 
         $watchedMoviesList = $this->getWatchedMoviesList($userId, $apiToken);
         $updatedWatchedMovie = reset($watchedMoviesList['data']);
-        $this->assertSame(7, (int)$updatedWatchedMovie['userWatchedMovie']['vote']);
+        $this->assertSame(7, (int) $updatedWatchedMovie['userWatchedMovie']['vote']);
         $this->assertNotNull($updatedWatchedMovie['userWatchedMovie']['watchedAt']);
         $this->assertContains('2010-05-02', $updatedWatchedMovie['userWatchedMovie']['watchedAt']);
     }

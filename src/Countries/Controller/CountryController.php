@@ -27,7 +27,7 @@ class CountryController extends BaseController
         }
 
         return $this->json($countries, 200, [], [
-            'context' => ['groups' => ['view', 'list']]
+            'context' => ['groups' => ['view', 'list']],
         ]);
     }
 }

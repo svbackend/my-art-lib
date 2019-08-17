@@ -105,7 +105,7 @@ class UserControllerTest extends WebTestCase
 
         $this->assertArrayHasKey('errors', $response);
         $this->assertArrayHasKey('message', $response);
-        $this->assertGreaterThanOrEqual(1, count($response['errors']));
+        $this->assertGreaterThanOrEqual(1, \count($response['errors']));
     }
 
     public function testEmailSentAfterRegistration()
@@ -153,7 +153,7 @@ class UserControllerTest extends WebTestCase
 
         $this->assertArrayHasKey('errors', $response);
         $this->assertArrayHasKey('message', $response);
-        $this->assertGreaterThanOrEqual(3, count($response['errors']));
+        $this->assertGreaterThanOrEqual(3, \count($response['errors']));
     }
 
     public function testPostUsersWithAlreadyRegisteredUsername()
@@ -174,7 +174,7 @@ class UserControllerTest extends WebTestCase
 
         $this->assertArrayHasKey('errors', $response);
         $this->assertArrayHasKey('message', $response);
-        $this->assertGreaterThanOrEqual(2, count($response['errors']));
+        $this->assertGreaterThanOrEqual(2, \count($response['errors']));
     }
 
     public function testGetAllUsersByAuthenticatedUser()
@@ -185,7 +185,7 @@ class UserControllerTest extends WebTestCase
         $client->request('GET', "/api/users?api_token={$api_token}");
         $this->assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true);
-        $this->assertTrue(count($response) > 0);
+        $this->assertTrue(\count($response) > 0);
     }
 
     public function testGetAllUsersWithWrongApiToken()

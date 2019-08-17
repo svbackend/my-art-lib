@@ -34,7 +34,7 @@ class MoviesControllerTest extends WebTestCase
         $client = self::$client;
 
         $client->request('GET', '/api/genres');
-        $genres = json_decode($client->getResponse()->getContent(), true);
+        $genres = json_decode($client->getResponse()->getContent(), true)['data'];
         $genresIds = [];
         foreach ($genres as $genre) {
             $genresIds[] = ['id' => $genre['id']];
@@ -230,7 +230,6 @@ class MoviesControllerTest extends WebTestCase
             ],
         ]);
 
-
         $this->assertSame(202, $client->getResponse()->getStatusCode());
         $client->request('GET', "/api/movies/{$movie['id']}?language=pl");
         $updatedMovie = json_decode($client->getResponse()->getContent(), true);
@@ -288,7 +287,7 @@ class MoviesControllerTest extends WebTestCase
         $movies = $response['data'];
         $paging = $response['paging'];
 
-        self::assertTrue(count($movies) > 0);
+        self::assertTrue(\count($movies) > 0);
         $movie = reset($movies);
         self::assertArrayHasKey('id', $movie);
         self::assertArrayHasKey('originalTitle', $movie);
@@ -315,9 +314,15 @@ class MoviesControllerTest extends WebTestCase
             'query' => $movieTitle,
         ]);
 
+        if ($client->getResponse()->getContent() === '{"error":"Notice: Undefined index: total_results"}') {
+            $this->addWarning('TheMovieDB search is probably down. Check it manually please.');
+
+            return;
+        }
+
         self::assertSame(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent(), true)['data'];
-        self::assertTrue(count($response) > 0);
+        self::assertTrue(\count($response) > 0);
         $movie = reset($response);
         self::assertArrayHasKey('id', $movie);
         self::assertArrayHasKey('originalTitle', $movie);
@@ -372,7 +377,7 @@ class MoviesControllerTest extends WebTestCase
 
     private function checkIsApiKeyProvided()
     {
-        if (!\getenv('MOVIE_DB_API_KEY')) {
+        if (!getenv('MOVIE_DB_API_KEY')) {
             echo "\r\nYou should provide MOVIE_DB_API_KEY in your .env.test\r\n";
             $this->markTestSkipped();
         }

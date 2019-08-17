@@ -33,7 +33,7 @@ class TokenAuthenticatorTest extends KernelTestCase
     public function setUp()
     {
         $this->translatorMock = $this->createMock(Translator::class);
-        $this->translatorMock->method('trans')->will($this->returnArgument(0));
+        $this->translatorMock->method('trans')->willReturnArgument(0);
 
         $requestMock = $this->getMockBuilder(Request::class)
             ->disableOriginalConstructor()
@@ -68,7 +68,7 @@ class TokenAuthenticatorTest extends KernelTestCase
         $this->requestMock->query->method('get')->with('api_token')->willReturn('{token}');
         $result = $this->tokenAuthenticator->getCredentials($this->requestMock);
 
-        self::assertTrue(is_string($result));
+        self::assertTrue(\is_string($result));
         self::assertSame('{token}', $result);
     }
 

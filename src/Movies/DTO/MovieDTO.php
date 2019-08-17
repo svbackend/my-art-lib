@@ -16,12 +16,12 @@ class MovieDTO
     /**
      * MovieDTO constructor.
      *
-     * @param null|string $originalTitle
-     * @param null|string $originalPosterUrl
-     * @param null|string $imdbId
+     * @param string|null $originalTitle
+     * @param string|null $originalPosterUrl
+     * @param string|null $imdbId
      * @param int|null    $budget
      * @param int|null    $runtime
-     * @param null|string $releaseDate
+     * @param string|null $releaseDate
      *
      * @throws \Exception
      */
@@ -36,7 +36,7 @@ class MovieDTO
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getOriginalTitle(): ?string
     {
@@ -44,7 +44,7 @@ class MovieDTO
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getOriginalPosterUrl(): ?string
     {
@@ -52,7 +52,7 @@ class MovieDTO
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getImdbId(): ?string
     {

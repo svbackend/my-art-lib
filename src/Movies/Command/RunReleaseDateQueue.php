@@ -28,8 +28,8 @@ class RunReleaseDateQueue extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln(sprintf('Queue started at %s', \date('d-m-Y h:i:s')));
+        $output->writeln(sprintf('Queue started at %s', date('d-m-Y h:i:s')));
         $this->releaseDateService->runCheck();
-        $output->writeln(sprintf('Queue ended at %s', \date('d-m-Y h:i:s')));
+        $output->writeln(sprintf('Queue ended at %s', date('d-m-Y h:i:s')));
     }
 }

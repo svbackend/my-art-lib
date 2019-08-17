@@ -37,7 +37,7 @@ class WatchedMovieProcessor implements Processor, TopicSubscriberInterface
      * This method called when user or guest trying to add movie to own list of watched movies but we do not have this movie in our db yet.
      *
      * @param QMessage $message
-     * @param Context $session
+     * @param Context  $session
      *
      * @throws \Doctrine\ORM\ORMException|\Exception
      *

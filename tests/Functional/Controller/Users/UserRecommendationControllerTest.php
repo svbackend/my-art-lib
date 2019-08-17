@@ -2,9 +2,7 @@
 
 namespace App\Tests\Functional\Controller\Users;
 
-use App\Movies\EventListener\AddRecommendationProcessor;
 use App\Users\DataFixtures\UsersFixtures;
-use Enqueue\Client\ProducerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class UserRecommendationControllerTest extends WebTestCase
@@ -52,9 +50,9 @@ class UserRecommendationControllerTest extends WebTestCase
 
         $client->request('GET', "/api/users/{$testerId}/recommendations");
         $recommendations = json_decode($client->getResponse()->getContent(), true)['data'];
-        $this->assertTrue(count($recommendations) === 0);
+        $this->assertTrue(\count($recommendations) === 0);
 
-        $client->request('GET', "/api/movies");
+        $client->request('GET', '/api/movies');
         $movies = json_decode($client->getResponse()->getContent(), true)['data'];
         $originalMovie = $movies[0];
         $recommendedMovie = $movies[1];
@@ -65,7 +63,7 @@ class UserRecommendationControllerTest extends WebTestCase
         $client->request('GET', "/api/users/{$testerId}/recommendations");
         $recommendations = json_decode($client->getResponse()->getContent(), true)['data'];
 
-        $this->assertTrue(count($recommendations) === 1);
+        $this->assertTrue(\count($recommendations) === 1);
     }
 
     public function testUserRecommendationsAsProfileOwner()
@@ -74,13 +72,12 @@ class UserRecommendationControllerTest extends WebTestCase
         $testerId = UsersFixtures::TESTER_ID;
         $apiToken = UsersFixtures::TESTER_API_TOKEN;
 
-
         $client->request('GET', "/api/users/{$testerId}/recommendations?api_token={$apiToken}");
         $recommendations = json_decode($client->getResponse()->getContent(), true)['data'];
-        $this->assertTrue(count($recommendations) === 0);
-        /** Recommendations should be empty END*/
+        $this->assertTrue(\count($recommendations) === 0);
+        /* Recommendations should be empty END*/
 
-        $client->request('GET', "/api/movies");
+        $client->request('GET', '/api/movies');
         $movies = json_decode($client->getResponse()->getContent(), true)['data'];
         $originalMovie = $movies[0];
         $recommendedMovie = $movies[1];
@@ -91,22 +88,21 @@ class UserRecommendationControllerTest extends WebTestCase
         $client->request('GET', "/api/users/{$testerId}/recommendations?api_token={$apiToken}");
         $recommendations = json_decode($client->getResponse()->getContent(), true)['data'];
 
-        $this->assertTrue(count($recommendations) === 1);
-        /** Test that recommendation will showed up on page END */
+        $this->assertTrue(\count($recommendations) === 1);
+        /* Test that recommendation will showed up on page END */
 
         $this->addToLibrary($recommendedMovie['id']);
 
         $client->request('GET', "/api/users/{$testerId}/recommendations?api_token={$apiToken}");
         $recommendations = json_decode($client->getResponse()->getContent(), true)['data'];
 
-        $this->assertTrue(count($recommendations) === 0);
+        $this->assertTrue(\count($recommendations) === 0);
         /** If we already watched recommended movie - dont show it in recommendations for profile owner END */
-
         $adminApiToken = UsersFixtures::ADMIN_API_TOKEN;
         $client->request('GET', "/api/users/{$testerId}/recommendations?api_token={$adminApiToken}");
         $recommendations = json_decode($client->getResponse()->getContent(), true)['data'];
 
-        $this->assertTrue(count($recommendations) === 1);
-        /** Show all recommendations even if owner have watched some of them for other users END */
+        $this->assertTrue(\count($recommendations) === 1);
+        /* Show all recommendations even if owner have watched some of them for other users END */
     }
 }

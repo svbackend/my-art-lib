@@ -6,7 +6,6 @@ use App\Controller\BaseController;
 use App\Movies\Repository\MovieRepository;
 use App\Movies\Transformer\MovieTransformer;
 use App\Pagination\CustomPaginatedCollection;
-use App\Pagination\PaginatedCollection;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,6 +20,7 @@ class ActorMovieController extends BaseController
      * @param MovieRepository $repository
      *
      * @throws
+     *
      * @return JsonResponse
      */
     public function getActorsMovies(Request $request, int $id, MovieRepository $repository)

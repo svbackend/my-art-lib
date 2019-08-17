@@ -43,7 +43,7 @@ class MovieSyncProcessor implements Processor, TopicSubscriberInterface
 
     /**
      * @param QMessage $message
-     * @param Context $session
+     * @param Context  $session
      *
      * @throws \ErrorException
      *

@@ -7,7 +7,6 @@ use App\Actors\Entity\ActorTMDB;
 use App\Actors\Entity\ActorTranslations;
 use App\Genres\DataFixtures\GenresFixtures;
 use App\Genres\Entity\Genre;
-use App\Genres\Entity\GenreTranslations;
 use App\Movies\DTO\MovieDTO;
 use App\Movies\DTO\MovieTranslationDTO;
 use App\Movies\Entity\MovieTMDB;

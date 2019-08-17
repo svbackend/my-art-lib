@@ -26,7 +26,7 @@ class MovieActorControllerTest extends WebTestCase
 
         $client->request('GET', "/api/movies/{$movie['id']}/actors");
         $response = json_decode($client->getResponse()->getContent(), true);
-        $this->assertSame(1, count($response['data']));
+        $this->assertSame(1, \count($response['data']));
         $movieActor = $response['data'][0];
         $this->assertArrayHasKey('actor', $movieActor);
         $actor = $movieActor['actor'];

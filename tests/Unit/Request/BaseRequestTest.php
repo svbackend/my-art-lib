@@ -46,7 +46,7 @@ class BaseRequestTest extends KernelTestCase
         $resultArray = json_decode($result->getContent(), true);
         self::assertArrayHasKey('errors', $resultArray);
         self::assertArrayHasKey('message', $resultArray);
-        self::assertTrue(is_array($resultArray['errors']));
+        self::assertTrue(\is_array($resultArray['errors']));
         self::assertCount(1, $resultArray['errors']);
     }
 }

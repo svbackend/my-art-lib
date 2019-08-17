@@ -39,7 +39,7 @@ class ActorPhoto
         if (file_exists($saveTo)) {
             unlink($saveTo);
         }
-        $fp = fopen($saveTo, 'xb');
+        $fp = fopen($saveTo, 'x');
         fwrite($fp, $raw);
         fclose($fp);
         chmod($saveTo, 0777);

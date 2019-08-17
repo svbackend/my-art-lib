@@ -56,7 +56,7 @@ class PasswordRecoveryTest extends WebTestCase
     public function testPasswordLostRequestNotFoundUser()
     {
         $client = self::$client;
-        $client->request('GET', "/api/users/not@existing.email/recoverPassword");
+        $client->request('GET', '/api/users/not@existing.email/recoverPassword');
         $this->assertSame(404, $client->getResponse()->getStatusCode());
     }
 

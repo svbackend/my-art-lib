@@ -73,7 +73,7 @@ class AddRecommendationProcessorTest extends KernelTestCase
         $this->em->expects($this->once())->method('clear');
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
-        $this->assertEquals($this->processor::ACK, $result);
+        $this->assertSame($this->processor::ACK, $result);
     }
 
     public function testAddRecommendationWithNotFoundOriginalMovie()
@@ -92,7 +92,7 @@ class AddRecommendationProcessorTest extends KernelTestCase
         ]);
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
-        $this->assertEquals($this->processor::REJECT, $result);
+        $this->assertSame($this->processor::REJECT, $result);
     }
 
     public function testAddRecommendationWithNotFoundRecommendedMovie()
@@ -111,7 +111,7 @@ class AddRecommendationProcessorTest extends KernelTestCase
         ]);
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
-        $this->assertEquals($this->processor::REJECT, $result);
+        $this->assertSame($this->processor::REJECT, $result);
     }
 
     public function testAddRecommendationWithUniqueConstraint()
@@ -143,6 +143,6 @@ class AddRecommendationProcessorTest extends KernelTestCase
         $this->em->method('flush')->willThrowException($exception);
 
         $result = $this->processor->process($this->psrMessage, $this->psrContext);
-        $this->assertEquals($this->processor::ACK, $result);
+        $this->assertSame($this->processor::ACK, $result);
     }
 }

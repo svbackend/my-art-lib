@@ -38,7 +38,7 @@ class ActorTranslationsProcessor implements Processor, TopicSubscriberInterface
 
     /**
      * @param QMessage $message
-     * @param Context $session
+     * @param Context  $session
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \ErrorException

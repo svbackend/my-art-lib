@@ -58,8 +58,8 @@ class ConfirmationTokenRepositoryTest extends KernelTestCase
 
         $tokens = $this->entityManager->getRepository(ConfirmationToken::class)->findAll();
 
-        $this->assertTrue(is_array($tokens));
-        $this->assertTrue(count($tokens) > 0);
+        $this->assertTrue(\is_array($tokens));
+        $this->assertTrue(\count($tokens) > 0);
         $this->assertContains($createdToken, $tokens);
     }
 
@@ -83,7 +83,7 @@ class ConfirmationTokenRepositoryTest extends KernelTestCase
 
         $expires_at = new \DateTimeImmutable('-1 day'); // expired token
         $setExpiredAt = function () use ($expires_at) { $this->expires_at = $expires_at; };
-        $setExpiredAt->bindTo($createdToken, get_class($createdToken))();
+        $setExpiredAt->bindTo($createdToken, \get_class($createdToken))();
 
         $this->entityManager->flush();
 
