@@ -293,4 +293,19 @@ class MovieRepository extends ServiceEntityRepository
 
         return $id ? $this->find($id) : $this->findOneBy(['tmdb.id' => $tmdb_id]);
     }
+
+    /**
+     * @param string $locale
+     * @return array|Movie[]
+     */
+    public function findAllWithEmptyTranslation(string $locale): array
+    {
+        return $this->createQueryBuilder('m')
+            ->leftJoin('m.translations', 'mt', 'WITH', 'm = mt.movie AND mt.locale = :locale')
+            ->addSelect('mt')
+            ->setParameter('locale', $locale)
+            ->where('mt IS NULL')
+            ->getQuery()
+            ->getResult();
+    }
 }
