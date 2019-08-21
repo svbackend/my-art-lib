@@ -28,6 +28,10 @@ host('142.93.109.174')
     ->identityFile('~/.ssh/dokey')
     ->set('deploy_path', '/var/www/mykino.top');
 
+task('apache:restart', function() {
+    run('sudo systemctl reload apache2');
+});
+
 // [Optional] if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
 after('deploy:failed', 'supervisord:restart');
@@ -39,12 +43,12 @@ after('deploy:symlink', 'apache:restart');
 
 after('apache:restart', 'supervisord:restart');
 
-task('apache:restart', function() {
-    run('sudo systemctl reload apache2');
-});
-
 task('supervisord:restart', function() {
-    run('kill -15 $(cat /tmp/supervisord.pid)');
+    try {
+        run('kill -15 $(cat /tmp/supervisord.pid)');
+    } catch (\Throwable $e) {
+        writeln('/tmp/supervisord.pid not found');
+    }
     run('cd /etc && supervisord');
 });
 
