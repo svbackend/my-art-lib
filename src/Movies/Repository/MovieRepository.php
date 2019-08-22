@@ -305,6 +305,7 @@ class MovieRepository extends ServiceEntityRepository
             ->addSelect('mt')
             ->setParameter('locale', $locale)
             ->where('mt IS NULL')
+            ->orderBy('m.id', 'DESC')
             ->getQuery()
             ->getResult();
     }

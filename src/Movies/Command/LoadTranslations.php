@@ -57,6 +57,7 @@ class LoadTranslations extends Command
             }
 
             $data['overview'] .= "\nДжерело https://kinobaza.com.ua";
+            $data['title'] = substr($data['title'], 0, 99);
 
             $movie->addTranslation(
                 new MovieTranslations(
@@ -67,8 +68,12 @@ class LoadTranslations extends Command
 
             $o->writeln("Added translation for {$movie->getOriginalTitle()}");
 
-            $this->em->persist($movie);
-            $this->em->flush();
+            try {
+                $this->em->persist($movie);
+                $this->em->flush();
+            } catch (\Throwable $e) {
+                $o->writeln("Exception: {$e->getMessage()}")
+            }
         }
     }
 }
