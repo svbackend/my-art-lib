@@ -211,7 +211,7 @@ class MovieController extends BaseController
      */
     public function putMovies(Movie $movie, UpdateMovieRequest $request)
     {
-        $this->denyAccessUnlessGranted(UserRoles::ROLE_ADMIN);
+        $this->denyAccessUnlessGranted([UserRoles::ROLE_ADMIN, UserRoles::ROLE_MODERATOR]);
 
         $movieData = $request->get('movie');
         $movieTranslationsData = $movieData['translations'];

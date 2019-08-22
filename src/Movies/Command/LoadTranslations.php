@@ -3,6 +3,7 @@
 namespace App\Movies\Command;
 
 use App\Movies\DTO\MovieTranslationDTO;
+use App\Movies\Entity\Movie;
 use App\Movies\Entity\MovieTranslations;
 use App\Movies\Parser\Kinobaza;
 use App\Movies\Repository\MovieReleaseDateRepository;
@@ -42,7 +43,9 @@ class LoadTranslations extends Command
     protected function execute(InputInterface $i, OutputInterface $o)
     {
         $movies = $this->repository->findAllWithEmptyTranslation('uk');
+        $movies = $movies->getResult();
 
+        /** @var $movie Movie */
         foreach ($movies as $movie) {
             if (null === $releaseDate = $movie->getReleaseDate()) {
                 $o->writeln(sprintf('Movie "%s" dont have release date. Skipping...', $movie->getOriginalTitle()));
@@ -56,7 +59,10 @@ class LoadTranslations extends Command
                 continue;
             }
 
-            $data['overview'] .= "\nДжерело https://kinobaza.com.ua";
+            if (!empty($data['overview'])) {
+                $data['overview'] .= "\nДжерело https://kinobaza.com.ua";
+            }
+
             $data['title'] = substr($data['title'], 0, 99);
 
             $movie->addTranslation(

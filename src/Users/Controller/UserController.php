@@ -11,6 +11,7 @@ use App\Users\Repository\UserRepository;
 use App\Users\Request\ConfirmEmailRequest;
 use App\Users\Request\RegisterUserRequest;
 use App\Users\Request\UpdateUserRequest;
+use App\Users\Request\UpdateUserRolesRequest;
 use App\Users\Service\RegisterService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -168,6 +169,32 @@ class UserController extends BaseController
         $profile->setAbout($profileData['about']);
         $profile->setPublicEmail($profileData['public_email']);
         $profile->setCountryCode($profileData['country_code']);
+        $this->getDoctrine()->getManager()->flush();
+
+        return new JsonResponse(null, 202);
+    }
+
+    /**
+     * @Route("/api/users/{id}/roles", methods={"POST", "PUT", "PATCH"}, requirements={"id"="\d+"})
+     *
+     * @param User              $user
+     * @param UpdateUserRequest $request
+     *
+     * @throws \Exception
+     *
+     * @return JsonResponse
+     */
+    public function putUsersRoles(User $user, UpdateUserRolesRequest $request)
+    {
+        $this->denyAccessUnlessGranted(UserRoles::ROLE_ADMIN);
+
+        $roles = $request->get('roles');
+        $user->getRolesObject()->removeRole(UserRoles::ROLE_MODERATOR);
+
+        foreach ($roles as $role) {
+            $user->getRolesObject()->addRole($role);
+        }
+
         $this->getDoctrine()->getManager()->flush();
 
         return new JsonResponse(null, 202);

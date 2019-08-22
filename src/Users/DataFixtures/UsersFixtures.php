@@ -97,6 +97,7 @@ class UsersFixtures extends Fixture
     private function createModer()
     {
         $user = new User(self::MODER_EMAIL, self::MODER_USERNAME, self::MODER_PASSWORD);
+        $user->getRolesObject()->addRole(UserRoles::ROLE_MODERATOR);
         $profile = $user->getProfile();
         $profile->setFirstName('First')->setLastName('Last');
 
