@@ -72,7 +72,7 @@ class LoadTranslations extends Command
                 $this->em->persist($movie);
                 $this->em->flush();
             } catch (\Throwable $e) {
-                $o->writeln("Exception: {$e->getMessage()}")
+                $o->writeln("Exception: {$e->getMessage()}");
             }
         }
     }
