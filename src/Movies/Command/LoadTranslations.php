@@ -32,6 +32,7 @@ class LoadTranslations extends Command
         $this->repository = $repository;
         $this->parser = $parser;
         $this->cache = $cache;
+        $this->em = $em;
     }
 
     protected function configure()
