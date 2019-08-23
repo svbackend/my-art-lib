@@ -9,6 +9,7 @@ use App\Movies\Parser\Kinobaza;
 use App\Movies\Repository\MovieReleaseDateRepository;
 use App\Movies\Repository\MovieRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,14 +23,15 @@ class LoadTranslations extends Command
     private $parser;
 
     private $em;
+    private $cache;
 
-    public function __construct(EntityManagerInterface $em, MovieRepository $repository, Kinobaza $parser, ?string $name = null)
+    public function __construct(EntityManagerInterface $em, MovieRepository $repository, Kinobaza $parser, CacheInterface $cache, ?string $name = null)
     {
         parent::__construct($name);
 
         $this->repository = $repository;
         $this->parser = $parser;
-        $this->em = $em;
+        $this->cache = $cache;
     }
 
     protected function configure()
@@ -47,6 +49,11 @@ class LoadTranslations extends Command
 
         /** @var $movie Movie */
         foreach ($movies as $movie) {
+            $cacheKey = 'notfound_' . $movie->getId();
+            if ($this->cache->has($cacheKey)) {
+                continue;
+            }
+
             if (null === $releaseDate = $movie->getReleaseDate()) {
                 $o->writeln(sprintf('Movie "%s" dont have release date. Skipping...', $movie->getOriginalTitle()));
                 continue;
@@ -55,6 +62,7 @@ class LoadTranslations extends Command
             $data = $this->parser->find($movie->getOriginalTitle(), (int)$releaseDate->format('Y'));
 
             if (!$data) {
+                $this->cache->set($cacheKey, true, 86400);
                 $o->writeln(sprintf('Cant find movie "%s" in kinobaza.com.ua', $movie->getOriginalTitle()));
                 continue;
             }
@@ -79,6 +87,7 @@ class LoadTranslations extends Command
                 $this->em->flush();
             } catch (\Throwable $e) {
                 $o->writeln("Exception: {$e->getMessage()}");
+                throw $e;
             }
         }
     }
