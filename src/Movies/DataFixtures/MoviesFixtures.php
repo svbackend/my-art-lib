@@ -9,6 +9,7 @@ use App\Genres\DataFixtures\GenresFixtures;
 use App\Genres\Entity\Genre;
 use App\Movies\DTO\MovieDTO;
 use App\Movies\DTO\MovieTranslationDTO;
+use App\Movies\Entity\MovieReview;
 use App\Movies\Entity\MovieTMDB;
 use App\Movies\Service\MovieManageService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
