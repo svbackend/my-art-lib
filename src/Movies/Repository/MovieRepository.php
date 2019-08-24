@@ -45,17 +45,22 @@ class MovieRepository extends ServiceEntityRepository
      *
      * @return Movie|null
      */
-    public function findOneForMoviePage(int $id, ?User $user = null): ?Movie
+    public function findOneForMoviePage(int $id, string $locale, ?User $user = null): ?Movie
     {
         if ($user === null) {
             return $this->getBaseQuery()
+                ->leftJoin('m.cards', 'mc', 'WITH', 'mc.movie = m AND mc.locale = :locale')
+                ->addSelect('mc')
                 ->where('m.id = :id')
                 ->setParameter('id', $id)
+                ->setParameter('locale', $locale)
                 ->getQuery()
                 ->getSingleResult();
         }
 
         $result = $this->getBaseQuery()
+            ->leftJoin('m.cards', 'mc', 'WITH', 'mc.movie = m AND mc.locale = :locale')
+            ->addSelect('mc')
             ->where('m.id = :id')
             ->leftJoin('m.userWatchedMovie', 'uwm', 'WITH', 'uwm.user = :user_id')
             ->addSelect('uwm')
@@ -65,6 +70,7 @@ class MovieRepository extends ServiceEntityRepository
             ->addSelect('uim')
             ->setParameter('user_id', $user->getId())
             ->setParameter('id', $id)
+            ->setParameter('locale', $locale)
             ->getQuery()
             ->getSingleResult();
 

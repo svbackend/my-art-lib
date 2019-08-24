@@ -21,7 +21,6 @@ class RemoveMovieRecommendationRequest extends BaseRequest
         };
 
         return new Assert\Collection([
-            'api_token' => new Assert\NotBlank(),
             'movie_id' => new Assert\Callback($movieIdRequired),
             'tmdb_id' => new Assert\Callback($movieIdRequired),
         ]);

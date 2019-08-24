@@ -19,8 +19,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-//todo production_countries, production_companies
-
 /**
  * @ORM\Entity(repositoryClass="App\Movies\Repository\MovieRepository")
  * @ORM\Table(name="movies")
@@ -162,6 +160,12 @@ class Movie implements TranslatableInterface
      */
     private $recommendations;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Movies\Entity\MovieCard", mappedBy="movie", cascade={"persist", "remove"})
+     * @Groups({"view"})
+     */
+    private $cards;
+
     public function __construct(MovieDTO $movieDTO, MovieTMDB $tmdb)
     {
         $this->translations = new ArrayCollection();
@@ -169,6 +173,7 @@ class Movie implements TranslatableInterface
         $this->similarMovies = new ArrayCollection();
         $this->recommendations = new ArrayCollection();
         $this->actors = new ArrayCollection();
+        $this->cards = new ArrayCollection();
 
         $this->originalTitle = $movieDTO->getOriginalTitle();
         $this->originalPosterUrl = $movieDTO->getOriginalPosterUrl();
@@ -228,7 +233,7 @@ class Movie implements TranslatableInterface
         }, $movieActors);
     }
 
-    public function addSimilarMovie(self $similarMovie)
+    public function addSimilarMovie(Movie $similarMovie)
     {
         $similarMovie = new SimilarMovie($this, $similarMovie);
         $this->similarMovies->add($similarMovie);
@@ -435,6 +440,14 @@ class Movie implements TranslatableInterface
     public function setOriginalTitle(string $originalTitle): void
     {
         $this->originalTitle = $originalTitle;
+    }
+
+    /**
+     * @return ArrayCollection|MovieCard[]
+     */
+    public function getCards()
+    {
+        return $this->cards;
     }
 
     public function __toString()

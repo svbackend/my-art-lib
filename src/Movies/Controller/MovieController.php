@@ -87,9 +87,9 @@ class MovieController extends BaseController
      *
      * @return JsonResponse
      */
-    public function getMovies(int $id, MovieRepository $repository, ProducerInterface $producer)
+    public function getMovies(Request $request, int $id, MovieRepository $repository, ProducerInterface $producer)
     {
-        if (null === $movie = $repository->findOneForMoviePage($id, $this->getUser())) {
+        if (null === $movie = $repository->findOneForMoviePage($id, $request->getLocale(), $this->getUser())) {
             throw new NotFoundHttpException();
         }
 
