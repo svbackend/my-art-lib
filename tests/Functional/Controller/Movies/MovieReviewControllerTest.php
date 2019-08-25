@@ -3,7 +3,6 @@
 namespace App\Tests\Functional\Controller\Movies;
 
 use App\Movies\DataFixtures\MoviesFixtures;
-use App\Movies\Entity\MovieCard;
 use App\Users\DataFixtures\UsersFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -41,12 +40,11 @@ class MovieReviewControllerTest extends WebTestCase
         $this->assertSame(1, $response['paging']['total']);
         $this->assertSame('VERY SHORT REVIEW!!!', $review['text']);
 
-        /*
         $client->request('DELETE', "/api/movies/{$movieId}/reviews/{$review['id']}?api_token={$apiToken}");
         $this->assertSame(200, $client->getResponse()->getStatusCode());
 
         $client->request('GET', "/api/movies/{$movieId}/reviews?api_token={$apiToken}&language=en");
         $response = json_decode($client->getResponse()->getContent(), true);
-        $this->assertSame(0, $response['paging']['total']);*/
+        $this->assertSame(0, $response['paging']['total']);
     }
 }

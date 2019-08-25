@@ -21,6 +21,20 @@ class MovieReviewRepository extends ServiceEntityRepository
         parent::__construct($registry, MovieReview::class);
     }
 
+    /**
+     * use this method instead of find(), because doctrine dont know how to map uwm correctly
+     */
+    public function findOne(int $id): ?MovieReview
+    {
+        return $this->createQueryBuilder('review')
+            ->leftJoin('review.userWatchedMovie', 'uwm')
+            ->addSelect('uwm')
+            ->where('review.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findAllByMovie(string $locale, int $movieId): Query
     {
         return $this->createQueryBuilder('review')

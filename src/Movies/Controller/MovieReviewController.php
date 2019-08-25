@@ -4,17 +4,16 @@ namespace App\Movies\Controller;
 
 use App\Controller\BaseController;
 use App\Movies\Entity\Movie;
-use App\Movies\Entity\MovieCard;
 use App\Movies\Entity\MovieReview;
-use App\Movies\Repository\MovieCardRepository;
 use App\Movies\Repository\MovieReviewRepository;
-use App\Movies\Request\NewMovieCardRequest;
 use App\Movies\Request\NewMovieReviewRequest;
 use App\Pagination\PaginatedCollection;
 use App\Users\Entity\UserRoles;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MovieReviewController extends BaseController
@@ -37,13 +36,7 @@ class MovieReviewController extends BaseController
     }
 
     /**
-     * Add new review
-     *
-     * @Route("/api/movies/{id}/reviews", methods={"POST"})
-     *
-     * @throws \Doctrine\ORM\ORMException
-     *
-     * @return JsonResponse
+     * @Route("/api/movies/{id}/reviews", methods={"POST"}, requirements={"id"="\d+"})
      */
     public function postMoviesReviews(Request $request, NewMovieReviewRequest $reviewRequest, Movie $movie, EntityManagerInterface $em)
     {
@@ -68,9 +61,13 @@ class MovieReviewController extends BaseController
     /**
      * @Route("/api/movies/{movie_id}/reviews/{id}", methods={"DELETE"})
      */
-    public function deleteMoviesReviews(MovieReview $review, EntityManagerInterface $em)
+    public function deleteMoviesReviews(int $id, EntityManagerInterface $em, MovieReviewRepository $repository)
     {
         $this->denyAccessUnlessGranted(UserRoles::ROLE_USER);
+
+        if (null === $review = $repository->findOne($id)) {
+            throw new NotFoundHttpException();
+        }
 
         if ($review->getUser()->getId() !== $this->getUser()->getId()) {
             $this->denyAccessUnlessGranted([UserRoles::ROLE_MODERATOR, UserRoles::ROLE_ADMIN]);

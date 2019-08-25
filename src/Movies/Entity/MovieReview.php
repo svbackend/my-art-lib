@@ -3,6 +3,7 @@
 namespace App\Movies\Entity;
 
 use App\Users\Entity\User;
+use App\Users\Entity\UserWatchedMovie;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -12,6 +13,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class MovieReview
 {
+    /**
+     * Important note here - this property (userWatchedMovie) MUST be first,
+     * because otherwise Doctrine will fill (override) user_id and movie_id with values from UserWatchedMovie
+     * which usually just nulls.
+     *
+     * @ORM\OneToOne(targetEntity="App\Users\Entity\UserWatchedMovie")
+     * @ORM\JoinColumns({
+     *     @ORM\JoinColumn(name="user_id", referencedColumnName="user_id"),
+     *     @ORM\JoinColumn(name="movie_id", referencedColumnName="movie_id")
+     *   })
+     * @Groups({"list", "view"})
+     */
+    private $userWatchedMovie;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -56,16 +71,6 @@ class MovieReview
      * @Groups({"list", "view"})
      */
     private $user;
-
-    /**
-     * @ORM\OneToOne(targetEntity="App\Users\Entity\UserWatchedMovie")
-     * @ORM\JoinColumns({
-     *     @ORM\JoinColumn(name="user_id", referencedColumnName="user_id"),
-     *     @ORM\JoinColumn(name="movie_id", referencedColumnName="movie_id")
-     *   })
-     * @Groups({"list", "view"})
-     */
-    private $userWatchedMovie;
 
     public function __construct(Movie $movie, User $user, string $locale, string $text)
     {
