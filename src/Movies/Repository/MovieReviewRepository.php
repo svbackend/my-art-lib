@@ -43,6 +43,7 @@ class MovieReviewRepository extends ServiceEntityRepository
             ->where('review.movie = :movieId AND review.locale = :locale')
             ->setParameter('movieId', $movieId)
             ->setParameter('locale', $locale)
+            ->orderBy('review.id', 'DESC')
             ->getQuery();
     }
 }
