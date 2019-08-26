@@ -256,9 +256,13 @@ class MovieRepository extends ServiceEntityRepository
         return [$items->getQuery(), $ids->getQuery(), $count->getQuery()];
     }
 
-    public function findAllQuery()
+    public function findAllWithoutCardsQuery(string $title, string $locale)
     {
-        $result = $this->getBaseQuery()
+        $result = $this->createQueryBuilder('m')
+            ->leftJoin('m.cards', 'mc', 'WITH', 'mc.title = :title AND mc.locale = :locale')
+            ->where('mc IS NULL')
+            ->setParameter('locale', $locale)
+            ->setParameter('title', $title)
             ->orderBy('m.id', 'DESC')
             ->getQuery();
 
