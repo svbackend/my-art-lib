@@ -25,6 +25,8 @@ class LoadTranslations extends Command
     private $em;
     private $cache;
 
+    private const CACHE_TIME = 2592000; // 30 days
+
     public function __construct(EntityManagerInterface $em, MovieRepository $repository, Kinobaza $parser, CacheInterface $cache, ?string $name = null)
     {
         parent::__construct($name);
@@ -63,7 +65,7 @@ class LoadTranslations extends Command
             $data = $this->parser->find($movie->getOriginalTitle(), (int)$releaseDate->format('Y'));
 
             if (!$data) {
-                $this->cache->set($cacheKey, true, 86400);
+                $this->cache->set($cacheKey, true, self::CACHE_TIME);
                 $o->writeln(sprintf('Cant find movie "%s" in kinobaza.com.ua', $movie->getOriginalTitle()));
                 continue;
             }
@@ -87,7 +89,7 @@ class LoadTranslations extends Command
                 $this->em->persist($movie);
                 $this->em->flush();
             } catch (\Throwable $e) {
-                $this->cache->set($cacheKey, true, 86400);
+                $this->cache->set($cacheKey, true, self::CACHE_TIME);
                 $o->writeln("Exception: {$e->getMessage()}");
                 throw $e;
             }

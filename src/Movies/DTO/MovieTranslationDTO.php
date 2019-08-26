@@ -13,6 +13,10 @@ class MovieTranslationDTO
 
     public function __construct(string $locale, string $title, ?string $overview, ?string $posterUrl)
     {
+        if (mb_strlen($title) >= 100) {
+            $title = mb_substr($title, 0, 96) . '...';
+        }
+
         $this->locale = $locale;
         $this->title = $title;
         $this->overview = $overview;
