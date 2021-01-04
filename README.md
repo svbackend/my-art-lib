@@ -1,6 +1,8 @@
 ## my-art-lib / [frontend](https://github.com/svbackend/my-art-lib-spa)
 
-[mykino.top](https://mykino.top): Collect your own library of watched movies and get recommendation from other people
+mykino.top: Collect your own library of watched movies and get recommendation from other people
+
+**Unfortunately I had to put it down.**
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/svbackend/my-art-lib/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/svbackend/my-art-lib/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/svbackend/my-art-lib/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/svbackend/my-art-lib/?branch=master)
